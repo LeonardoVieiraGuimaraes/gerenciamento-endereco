@@ -268,7 +268,10 @@
             "credentials": [
                 { "type": "password", "value": "270414", "temporary": false }
             ],
-            "realmRoles": [ "ADMIN", "USUARIO" ]
+            "realmRoles": [ "ADMIN", "USUARIO" ],
+            "clientRoles": {
+                "realm-management": [ "realm-admin" ]
+            }
         },
         {
             "username": "leonardo",
