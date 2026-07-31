@@ -1,0 +1,60 @@
+@{
+    ViewData["Title"] = "Página Inicial";
+}
+
+<div class="hero-section text-center">
+    <div class="glass-card slide-up-anim">
+        <div class="hero-icon text-primary">
+            <i class="bi bi-pin-map-fill"></i>
+        </div>
+        <h1 class="hero-title">Gerenciamento de Endereços</h1>
+        <p class="hero-subtitle mb-4">Controle seus locais de forma segura e inteligente, com o poder do <strong>Authentik</strong> e <strong>ASP.NET Core</strong>.</p>
+        
+        <div class="mt-4 d-flex justify-content-center gap-3">
+            @if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                <a asp-controller="Enderecos" asp-action="Index" class="btn-premium px-5 py-3 fs-5">
+                    <i class="bi bi-map me-2"></i> Ir para Meus Endereços
+                </a>
+            }
+            else
+            {
+                <a asp-controller="Auth" asp-action="Login" class="btn-premium px-5 py-3 fs-5">
+                    <i class="bi bi-shield-lock me-2"></i> Acessar a Plataforma
+                </a>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="features-section mt-5 fade-in-anim delay-1">
+    <div class="row g-4 text-center">
+        <div class="col-md-4">
+            <div class="feature-card">
+                <div class="feature-icon text-success mb-3">
+                    <i class="bi bi-shield-check" style="font-size: 2.5rem;"></i>
+                </div>
+                <h3>Segurança</h3>
+                <p>Autenticação SSO nativa com suporte a 2FA através da integração direta e segura com o Authentik.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-card">
+                <div class="feature-icon text-warning mb-3">
+                    <i class="bi bi-lightning-charge-fill" style="font-size: 2.5rem;"></i>
+                </div>
+                <h3>Alta Performance</h3>
+                <p>Backend robusto em C# operando com injeção de dependência avançada e Entity Framework Core In-Memory e Postgres.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-card">
+                <div class="feature-icon text-info mb-3">
+                    <i class="bi bi-file-earmark-spreadsheet-fill" style="font-size: 2.5rem;"></i>
+                </div>
+                <h3>Exportação Ágil</h3>
+                <p>Gere e manipule relatórios estruturados de forma profissional em CSV de seus endereços cadastrados.</p>
+            </div>
+        </div>
+    </div>
+</div>

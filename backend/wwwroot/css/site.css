@@ -1,0 +1,253 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  /* Paleta Light Mode (Padrão de Mercado - Modern Slate & Blue) */
+  --bg-color: #f8fafc;
+  --bg-gradient: radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.05) 0%, transparent 40%),
+                 radial-gradient(circle at 90% 80%, rgba(99, 102, 241, 0.05) 0%, transparent 40%);
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(226, 232, 240, 0.8);
+  --btn-primary: #2563eb;
+  --btn-primary-hover: #1d4ed8;
+  --primary-color: #2563eb;
+  --card-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+  --input-bg: #ffffff;
+  --input-border: #cbd5e1;
+  --table-hover-bg: rgba(241, 245, 249, 0.6);
+  --dropdown-bg: rgba(255, 255, 255, 0.95);
+}
+
+[data-theme="dark"] {
+  /* Paleta Dark Mode (Padrão de Mercado - Deep Night & Electric Cyan/Blue) */
+  --bg-color: #0b0f17;
+  --bg-gradient: radial-gradient(circle at 15% 15%, rgba(56, 189, 248, 0.12) 0%, transparent 45%),
+                 radial-gradient(circle at 85% 85%, rgba(99, 102, 241, 0.10) 0%, transparent 45%);
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --glass-bg: rgba(17, 24, 39, 0.75);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --btn-primary: #38bdf8;
+  --btn-primary-hover: #0284c7;
+  --primary-color: #38bdf8;
+  --card-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  --input-bg: rgba(15, 23, 42, 0.7);
+  --input-border: rgba(255, 255, 255, 0.15);
+  --table-hover-bg: rgba(255, 255, 255, 0.04);
+  --dropdown-bg: rgba(15, 23, 42, 0.95);
+}
+
+html {
+  font-size: 15px;
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+  background-color: var(--bg-color);
+  background-image: var(--bg-gradient);
+  background-attachment: fixed;
+  color: var(--text-main);
+  transition: background-color 0.3s ease, color 0.3s ease;
+  -webkit-font-smoothing: antialiased;
+}
+
+.main-container {
+  padding-top: 2rem;
+  padding-bottom: 3rem;
+}
+
+/* Classes Utilitárias */
+.var-text-main { color: var(--text-main) !important; }
+.var-text-muted { color: var(--text-muted) !important; }
+.var-text-primary { color: var(--primary-color) !important; }
+
+/* Navbar e Footer Premium com Glassmorphism Real */
+.glass-nav {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--glass-border) !important;
+  box-shadow: var(--card-shadow);
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 1050 !important;
+}
+
+.glass-footer {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid var(--glass-border) !important;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.03);
+}
+
+/* Cartões (Glass Cards) Alinhados e Profissionais */
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 2.5rem;
+  box-shadow: var(--card-shadow);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  margin-bottom: 2rem;
+}
+
+/* Tabelas Profissionais */
+.table {
+  color: var(--text-main) !important;
+  border-color: var(--glass-border) !important;
+}
+
+.table th {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+  color: var(--text-muted);
+  border-bottom: 2px solid var(--glass-border) !important;
+  padding: 1rem 0.75rem;
+}
+
+.table td {
+  padding: 1rem 0.75rem;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.table-hover tbody tr:hover {
+  background-color: var(--table-hover-bg) !important;
+  color: var(--text-main) !important;
+}
+
+/* Form Inputs e Controlos */
+.form-control, .form-select {
+  background-color: var(--input-bg) !important;
+  border: 1px solid var(--input-border) !important;
+  color: var(--text-main) !important;
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15) !important;
+}
+
+/* Botões Estilizados */
+.btn-primary {
+  background-color: var(--btn-primary) !important;
+  border-color: var(--btn-primary) !important;
+  color: #ffffff !important;
+  font-weight: 600;
+  box-shadow: 0 4px 14px 0 rgba(37, 99, 235, 0.3);
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+  background-color: var(--btn-primary-hover) !important;
+  border-color: var(--btn-primary-hover) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px 0 rgba(37, 99, 235, 0.4);
+}
+
+.btn-outline-primary {
+  color: var(--primary-color) !important;
+  border-color: var(--primary-color) !important;
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--primary-color) !important;
+  color: #ffffff !important;
+}
+
+/* Botão de CTA principal (usado no "Entrar" da navbar e nos hero CTAs) —
+   classe usada em várias views mas nunca tinha sido definida no CSS. */
+.btn-premium {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--btn-primary) 0%, var(--primary-color) 100%);
+  color: #ffffff !important;
+  font-weight: 700;
+  border: none;
+  border-radius: 50px;
+  text-decoration: none;
+  box-shadow: 0 4px 14px 0 rgba(37, 99, 235, 0.35);
+  transition: all 0.2s ease;
+}
+
+.btn-premium:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px 0 rgba(37, 99, 235, 0.45);
+  color: #ffffff !important;
+}
+
+/* Hero Section */
+.hero-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 55vh;
+  padding: 4rem 0;
+}
+
+.hero-title {
+  font-weight: 800;
+  font-size: 2.75rem;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, var(--text-main) 0%, var(--primary-color) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-subtitle {
+  font-size: 1.2rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+/* Glassmorphism Dropdown Refinado */
+.glass-dropdown {
+  background: var(--dropdown-bg) !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border) !important;
+  border-radius: 14px !important;
+  padding: 0.5rem !important;
+  box-shadow: var(--card-shadow) !important;
+  z-index: 2000 !important;
+}
+
+.glass-dropdown .dropdown-item {
+  color: var(--text-main) !important;
+  border-radius: 8px;
+  padding: 0.65rem 1.2rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.glass-dropdown .dropdown-item:hover {
+  background: var(--btn-primary) !important;
+  color: #ffffff !important;
+}
+
+.glass-dropdown .dropdown-item:hover i {
+  color: #ffffff !important;
+}
+
+/* Animações Fluidas */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}

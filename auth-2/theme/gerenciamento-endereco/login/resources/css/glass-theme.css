@@ -1,0 +1,180 @@
+/* Modern Glassmorphism Theme for Keycloak with Light/Dark Mode */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --bg-color: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    --card-bg: rgba(255, 255, 255, 0.7);
+    --card-border: rgba(255, 255, 255, 0.3);
+    --text-main: #333333;
+    --text-muted: #6b7280;
+    --title-color: #2563eb;
+    --input-bg: rgba(255, 255, 255, 0.6);
+    --input-border: rgba(200, 200, 200, 0.5);
+    --input-focus-border: #3b82f6;
+    --btn-bg: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    --link-color: #2563eb;
+    --link-hover: #1d4ed8;
+}
+
+[data-theme="dark"] {
+    --bg-color: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        --card-bg: rgba(30, 41, 59, 0.7);
+        --card-border: rgba(255, 255, 255, 0.1);
+        --text-main: #f8fafc;
+        --text-muted: #94a3b8;
+    --card-bg: rgba(30, 41, 59, 0.7);
+    --card-border: rgba(255, 255, 255, 0.1);
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --title-color: #38bdf8;
+    --input-bg: rgba(15, 23, 42, 0.6);
+    --input-border: rgba(255, 255, 255, 0.1);
+    --input-focus-border: #38bdf8;
+    --btn-bg: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
+    --link-color: #38bdf8;
+    --link-hover: #60a5fa;
+}
+
+body {
+    font-family: 'Inter', sans-serif !important;
+    background: var(--bg-color) !important;
+    color: var(--text-main) !important;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+#kc-header {
+    display: none !important;
+}
+
+.login-pf body {
+    background: var(--bg-color) !important;
+}
+
+/* Container principal - Efeito Glass */
+.card-pf {
+    background: var(--card-bg) !important;
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+    border: 1px solid var(--card-border) !important;
+    border-radius: 20px !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+    padding: 2.5rem !important;
+    max-width: 450px !important;
+    width: 100% !important;
+    margin: 0 auto !important;
+    transition: background 0.3s ease, border 0.3s ease;
+}
+
+/* Títulos */
+#kc-page-title {
+    font-size: 1.75rem !important;
+    font-weight: 700 !important;
+    color: var(--title-color) !important;
+    text-align: center !important;
+    margin-bottom: 1.5rem !important;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Labels */
+.control-label {
+    color: var(--text-muted) !important;
+    font-weight: 500 !important;
+    font-size: 0.9rem !important;
+    margin-bottom: 0.5rem !important;
+}
+
+/* Inputs */
+input[type="text"],
+input[type="password"],
+input[type="email"] {
+    background: var(--input-bg) !important;
+    border: 1px solid var(--input-border) !important;
+    color: var(--text-main) !important;
+    border-radius: 10px !important;
+    padding: 0.75rem 1rem !important;
+    font-size: 1rem !important;
+    transition: all 0.3s ease !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus {
+    outline: none !important;
+    border-color: var(--input-focus-border) !important;
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.25) !important;
+}
+
+/* Botão de Submit */
+.btn-primary {
+    background: var(--btn-bg) !important;
+    border: none !important;
+    border-radius: 10px !important;
+    color: white !important;
+    font-weight: 600 !important;
+    font-size: 1rem !important;
+    padding: 0.75rem 1.5rem !important;
+    width: 100% !important;
+    transition: transform 0.2s, box-shadow 0.2s !important;
+    cursor: pointer !important;
+    margin-top: 1.5rem !important;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 10px 20px -10px rgba(37, 99, 235, 0.7) !important;
+}
+
+/* Links (Esqueci a senha, registrar) */
+a, .login-pf-settings a, #kc-registration a, #kc-login a {
+    color: var(--link-color) !important;
+    text-decoration: none !important;
+    font-size: 0.9rem !important;
+    transition: color 0.2s !important;
+}
+
+a:hover, .login-pf-settings a:hover, #kc-registration a:hover, #kc-login a:hover {
+    color: var(--link-hover) !important;
+    text-decoration: underline !important;
+}
+
+/* Checkbox Remember Me */
+.checkbox {
+    color: var(--text-muted) !important;
+}
+
+#kc-registration, #kc-login {
+    color: var(--text-muted);
+}
+
+.theme-toggle {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    color: var(--text-main);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+}
+
+.theme-toggle:hover {
+    background: var(--btn-bg);
+    color: white;
+    transform: scale(1.1);
+}

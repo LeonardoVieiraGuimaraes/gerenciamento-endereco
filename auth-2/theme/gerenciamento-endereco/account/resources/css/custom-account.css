@@ -1,0 +1,104 @@
+/* Tema Customizado para o Account Console do Keycloak (v3) */
+
+:root {
+  /* Cores base */
+  --pf-v5-global--primary-color--100: #0ea5e9;
+  --pf-v5-global--primary-color--200: #0284c7;
+  
+  /* Fundos */
+  --pf-v5-global--BackgroundColor--100: #0f172a;
+  --pf-v5-global--BackgroundColor--200: #1e293b;
+  --pf-v5-global--BackgroundColor--dark-100: #0f172a;
+
+  /* Textos */
+  --pf-v5-global--Color--100: #e2e8f0;
+  --pf-v5-global--Color--200: #94a3b8;
+  --pf-v5-global--Color--dark-100: #f8fafc;
+  --pf-v5-global--Color--dark-200: #cbd5e1;
+
+  /* Bordas */
+  --pf-v5-global--BorderColor--100: rgba(255, 255, 255, 0.1);
+  
+  /* Fontes */
+  --pf-v5-global--FontFamily--sans-serif: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Forçando fundo escuro no corpo */
+body, .pf-v5-c-page {
+  background-color: #0f172a !important;
+  color: #e2e8f0 !important;
+  font-family: var(--pf-v5-global--FontFamily--sans-serif);
+}
+
+/* Cabeçalho */
+.pf-v5-c-page__header {
+  background-color: rgba(30, 41, 59, 0.7) !important;
+  backdrop-filter: blur(10px) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Sidebar de navegação */
+.pf-v5-c-page__sidebar {
+  background-color: #1e293b !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.pf-v5-c-nav__link {
+  color: #cbd5e1 !important;
+}
+
+.pf-v5-c-nav__link:hover, .pf-v5-c-nav__link.pf-m-current {
+  color: #0ea5e9 !important;
+}
+
+.pf-v5-c-nav__item.pf-m-current::after {
+  border-color: #0ea5e9 !important;
+}
+
+/* Cards (Glassmorphism sutil) */
+.pf-v5-c-card {
+  background-color: rgba(30, 41, 59, 0.5) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+}
+
+.pf-v5-c-card__title, .pf-v5-c-card__header {
+  color: #f8fafc !important;
+}
+
+/* Tabelas e Listas */
+.pf-v5-c-data-list, .pf-v5-c-table {
+  background-color: transparent !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.pf-v5-c-data-list__item, .pf-v5-c-table tr {
+  border-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.pf-v5-c-data-list__item:hover, .pf-v5-c-table tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.02) !important;
+}
+
+/* Botões */
+.pf-v5-c-button.pf-m-primary {
+  background-color: #0ea5e9 !important;
+  color: white !important;
+  border-radius: 6px !important;
+}
+
+.pf-v5-c-button.pf-m-primary:hover {
+  background-color: #0284c7 !important;
+}
+
+/* Inputs */
+.pf-v5-c-form-control {
+  background-color: rgba(15, 23, 42, 0.5) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  color: #f8fafc !important;
+}
+
+.pf-v5-c-form-control:focus {
+  border-color: #0ea5e9 !important;
+}

@@ -1,0 +1,22 @@
+# Visual Studio / .NET Core
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vscode/
+
+# Docker
+.dockerignore
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Keycloak and DB data volumes if created locally
+**/keycloak_data/
+**/sqldata/

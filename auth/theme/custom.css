@@ -1,0 +1,20 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --ak-primary-color: #3b82f6;
+  --ak-accent-color: #38bdf8;
+  --ak-dark-bg: #0b0f17;
+  --ak-surface-bg: rgba(17, 24, 39, 0.85);
+  --ak-border-color: rgba(148, 163, 184, 0.2);
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif !important;
+  background-color: var(--ak-dark-bg) !important;
+  background-image: radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 40%),
+                    radial-gradient(circle at 90% 80%, rgba(99, 102, 241, 0.15) 0%, transparent 40%) !important;
+}
+
+.pf-c-brand {
+  content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 40"><text x="10" y="28" fill="%2338bdf8" font-family="sans-serif" font-size="18" font-weight="bold">📍 Endereços</text></svg>') !important;
+}

@@ -1,0 +1,26 @@
+{
+  "realm" : "gerenciamento-endereco",
+  "users" : [ {
+    "id" : "572e7d56-7fe0-4b05-a37f-3ed23569139c",
+    "username" : "leonardo",
+    "firstName" : "Leonardo",
+    "lastName" : "Guimarães",
+    "email" : "leonardovieiraxy@gmail.com",
+    "emailVerified" : false,
+    "enabled" : true,
+    "createdTimestamp" : 1785456678935,
+    "totp" : false,
+    "credentials" : [ {
+      "id" : "4a9d2d8a-0d9a-4625-a9c5-37db7a5ff5e4",
+      "type" : "password",
+      "createdDate" : 1785456679231,
+      "secretData" : "{\"value\":\"39c8KfcU63r5rmwNm1uT8uUQysqZ+6LBjhjsk8anJwo=\",\"salt\":\"aGDUDllc7w2TcuhBhRSHoA==\",\"additionalParameters\":{}}",
+      "credentialData" : "{\"hashIterations\":5,\"algorithm\":\"argon2\",\"additionalParameters\":{\"hashLength\":[\"32\"],\"memory\":[\"7168\"],\"type\":[\"id\"],\"version\":[\"1.3\"],\"parallelism\":[\"1\"]}}"
+    } ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "user" ],
+    "notBefore" : 0,
+    "groups" : [ ]
+  } ]
+}

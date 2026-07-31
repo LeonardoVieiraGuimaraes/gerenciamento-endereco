@@ -1,0 +1,63 @@
+@{
+    ViewData["Title"] = "Documentação da API";
+}
+
+<div class="glass-card fade-in" style="max-width: 900px; margin: 0 auto;">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h1 class="fw-bold var-text-primary mb-0"><i class="bi bi-braces-asterisk me-2"></i>API — Gerenciamento de Endereços</h1>
+        <span class="badge bg-secondary rounded-pill">v1</span>
+    </div>
+    <p class="var-text-muted">API REST somente leitura para consulta dos endereços cadastrados no sistema.</p>
+
+    <div class="d-flex flex-wrap gap-2 mb-4">
+        <a href="/swagger" target="_blank" class="btn-premium px-4 py-2 text-decoration-none">
+            <i class="bi bi-box-arrow-up-right me-2"></i> Abrir Swagger UI
+        </a>
+        <a href="/swagger/v1/swagger.json" target="_blank" class="btn btn-outline-secondary rounded-pill px-4 py-2">
+            <i class="bi bi-filetype-json me-2"></i> OpenAPI JSON
+        </a>
+    </div>
+
+    <h5 class="fw-bold mb-2"><i class="bi bi-key me-2"></i>Autenticação</h5>
+    <p class="var-text-muted">
+        A API usa o mesmo cookie de sessão da interface web (autenticação via Authentik/OpenID Connect).
+        Faça login pelo navegador primeiro — o Swagger UI, por rodar na mesma origem, reaproveita a sessão
+        automaticamente no botão <strong>Try it out</strong>. Não há suporte a API Key própria desta aplicação.
+    </p>
+
+    <h5 class="fw-bold mt-4 mb-2"><i class="bi bi-diagram-3 me-2"></i>Endpoints</h5>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Método</th>
+                    <th>Rota</th>
+                    <th>Descrição</th>
+                    <th>Acesso</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="badge bg-success rounded-pill">GET</span></td>
+                    <td><code>/api/enderecos</code></td>
+                    <td>Lista os endereços do usuário autenticado (todos, se ADMIN)</td>
+                    <td><span class="var-text-muted small">Autenticado</span></td>
+                </tr>
+                <tr>
+                    <td><span class="badge bg-success rounded-pill">GET</span></td>
+                    <td><code>/api/enderecos/{id}</code></td>
+                    <td>Retorna um endereço específico pelo ID</td>
+                    <td><span class="var-text-muted small">Autenticado + dono do recurso</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h5 class="fw-bold mt-4 mb-2"><i class="bi bi-shield-check me-2"></i>Códigos de resposta</h5>
+    <ul class="var-text-muted">
+        <li><code>200 OK</code> — sucesso</li>
+        <li><code>401 Unauthorized</code> — sessão ausente ou expirada</li>
+        <li><code>403 Forbidden</code> — endereço pertence a outro usuário</li>
+        <li><code>404 Not Found</code> — endereço inexistente</li>
+    </ul>
+</div>

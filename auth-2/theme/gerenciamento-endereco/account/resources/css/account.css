@@ -1,0 +1,197 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --brand-primary: #3b82f6;
+  --brand-primary-dark: #2563eb;
+  --surface: rgba(17, 24, 39, .82);
+  --surface-soft: rgba(30, 41, 59, .75);
+  --border: rgba(148, 163, 184, .24);
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+
+  /* PatternFly v4 & v5 fallback variables */
+  --pf-global--primary-color--100: var(--brand-primary);
+  --pf-global--BackgroundColor--100: #0b0f17;
+  --pf-global--Color--100: #f8fafc;
+  --pf-v5-global--primary-color--100: var(--brand-primary);
+  --pf-v5-global--BackgroundColor--100: #0b0f17;
+  --pf-v5-global--Color--100: #f8fafc;
+}
+
+html, body {
+  min-height: 100vh;
+  font-family: 'Plus Jakarta Sans', sans-serif !important;
+  color: var(--text-main) !important;
+  background-color: #0b0f17 !important;
+  background-image:
+    radial-gradient(circle at 10% 5%, rgba(59, 130, 246, .25), transparent 32rem),
+    radial-gradient(circle at 90% 90%, rgba(99, 102, 241, .20), transparent 30rem) !important;
+  background-attachment: fixed !important;
+}
+
+/* Outer PatternFly Page Container Reset */
+#app, .pf-c-page, .pf-v5-c-page, main, .pf-c-page__main, .pf-v5-c-page__main, .pf-c-page__main-section, .pf-v5-c-page__main-section {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* Header Navbar */
+.navbar-default, .navbar-inverse, header, .navbar, .navbar-pf-vertical, .pf-c-page__header, .pf-v5-c-page__header {
+  background: rgba(15, 23, 42, .88) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border-bottom: 1px solid var(--border) !important;
+}
+
+/* Logo override: Remove TODAS as imagens do Keycloak e substitui pelo nome do sistema */
+.navbar-brand,
+.navbar-brand-txt,
+.kc-logo,
+.realm-logo,
+.pf-c-brand,
+.pf-v5-c-brand,
+.pf-c-page__header-brand-link,
+.pf-v5-c-page__header-brand-link,
+a[data-testid="brand-logo"] {
+  background: none !important;
+  background-image: none !important;
+  width: auto !important;
+  height: auto !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  font-size: 0 !important;
+  text-decoration: none !important;
+}
+
+.navbar-brand *,
+.kc-logo *,
+.realm-logo *,
+.pf-c-brand *,
+.pf-v5-c-brand *,
+.pf-c-page__header-brand-link *,
+.pf-v5-c-page__header-brand-link *,
+a[data-testid="brand-logo"] * {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+.navbar-brand::before,
+.kc-logo::before,
+.realm-logo::before,
+.pf-c-page__header-brand-link::before,
+.pf-v5-c-page__header-brand-link::before,
+a[data-testid="brand-logo"]::before {
+  content: "📍 Gerenciamento de Endereços" !important;
+  font-size: 1.25rem !important;
+  font-weight: 800 !important;
+  color: #ffffff !important;
+  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  white-space: nowrap !important;
+}
+
+/* Sidebar Navigation */
+.nav-pf-vertical, .bs-docs-sidebar, .sidebar-pf, .pf-c-page__sidebar, .pf-v5-c-page__sidebar {
+  background: rgba(15, 23, 42, .75) !important;
+  border-right: 1px solid var(--border) !important;
+}
+
+.nav-pf-vertical .list-group-item, .nav > li > a, .pf-c-nav__link, .pf-v5-c-nav__link {
+  color: var(--text-muted) !important;
+  border-radius: 8px !important;
+  margin: 2px 8px !important;
+  transition: all 0.2s ease !important;
+}
+
+.nav-pf-vertical .list-group-item:hover, .nav > li > a:hover, .pf-c-nav__link:hover, .pf-v5-c-nav__link:hover,
+.nav-pf-vertical .list-group-item.active, .pf-c-nav__link.pf-m-current, .pf-v5-c-nav__link.pf-m-current {
+  background-color: var(--brand-primary) !important;
+  color: #ffffff !important;
+}
+
+/* Content Cards & Panels */
+.card, .panel, .well, .card-pf, .pf-c-card, .pf-v5-c-card {
+  background: var(--surface) !important;
+  backdrop-filter: blur(16px) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
+  color: var(--text-main) !important;
+  padding: 1.5rem !important;
+  margin-bottom: 1.5rem !important;
+}
+
+.panel-heading, .card-pf-heading, .pf-c-card__header, .pf-v5-c-card__header {
+  background: transparent !important;
+  border-bottom: 1px solid var(--border) !important;
+  color: var(--text-main) !important;
+}
+
+.panel-title, .card-pf-title, .pf-c-card__title, .pf-v5-c-card__title {
+  font-size: 1.2rem !important;
+  font-weight: 700 !important;
+  color: #ffffff !important;
+}
+
+/* Form Inputs */
+.form-control, .pf-c-form-control, .pf-v5-c-form-control {
+  background-color: rgba(15, 23, 42, 0.7) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text-main) !important;
+  border-radius: 10px !important;
+  padding: 0.65rem 1rem !important;
+}
+
+.form-control:focus, .pf-c-form-control:focus, .pf-v5-c-form-control:focus {
+  border-color: var(--brand-primary) !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25) !important;
+}
+
+/* Buttons */
+.btn-primary, .pf-c-button.pf-m-primary, .pf-v5-c-button.pf-m-primary {
+  background-color: var(--brand-primary) !important;
+  border-color: var(--brand-primary) !important;
+  color: #ffffff !important;
+  border-radius: 10px !important;
+  font-weight: 600 !important;
+  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.3) !important;
+  transition: all 0.2s ease !important;
+}
+
+.btn-primary:hover, .pf-c-button.pf-m-primary:hover, .pf-v5-c-button.pf-m-primary:hover {
+  background-color: var(--brand-primary-dark) !important;
+  border-color: var(--brand-primary-dark) !important;
+  transform: translateY(-1px) !important;
+}
+
+.btn-default, .pf-c-button.pf-m-secondary, .pf-v5-c-button.pf-m-secondary {
+  background-color: rgba(30, 41, 59, 0.8) !important;
+  border-color: var(--border) !important;
+  color: var(--text-main) !important;
+  border-radius: 10px !important;
+}
+
+/* Tables */
+.table, .pf-c-table, .pf-v5-c-table {
+  color: var(--text-main) !important;
+  background: transparent !important;
+}
+
+.table th, .pf-c-table th, .pf-v5-c-table th {
+  color: var(--text-muted) !important;
+  border-bottom: 2px solid var(--border) !important;
+  text-transform: uppercase !important;
+  font-size: 0.75rem !important;
+  letter-spacing: 0.05em !important;
+}
+
+.table td, .pf-c-table td, .pf-v5-c-table td {
+  border-bottom: 1px solid var(--border) !important;
+}

@@ -1,18 +1,7 @@
-FROM quay.io/keycloak/keycloak:latest
+FROM ghcr.io/goauthentik/server:2024.12.3
 
-# Modo de produção
-ENV KC_METRICS_ENABLED=true
-ENV KC_HEALTH_ENABLED=true
-ENV KC_FEATURES=token-exchange
+# Copia os Blueprints (Realms) customizados para o diretório de autocarregamento do Authentik
+COPY blueprints/ /blueprints/custom/
 
-# Diretório de trabalho
-WORKDIR /opt/keycloak
-
-# Build do Keycloak
-RUN /opt/keycloak/bin/kc.sh build
-
-# Porta padrão
-EXPOSE 8080
-
-# Comando de inicialização
-ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "start", "--optimized"]
+# Copia os arquivos de Tema customizados
+COPY theme/custom.css /web/dist/custom.css

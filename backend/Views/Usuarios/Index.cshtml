@@ -1,0 +1,112 @@
+@model IEnumerable<GerenciamentoEndereco.API.Models.ViewModels.UsuarioListViewModel>
+@{
+    ViewData["Title"] = "Usuários Registrados";
+}
+
+<div class="glass-card fade-in">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-people me-2"></i>@ViewData["Title"]</h2>
+        <div>
+            <span class="badge bg-primary rounded-pill fs-6 me-2">@Model.Count() usuários</span>
+            <a asp-action="Create" class="btn btn-primary btn-sm rounded-pill px-3 fw-bold">
+                <i class="bi bi-person-plus me-1"></i> Novo Usuário
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>@TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>@TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th><i class="bi bi-hash me-1"></i>ID</th>
+                    <th><i class="bi bi-person me-1"></i>Nome</th>
+                    <th><i class="bi bi-at me-1"></i>Usuário / E-mail</th>
+                    <th><i class="bi bi-shield me-1"></i>Status</th>
+                    <th><i class="bi bi-map me-1"></i>Endereços (Local)</th>
+                    <th><i class="bi bi-gear me-1"></i>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td><small class="text-muted">@item.Id</small></td>
+                        <td class="fw-medium">@item.Nome</td>
+                        <td>
+                            <div class="d-flex flex-column">
+                                <small class="var-text-main fw-bold">@item.Username</small>
+                                <small class="var-text-muted">@item.Email</small>
+                            </div>
+                        </td>
+                        <td>
+                            @if (item.Enabled)
+                            {
+                                <span class="badge bg-success rounded-pill">
+                                    <i class="bi bi-check-circle-fill me-1"></i>Ativo
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger rounded-pill">
+                                    <i class="bi bi-x-circle-fill me-1"></i>Inativo
+                                </span>
+                            }
+                        </td>
+                        <td>
+                            <span class="badge bg-secondary rounded-pill">
+                                <i class="bi bi-geo-alt me-1"></i>@item.EnderecoCount
+                            </span>
+                        </td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@item.Id"
+                               class="btn btn-sm btn-outline-secondary rounded-pill me-1"
+                               title="Editar Usuário">
+                                <i class="bi bi-pencil me-1"></i> Editar
+                            </a>
+                            <a asp-controller="Enderecos" asp-action="Index" asp-route-username="@item.Username"
+                               class="btn btn-sm btn-outline-info rounded-pill me-1"
+                               title="Ver e Editar Endereços do Usuário">
+                                <i class="bi bi-geo-alt me-1"></i> Endereços (@item.EnderecoCount)
+                            </a>
+                            <a href="http://localhost:8089/if/admin/#/identity/users/@item.Id"
+                               target="_blank"
+                               class="btn btn-sm btn-outline-primary rounded-pill me-1"
+                               title="Abrir no Console Admin do Authentik">
+                                <i class="bi bi-shield-lock me-1"></i> Authentik
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@item.Id"
+                               class="btn btn-sm btn-outline-danger rounded-pill"
+                               title="Excluir Usuário">
+                                <i class="bi bi-trash me-1"></i> Excluir
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        @if (!Model.Any())
+        {
+            <div class="text-center p-5">
+                <i class="bi bi-people fs-1 var-text-muted"></i>
+                <p class="mt-3 var-text-muted">Nenhum usuário registrado ainda.</p>
+            </div>
+        }
+    </div>
+</div>

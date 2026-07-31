@@ -14,6 +14,28 @@ entries:
     attrs:
       default: true
       branding_title: "Gerenciamento de Endereços"
+      branding_logo: "/static/dist/assets/icons/custom-logo.svg"
+      branding_favicon: "/static/dist/assets/icons/custom-favicon.svg"
+      branding_custom_css: |
+        :root {
+          --ak-accent: #2563eb;
+          --ak-dark-background: #0b0f17;
+          --ak-dark-background-light: #111827;
+          --ak-dark-background-lighter: #1a2333;
+          --ak-global--background-image: none;
+        }
+
+        /* Remove a foto de fundo padrão e o rodapé "Powered by authentik" —
+           a aplicação tem identidade visual própria. */
+        .pf-c-login {
+          background-color: var(--ak-dark-background) !important;
+          background-image: radial-gradient(circle at 15% 15%, rgba(56, 189, 248, 0.12) 0%, transparent 45%),
+                             radial-gradient(circle at 85% 85%, rgba(37, 99, 235, 0.12) 0%, transparent 45%) !important;
+        }
+
+        ak-brand-links {
+          display: none !important;
+        }
       attributes:
         settings:
           locale: "pt-BR"
@@ -67,6 +89,20 @@ entries:
       groups:
         - !KeyOf role-usuario
 
+  # 2.1 TOKEN DE API PARA O BACKEND GERENCIAR USUÁRIOS (admin.manage-users)
+  # Usado pelo AuthentikAdminService (backend .NET) para chamar /api/v3/core/users/
+  # server-to-server, sem depender do access_token OIDC do usuário logado.
+  - model: authentik_core.token
+    id: token-backend-admin-api
+    identifiers:
+      identifier: backend-admin-api-token
+    attrs:
+      user: !KeyOf user-admin
+      intent: api
+      expiring: false
+      key: "SWlaE_4uBN0SZ8WHQ-cMHZXhj4Qzh77ld95sKBupUNVhGyJ_LI9-Eg"
+      description: "Token usado pelo backend ASP.NET (AuthentikAdminService) para gerenciar usuários via API"
+
   # 3. PROVEDOR OPENID CONNECT (OIDC)
   - model: authentik_providers_oauth2.oauth2provider
     id: gerenciamento-endereco-provider
@@ -88,6 +124,25 @@ entries:
       sub_mode: user_username
       issuer_mode: per_provider
       include_claims_in_id_token: true
+
+  # 3.1 TÍTULOS DOS FLOWS PADRÃO (campo de texto livre, não é string traduzida)
+  - model: authentik_flows.flow
+    identifiers:
+      slug: default-authentication-flow
+    attrs:
+      title: "Gerenciamento de Endereços"
+
+  - model: authentik_flows.flow
+    identifiers:
+      slug: default-user-settings-flow
+    attrs:
+      title: "Minha Conta"
+
+  - model: authentik_flows.flow
+    identifiers:
+      slug: default-invalidation-flow
+    attrs:
+      title: "Até logo!"
 
   # 4. APLICAÇÃO
   - model: authentik_core.application

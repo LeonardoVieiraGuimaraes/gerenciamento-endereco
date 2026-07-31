@@ -1,0 +1,106 @@
+@model GerenciamentoEndereco.API.Models.Endereco
+
+@{
+    ViewData["Title"] = "Editar Endereço";
+}
+
+<div class="glass-card fade-in" style="max-width: 720px; margin: 0 auto;">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-pencil-square me-2"></i>@ViewData["Title"]</h2>
+        <a asp-action="Index" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+            <i class="bi bi-arrow-left me-1"></i> Voltar
+        </a>
+    </div>
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>Por favor, corrija os erros abaixo.
+            <div asp-validation-summary="ModelOnly" class="text-danger mt-2 mb-0"></div>
+        </div>
+    }
+
+    <form asp-action="Edit" class="needs-validation">
+        <input type="hidden" asp-for="Id" />
+
+        <div class="row g-3">
+            <div class="col-md-5">
+                <label asp-for="Cep" class="form-label fw-bold">CEP</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    <input asp-for="Cep" class="form-control" id="cepInput" autocomplete="off" />
+                </div>
+                <span asp-validation-for="Cep" class="text-danger d-block"></span>
+            </div>
+
+            <div class="col-md-7">
+                <label asp-for="Logradouro" class="form-label fw-bold">Logradouro</label>
+                <input asp-for="Logradouro" class="form-control" id="logradouroInput" />
+                <span asp-validation-for="Logradouro" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-4">
+                <label asp-for="Numero" class="form-label fw-bold">Número</label>
+                <input asp-for="Numero" class="form-control" />
+                <span asp-validation-for="Numero" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-8">
+                <label asp-for="Complemento" class="form-label fw-bold">Complemento</label>
+                <input asp-for="Complemento" class="form-control" placeholder="Apto, bloco, referência (opcional)" />
+                <span asp-validation-for="Complemento" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="Bairro" class="form-label fw-bold">Bairro</label>
+                <input asp-for="Bairro" class="form-control" id="bairroInput" />
+                <span asp-validation-for="Bairro" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-4">
+                <label asp-for="Cidade" class="form-label fw-bold">Cidade</label>
+                <input asp-for="Cidade" class="form-control" id="cidadeInput" />
+                <span asp-validation-for="Cidade" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-2">
+                <label asp-for="Uf" class="form-label fw-bold">UF</label>
+                <input asp-for="Uf" class="form-control text-uppercase" id="ufInput" maxlength="2" />
+                <span asp-validation-for="Uf" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="mt-4 text-end">
+            <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold">
+                <i class="bi bi-check-circle me-1"></i> Salvar Alterações
+            </button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+        const cepInput = document.getElementById('cepInput');
+        cepInput.addEventListener('blur', function () {
+            var cep = this.value.replace(/\D/g, '');
+            if (cep.length !== 8) return;
+
+            cepInput.disabled = true;
+            fetch(`/Enderecos/BuscarCep?cep=${cep}`)
+                .then(response => {
+                    if (!response.ok) throw new Error('CEP não encontrado');
+                    return response.json();
+                })
+                .then(data => {
+                    document.getElementById('logradouroInput').value = data.logradouro;
+                    document.getElementById('bairroInput').value = data.bairro;
+                    document.getElementById('cidadeInput').value = data.localidade;
+                    document.getElementById('ufInput').value = data.uf;
+                })
+                .catch(() => alert('CEP não encontrado!'))
+                .finally(() => { cepInput.disabled = false; });
+        });
+    </script>
+}

@@ -1,0 +1,24 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --pf-v5-global--primary-color--100: #3b82f6;
+  --pf-v5-global--primary-color--200: #2563eb;
+  --pf-v5-global--BackgroundColor--100: #0b0f17;
+  --pf-v5-global--Color--100: #f8fafc;
+}
+
+html, body {
+  font-family: 'Plus Jakarta Sans', sans-serif !important;
+}
+
+/* Header brand logo */
+.pf-c-brand, .pf-v5-c-brand, a[data-testid="brand-logo"] img, a[data-testid="brand-logo"] svg {
+  display: none !important;
+}
+
+a[data-testid="brand-logo"]::after {
+  content: "📍 Gerenciamento de Endereços Admin" !important;
+  font-size: 1.1rem !important;
+  font-weight: 800 !important;
+  color: #38bdf8 !important;
+}
