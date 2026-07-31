@@ -39,10 +39,11 @@ body {
     font-family: 'Inter', sans-serif !important;
     background: var(--bg-color) !important;
     color: var(--text-main) !important;
-    height: 100vh;
+    min-height: 100vh;
     display: flex;
-    justify-content: center;
-    align-items: center;
+    flex-direction: column;
+    padding: 2rem 1rem !important;
+    box-sizing: border-box !important;
     margin: 0;
     transition: background 0.3s ease, color 0.3s ease;
 }
@@ -66,7 +67,7 @@ body {
     padding: 2.5rem !important;
     max-width: 450px !important;
     width: 100% !important;
-    margin: 0 auto !important;
+    margin: auto !important;
     transition: background 0.3s ease, border 0.3s ease;
 }
 
