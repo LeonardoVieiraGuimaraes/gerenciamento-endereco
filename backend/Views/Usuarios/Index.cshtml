@@ -34,20 +34,25 @@
         <table class="table table-hover align-middle">
             <thead>
                 <tr>
-                    <th><i class="bi bi-hash me-1"></i>ID</th>
                     <th><i class="bi bi-person me-1"></i>Nome</th>
                     <th><i class="bi bi-at me-1"></i>Usuário / E-mail</th>
                     <th><i class="bi bi-shield me-1"></i>Status</th>
-                    <th><i class="bi bi-map me-1"></i>Endereços (Local)</th>
-                    <th><i class="bi bi-gear me-1"></i>Ações</th>
+                    <th><i class="bi bi-geo-alt me-1"></i>Endereços</th>
+                    <th class="text-center"><i class="bi bi-shield-lock me-1"></i>Keycloak</th>
+                    <th class="text-center"><i class="bi bi-trash me-1"></i>Excluir</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var item in Model)
                 {
                     <tr>
-                        <td><small class="text-muted">@item.Id</small></td>
-                        <td class="fw-medium">@item.Nome</td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@item.Id"
+                               class="fw-medium var-text-main text-decoration-none"
+                               title="Editar Usuário">
+                                <i class="bi bi-pencil-square me-1 var-text-primary"></i>@item.Nome
+                            </a>
+                        </td>
                         <td>
                             <div class="d-flex flex-column">
                                 <small class="var-text-main fw-bold">@item.Username</small>
@@ -69,31 +74,25 @@
                             }
                         </td>
                         <td>
-                            <span class="badge bg-secondary rounded-pill">
-                                <i class="bi bi-geo-alt me-1"></i>@item.EnderecoCount
-                            </span>
-                        </td>
-                        <td>
-                            <a asp-action="Edit" asp-route-id="@item.Id"
-                               class="btn btn-sm btn-outline-secondary rounded-pill me-1"
-                               title="Editar Usuário">
-                                <i class="bi bi-pencil me-1"></i> Editar
-                            </a>
                             <a asp-controller="Enderecos" asp-action="Index" asp-route-username="@item.Username"
-                               class="btn btn-sm btn-outline-info rounded-pill me-1"
+                               class="badge bg-secondary rounded-pill text-decoration-none"
                                title="Ver e Editar Endereços do Usuário">
-                                <i class="bi bi-geo-alt me-1"></i> Endereços (@item.EnderecoCount)
+                                <i class="bi bi-geo-alt-fill me-1"></i>@item.EnderecoCount
                             </a>
+                        </td>
+                        <td class="text-center">
                             <a href="http://localhost:8089/admin/gerenciamento-endereco/console/#/gerenciamento-endereco/users/@item.Id/settings"
                                target="_blank"
-                               class="btn btn-sm btn-outline-primary rounded-pill me-1"
+                               class="btn btn-sm btn-outline-primary rounded-circle"
                                title="Abrir no Console Admin do Keycloak">
-                                <i class="bi bi-shield-lock me-1"></i> Keycloak
+                                <i class="bi bi-shield-lock"></i>
                             </a>
+                        </td>
+                        <td class="text-center">
                             <a asp-action="Delete" asp-route-id="@item.Id"
-                               class="btn btn-sm btn-outline-danger rounded-pill"
+                               class="btn btn-sm btn-outline-danger rounded-circle"
                                title="Excluir Usuário">
-                                <i class="bi bi-trash me-1"></i> Excluir
+                                <i class="bi bi-trash"></i>
                             </a>
                         </td>
                     </tr>
