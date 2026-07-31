@@ -1,0 +1,101 @@
+# Authentik Blueprint para o sistema Gerenciamento de Endereços
+version: 1
+metadata:
+  name: Gerenciamento de Endereços Full Blueprint
+entries:
+  # 0. BRAND PADRÃO EM PT-BR
+  # A única forma suportada de forçar o idioma da tela de login (flow executor) é via
+  # atributo settings.locale do Brand padrão. Variáveis de ambiente como
+  # AUTHENTIK_DEFAULT_LANGUAGE não existem no Authentik e não têm efeito nenhum.
+  - model: authentik_brands.brand
+    id: brand-default
+    identifiers:
+      domain: authentik-default
+    attrs:
+      default: true
+      branding_title: "Gerenciamento de Endereços"
+      attributes:
+        settings:
+          locale: "pt-BR"
+
+  # 1. GRUPOS / PERFIS (ROLES)
+  - model: authentik_core.group
+    id: role-admin
+    identifiers:
+      name: ADMIN
+    attrs:
+      is_superuser: true
+
+  - model: authentik_core.group
+    id: role-usuario
+    identifiers:
+      name: USUARIO
+    attrs:
+      is_superuser: false
+
+  # 2. USUÁRIOS COM IDIOMA PT-BR
+  - model: authentik_core.user
+    id: user-admin
+    identifiers:
+      username: admin
+    attrs:
+      name: Administrador Master
+      email: leonardovieriaxy@gmail.com
+      is_active: true
+      is_superuser: true
+      password: "270414"
+      attributes:
+        settings:
+          locale: "pt-br"
+      groups:
+        - !KeyOf role-admin
+        - !KeyOf role-usuario
+
+  - model: authentik_core.user
+    id: user-leonardo
+    identifiers:
+      username: leonardo
+    attrs:
+      name: Leonardo Guimaraes
+      email: leonardovieriaxy@hotmail.com
+      is_active: true
+      is_superuser: false
+      password: "270414"
+      attributes:
+        settings:
+          locale: "pt-br"
+      groups:
+        - !KeyOf role-usuario
+
+  # 3. PROVEDOR OPENID CONNECT (OIDC)
+  - model: authentik_providers_oauth2.oauth2provider
+    id: gerenciamento-endereco-provider
+    identifiers:
+      name: gerenciamento-endereco-provider
+    attrs:
+      client_id: app-csharp
+      client_secret: bcdbmbolTUjkbRc21tgKv7yuU8XZDk1E
+      authorization_flow: !Find [authentik_flows.flow, [slug, default-provider-authorization-explicit-consent]]
+      invalidation_flow: !Find [authentik_flows.flow, [slug, default-provider-invalidation-flow]]
+      signing_key: !Find [authentik_crypto.certificatekeypair, [name, "authentik Self-signed Certificate"]]
+      redirect_uris:
+        - matching_mode: regex
+          url: ".*"
+      property_mappings:
+        - !Find [authentik_core.propertymapping, [managed, "goauthentik.io/providers/oauth2/scope-openid"]]
+        - !Find [authentik_core.propertymapping, [managed, "goauthentik.io/providers/oauth2/scope-profile"]]
+        - !Find [authentik_core.propertymapping, [managed, "goauthentik.io/providers/oauth2/scope-email"]]
+      sub_mode: user_username
+      issuer_mode: per_provider
+      include_claims_in_id_token: true
+
+  # 4. APLICAÇÃO
+  - model: authentik_core.application
+    id: gerenciamento-endereco-app
+    identifiers:
+      slug: gerenciamento-endereco
+    attrs:
+      name: Gerenciamento de Endereços
+      provider: !KeyOf gerenciamento-endereco-provider
+
+
