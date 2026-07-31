@@ -118,10 +118,20 @@ builder.Services.AddAuthentication(options =>
 
     // Busca as chaves de assinatura (JWKS) do host interno, com retry — o Keycloak pode
     // ainda estar de boot quando o backend-api inicia (mesma rede Docker, containers
-    // diferentes).
+    // diferentes; num deploy novo em produção, o Keycloak pode levar bem mais tempo pra
+    // subir, já que a imagem é construída e o realm é importado do zero).
+    //
+    // Esse bloco roda de forma "lazy" (só na primeira requisição que toca autenticação —
+    // inclusive /health, já que UseAuthentication roda antes de QUALQUER endpoint). Se a
+    // última tentativa também falhar e a exceção não for capturada, ela fica "presa" no
+    // cache do OptionsMonitor e volta a estourar em TODA requisição seguinte, mesmo
+    // depois do Keycloak ficar disponível — por isso o catch aqui precisa cobrir
+    // TODAS as tentativas, inclusive a última: melhor a app subir sem as chaves de
+    // assinatura (login vai falhar até o Keycloak responder) do que ficar 500 pra sempre.
     using (var jwksClient = new HttpClient())
     {
-        for (var attempt = 1; attempt <= 10; attempt++)
+        const int maxAttempts = 30;
+        for (var attempt = 1; attempt <= maxAttempts; attempt++)
         {
             try
             {
@@ -133,9 +143,14 @@ builder.Services.AddAuthentication(options =>
                 }
                 break;
             }
-            catch when (attempt < 10)
+            catch (Exception ex)
             {
-                Thread.Sleep(2000);
+                if (attempt == maxAttempts)
+                {
+                    Log.Error(ex, "Não foi possível obter as chaves JWKS do Keycloak após {MaxAttempts} tentativas — a app vai subir mesmo assim, mas login/validação de token vão falhar até o Keycloak responder.", maxAttempts);
+                    break;
+                }
+                Thread.Sleep(3000);
             }
         }
     }

@@ -96,4 +96,4 @@ jobs:
         run: |
           ssh -o ProxyCommand="cloudflared access ssh --hostname %h" \
               ${{ secrets.DEPLOY_SSH_USER }}@${{ secrets.DEPLOY_SSH_HOST }} \
-              "for i in \$(seq 1 15); do curl -sf http://localhost:8090/health && exit 0; sleep 4; done; echo 'Health check falhou'; docker logs gerenc-web --tail 100; exit 1"
+              "for i in \$(seq 1 20); do curl -sf --max-time 15 http://localhost:8090/health && exit 0; sleep 10; done; echo 'Health check falhou'; docker logs gerenc-web --tail 100; exit 1"
