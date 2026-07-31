@@ -98,10 +98,10 @@ services:
       - "8089:9000"
       - "8443:9443"
     volumes:
-      - ../auth/blueprints:/blueprints/custom
-      - ../auth/theme/custom.css:/web/dist/custom.css
-      - ../auth/theme/logo.svg:/web/dist/assets/icons/custom-logo.svg
-      - ../auth/theme/favicon.svg:/web/dist/assets/icons/custom-favicon.svg
+      - ../auth-authentik/blueprints:/blueprints/custom
+      - ../auth-authentik/theme/custom.css:/web/dist/custom.css
+      - ../auth-authentik/theme/logo.svg:/web/dist/assets/icons/custom-logo.svg
+      - ../auth-authentik/theme/favicon.svg:/web/dist/assets/icons/custom-favicon.svg
     depends_on:
       authentik-postgresql:
         condition: service_healthy
@@ -125,10 +125,10 @@ services:
       AUTHENTIK_REDIS__HOST: authentik-redis
     user: "0:0"
     volumes:
-      - ../auth/blueprints:/blueprints/custom
-      - ../auth/theme/custom.css:/web/dist/custom.css
-      - ../auth/theme/logo.svg:/web/dist/assets/icons/custom-logo.svg
-      - ../auth/theme/favicon.svg:/web/dist/assets/icons/custom-favicon.svg
+      - ../auth-authentik/blueprints:/blueprints/custom
+      - ../auth-authentik/theme/custom.css:/web/dist/custom.css
+      - ../auth-authentik/theme/logo.svg:/web/dist/assets/icons/custom-logo.svg
+      - ../auth-authentik/theme/favicon.svg:/web/dist/assets/icons/custom-favicon.svg
     depends_on:
       authentik-postgresql:
         condition: service_healthy
