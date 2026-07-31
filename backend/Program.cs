@@ -226,20 +226,24 @@ builder.Services.AddAuthentication(options =>
         },
         OnRedirectToIdentityProvider = context =>
         {
-            // Não precisa reescrever hostname aqui: AuthorizationEndpoint/EndSessionEndpoint
-            // já são montados com o host externo em options.Configuration, acima.
-
             // Força a interface do Keycloak a ficar em português
             context.ProtocolMessage.SetParameter("kc_locale", "pt-BR");
             context.ProtocolMessage.SetParameter("ui_locales", "pt-BR");
 
-            // Repassa a ação nativa do Keycloak (trocar senha, configurar 2FA...) definida
-            // em AuthController.AlterarSenha/ConfigurarDoisFatores.
             if (context.Properties.Items.TryGetValue("kc_action", out var kcAction) && !string.IsNullOrEmpty(kcAction))
             {
                 context.ProtocolMessage.SetParameter("kc_action", kcAction);
             }
-
+            return Task.CompletedTask;
+        },
+        OnRedirectToIdentityProviderForSignOut = context =>
+        {
+            var idToken = context.Properties.GetTokenValue("id_token");
+            if (!string.IsNullOrEmpty(idToken))
+            {
+                context.ProtocolMessage.IdTokenHint = idToken;
+            }
+            context.ProtocolMessage.SetParameter("client_id", builder.Configuration["Keycloak:ClientId"]);
             return Task.CompletedTask;
         }
     };
@@ -376,6 +380,17 @@ using (var scope = app.Services.CreateScope())
 // cookie Secure, rate limiter por IP).
 app.UseForwardedHeaders();
 
+// Origem externa do Keycloak, pra liberar no CSP abaixo — alguns navegadores aplicam
+// "form-action" não só no <form action="..."> em si, mas também em REDIRECTS que
+// resultam dessa submissão. O Logout() faz SignOut via form POST e o middleware OIDC
+// redireciona pro Keycloak (origem diferente) logo em seguida — sem essa liberação,
+// o navegador bloqueia esse redirect silenciosamente (sem erro visível), o cookie local
+// já foi removido mas a sessão do Keycloak nunca morre, e o próximo login reautentica
+// sozinho via SSO — parecendo que "o logout não funciona". O Login() não é afetado
+// porque o Challenge ali é um redirect direto (ChallengeResult), não vem de um form.
+var keycloakExternalScheme = builder.Configuration["Keycloak:ExternalScheme"] ?? "http";
+var keycloakExternalOrigin = $"{keycloakExternalScheme}://{builder.Configuration["Keycloak:ExternalHost"] ?? "localhost:8089"}";
+
 app.Use(async (context, next) =>
 {
     var headers = context.Response.Headers;
@@ -392,7 +407,7 @@ app.Use(async (context, next) =>
         "connect-src 'self'; " +
         "object-src 'none'; " +
         "base-uri 'self'; " +
-        "form-action 'self'; " +
+        $"form-action 'self' {keycloakExternalOrigin}; " +
         "frame-ancestors 'none'";
     await next();
 });
