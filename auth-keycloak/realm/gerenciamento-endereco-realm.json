@@ -262,6 +262,7 @@
             "username": "admin",
             "enabled": true,
             "emailVerified": true,
+            "attributes": { "locale": [ "pt-BR" ] },
             "email": "leonardovieriaxy@gmail.com",
             "firstName": "Administrador",
             "lastName": "Master",

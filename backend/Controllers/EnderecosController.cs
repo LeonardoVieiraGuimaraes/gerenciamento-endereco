@@ -62,7 +62,7 @@ public class EnderecosController : Controller
         return localUser;
     }
 
-    public async Task<IActionResult> Index(string? username)
+    public async Task<IActionResult> Index(string? username = null)
     {
         var isAdmin = User.HasClaim(c => c.Type == "roles" && c.Value == "admin") || 
                       User.HasClaim(c => c.Type == "client_role" && c.Value == "usuarios.manage");

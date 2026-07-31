@@ -25,6 +25,15 @@ public class AuthController : Controller
     [HttpGet]
     public IActionResult Login(string returnUrl = "/")
     {
+        // AuthenticationProperties.RedirectUri (usado pelo Challenge abaixo) não é
+        // validado pelo framework como LocalRedirect() é — sem essa checagem, um
+        // returnUrl apontando pra fora do site vira um open redirect logo após o
+        // login (ex.: /Auth/Login?returnUrl=https://site-malicioso.com).
+        if (!Url.IsLocalUrl(returnUrl))
+        {
+            returnUrl = "/";
+        }
+
         // Se o usuário já estiver logado, redireciona de volta
         if (User.Identity != null && User.Identity.IsAuthenticated)
         {
