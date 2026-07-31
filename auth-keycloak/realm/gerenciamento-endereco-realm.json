@@ -194,11 +194,12 @@
             "serviceAccountsEnabled": false,
             "redirectUris": [
                 "http://localhost:5000/signin-oidc",
-                "https://localhost:5001/signin-oidc"
+                "https://localhost:5001/signin-oidc",
+                "https://enderecos.leoproti.com.br/signin-oidc"
             ],
-            "webOrigins": [ "http://localhost:5000", "https://localhost:5001" ],
+            "webOrigins": [ "http://localhost:5000", "https://localhost:5001", "https://enderecos.leoproti.com.br" ],
             "attributes": {
-                "post.logout.redirect.uris": "http://localhost:5000/signout-callback-oidc"
+                "post.logout.redirect.uris": "http://localhost:5000/signout-callback-oidc##https://enderecos.leoproti.com.br/signout-callback-oidc"
             },
             "defaultClientScopes": [ "web-origins", "acr", "profile", "roles", "email" ]
         },

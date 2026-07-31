@@ -4,6 +4,7 @@
     var title = ViewData["TargetNome"] != null ? $"Endereços: {ViewData["TargetNome"]}" : "Meus Endereços";
     ViewData["Title"] = title;
     var isAllView = ViewData["IsAllView"] as bool? == true;
+    var filtroNomeEditavel = ViewData["FiltroNomeEditavel"] as bool? == true;
 }
 
 <div class="glass-card fade-in">
@@ -18,6 +19,44 @@
             </a>
         </div>
     </div>
+
+    <form asp-action="Index" method="get" class="row g-2 mb-4 align-items-end">
+        <div class="col-6 col-md-3 col-lg-2">
+            <label class="form-label small var-text-muted mb-1">Nome</label>
+            @if (filtroNomeEditavel)
+            {
+                <input type="text" name="nome" value="@ViewData["FiltroNome"]" class="form-control form-control-sm" placeholder="Buscar por usuário..." />
+            }
+            else
+            {
+                <input type="text" value="@ViewData["FiltroNome"]" class="form-control form-control-sm" disabled title="Restrito ao seu próprio usuário" />
+            }
+        </div>
+        <div class="col-6 col-md-2 col-lg-2">
+            <label class="form-label small var-text-muted mb-1">CEP</label>
+            <input type="text" name="cep" value="@ViewData["FiltroCep"]" class="form-control form-control-sm" />
+        </div>
+        <div class="col-6 col-md-3 col-lg-3">
+            <label class="form-label small var-text-muted mb-1">Logradouro</label>
+            <input type="text" name="logradouro" value="@ViewData["FiltroLogradouro"]" class="form-control form-control-sm" />
+        </div>
+        <div class="col-6 col-md-2 col-lg-2">
+            <label class="form-label small var-text-muted mb-1">Cidade</label>
+            <input type="text" name="cidade" value="@ViewData["FiltroCidade"]" class="form-control form-control-sm" />
+        </div>
+        <div class="col-6 col-md-1 col-lg-1">
+            <label class="form-label small var-text-muted mb-1">UF</label>
+            <input type="text" name="uf" value="@ViewData["FiltroUf"]" maxlength="2" class="form-control form-control-sm text-uppercase" />
+        </div>
+        <div class="col-6 col-md-1 col-lg-2 d-flex gap-2">
+            <button type="submit" class="btn-app btn-app-primary btn-app-sm">
+                <i class="bi bi-search"></i> Buscar
+            </button>
+            <a asp-action="Index" class="btn-app btn-app-outline btn-app-sm" title="Limpar filtros">
+                <i class="bi bi-x-circle"></i>
+            </a>
+        </div>
+    </form>
 
     <div class="table-responsive">
         <table class="table table-hover align-middle">

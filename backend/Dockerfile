@@ -1,12 +1,14 @@
 # Etapa base para o runtime
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+# Tag de patch fixa (não "8.0" flutuante) para builds reprodutíveis — atualize
+# periodicamente para receber correções de segurança do runtime.
+FROM mcr.microsoft.com/dotnet/aspnet:8.0.29 AS base
 USER app
 WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
 
 # Etapa de build e restauração de pacotes
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0.412 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["GerenciamentoEndereco.API.csproj", "."]

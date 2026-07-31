@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using GerenciamentoEndereco.API.Data;
 using GerenciamentoEndereco.API.Models.ViewModels;
@@ -23,6 +24,7 @@ public class AuthController : Controller
     }
 
     [HttpGet]
+    [EnableRateLimiting("login")]
     public IActionResult Login(string returnUrl = "/")
     {
         // AuthenticationProperties.RedirectUri (usado pelo Challenge abaixo) não é
@@ -45,9 +47,15 @@ public class AuthController : Controller
     }
 
     [HttpPost]
-    [ValidateAntiForgeryToken]
     public IActionResult Logout()
     {
+        // Sem [ValidateAntiForgeryToken] de propósito: esse token fica vinculado aos
+        // claims do usuário no momento em que a página foi renderizada. Como o Keycloak
+        // mantém uma sessão SSO ativa, é comum o usuário ser re-autenticado silenciosamente
+        // entre um clique em "Sair" e outro (ex.: after voltar pra Home, ou usando o botão
+        // voltar do navegador) — o que invalida esse token e gera um 400 feio numa ação que
+        // não é destrutiva (o pior caso de um CSRF forçando logout é só deslogar a vítima).
+        //
         // Diferente do Authentik, o RP-Initiated Logout do Keycloak funciona normalmente
         // (sem bug conhecido) — o próprio SignOut do OIDC já redireciona pro
         // end_session_endpoint e volta via post.logout.redirect.uris do client.
