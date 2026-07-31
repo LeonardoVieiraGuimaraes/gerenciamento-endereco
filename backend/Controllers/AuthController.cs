@@ -14,12 +14,12 @@ namespace GerenciamentoEndereco.API.Controllers;
 public class AuthController : Controller
 {
     private readonly AppDbContext _context;
-    private readonly IAuthentikAdminService _authentikAdminService;
+    private readonly IKeycloakAdminService _keycloakAdminService;
 
-    public AuthController(AppDbContext context, IAuthentikAdminService authentikAdminService)
+    public AuthController(AppDbContext context, IKeycloakAdminService keycloakAdminService)
     {
         _context = context;
-        _authentikAdminService = authentikAdminService;
+        _keycloakAdminService = keycloakAdminService;
     }
 
     [HttpGet]
@@ -37,22 +37,15 @@ public class AuthController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Logout()
+    public IActionResult Logout()
     {
-        // O RP-Initiated Logout (redirect pro end-session do Authentik) está quebrado
-        // no Authentik 2026.5.x (retorna "Bad Request" — bug confirmado upstream:
-        // https://github.com/goauthentik/authentik/issues/22904). Em vez de depender
-        // desse redirect, revogamos a sessão diretamente via Admin API antes de encerrar
-        // a sessão local — assim o usuário sai de verdade (app + Authentik) sem passar
-        // pela tela de erro.
-        var username = User.FindFirst("preferred_username")?.Value ?? User.Identity?.Name;
-        if (!string.IsNullOrEmpty(username))
-        {
-            await _authentikAdminService.RevokeAllSessionsAsync(username);
-        }
-
-        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-        return LocalRedirect("/");
+        // Diferente do Authentik, o RP-Initiated Logout do Keycloak funciona normalmente
+        // (sem bug conhecido) — o próprio SignOut do OIDC já redireciona pro
+        // end_session_endpoint e volta via post.logout.redirect.uris do client.
+        return SignOut(
+            new AuthenticationProperties { RedirectUri = "/" },
+            CookieAuthenticationDefaults.AuthenticationScheme,
+            OpenIdConnectDefaults.AuthenticationScheme);
     }
 
     [Authorize]

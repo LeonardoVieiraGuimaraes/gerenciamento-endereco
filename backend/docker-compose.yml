@@ -28,119 +28,79 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__DefaultConnection=Server=sqldb;Database=GerenciamentoEnderecoDb;User Id=sa;Password=SuperSenha123!;TrustServerCertificate=True;
-      - Keycloak__MetadataAddress=http://authentik-server:9000/application/o/gerenciamento-endereco/.well-known/openid-configuration
-      - Keycloak__Authority=http://localhost:8089/application/o/gerenciamento-endereco/
-      - Keycloak__InternalHost=authentik-server:9000
+      - Keycloak__MetadataAddress=http://keycloak:8080/realms/gerenciamento-endereco/.well-known/openid-configuration
+      - Keycloak__Authority=http://localhost:8089/realms/gerenciamento-endereco
+      - Keycloak__InternalHost=keycloak:8080
       - Keycloak__ExternalHost=localhost:8089
+      - KeycloakAdmin__BaseUrl=http://keycloak:8080
+      - KeycloakAdmin__Realm=gerenciamento-endereco
+      - KeycloakAdmin__ClientId=backend-admin-api
+      - KeycloakAdmin__ClientSecret=K3eQM5uNBNJCRBKTxGRiBwqAPsErOrZh-GIwYpZ3PC4
     depends_on:
       - sqldb
-      - authentik-server
+      - keycloak
     networks:
       - gerenc-net
 
-  # 3. BANCO DE DADOS DO AUTHENTIK (PostgreSQL 16)
-  authentik-postgresql:
+  # 3. BANCO DE DADOS DO KEYCLOAK (PostgreSQL)
+  keycloak-db:
     image: postgres:16-alpine
-    container_name: authentik-postgresql
+    container_name: keycloak-db
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
+      test: ["CMD-SHELL", "pg_isready -d keycloak -U keycloak"]
       start_period: 20s
       interval: 30s
       retries: 5
       timeout: 5s
     environment:
-      POSTGRES_PASSWORD: authentik_pass_2026
-      POSTGRES_USER: authentik
-      POSTGRES_DB: authentik
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: keycloak_pass_2026
     volumes:
-      - authentik_database:/var/lib/postgresql/data
+      - keycloak_database:/var/lib/postgresql/data
     networks:
       - gerenc-net
 
-  # 4. CACHE E FILA DO AUTHENTIK (Redis)
-  authentik-redis:
-    image: redis:alpine
-    container_name: authentik-redis
-    command: --save 60 1 --loglevel warning
+  # 4. SERVIDOR KEYCLOAK — build local (Dockerfile em auth-2/) com tema glassmorphism
+  #    custom e o realm "gerenciamento-endereco" (client, roles, usuários) importado
+  #    automaticamente no boot.
+  keycloak:
+    build:
+      context: ../auth-2
+      dockerfile: Dockerfile
+    container_name: keycloak-gerenciamento-endereco
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
-      start_period: 20s
-      interval: 30s
-      retries: 5
-      timeout: 5s
-    volumes:
-      - authentik_redis_data:/data
-    networks:
-      - gerenc-net
-
-  # 5. SERVIDOR DO AUTHENTIK (versão fixada em 2026.5.6. NOTA: essa linha de release tem um
-  #    bug confirmado no RP-Initiated Logout quando post_logout_redirect_uri é enviado
-  #    (https://github.com/goauthentik/authentik/issues/22904). Não fazer downgrade para
-  #    contornar — a migração de schema do Postgres não é reversível. O workaround está
-  #    no backend: AuthController.Logout não envia RedirectUri no SignOut.)
-  authentik-server:
-    image: ghcr.io/goauthentik/server:2026.5.6
-    container_name: authentik-server
-    restart: unless-stopped
-    command: server
     environment:
-      AUTHENTIK_SECRET_KEY: c3VwZXJzZWNyZXRhdXRoZW50aWtrZXlmb3JnZXJlbmNpYW1lbnRvZW5kZXJlY28yMDI2
-      AUTHENTIK_POSTGRESQL__HOST: authentik-postgresql
-      AUTHENTIK_POSTGRESQL__USER: authentik
-      AUTHENTIK_POSTGRESQL__NAME: authentik
-      AUTHENTIK_POSTGRESQL__PASSWORD: authentik_pass_2026
-      AUTHENTIK_REDIS__HOST: authentik-redis
-      AUTHENTIK_LISTEN__HTTP: 0.0.0.0:9000
-      AUTHENTIK_LISTEN__HTTPS: 0.0.0.0:9443
+      KC_DB: postgres
+      KC_DB_URL_HOST: keycloak-db
+      KC_DB_URL_DATABASE: keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: keycloak_pass_2026
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin123
+      # KC_HOSTNAME fica com o nome público (localhost:8089): o Keycloak usa esse
+      # valor em TODAS as URLs que ele mesmo renderiza (inclusive o "action" do
+      # formulário de login), então precisa ser o que o NAVEGADOR do usuário
+      # consegue resolver. O backend-api, que precisa falar com o Keycloak
+      # server-to-server (token exchange, JWKS), usa os endpoints internos
+      # (keycloak:8080) montados manualmente em Program.cs — não pelo discovery
+      # document, que só teria a versão pública.
+      KC_HOSTNAME: localhost
+      KC_HOSTNAME_PORT: "8089"
+      KC_HOSTNAME_STRICT_HTTPS: "false"
+      KC_HTTP_ENABLED: "true"
     ports:
-      - "8089:9000"
-      - "8443:9443"
-    volumes:
-      - ../auth/blueprints:/blueprints/custom
-      - ../auth/theme/custom.css:/web/dist/custom.css
-      - ../auth/theme/logo.svg:/web/dist/assets/icons/custom-logo.svg
-      - ../auth/theme/favicon.svg:/web/dist/assets/icons/custom-favicon.svg
+      - "8089:8080"
     depends_on:
-      authentik-postgresql:
-        condition: service_healthy
-      authentik-redis:
-        condition: service_healthy
-    networks:
-      - gerenc-net
-
-  # 6. WORKER DO AUTHENTIK (versão fixada em 2026.5.6 — ver nota acima sobre o bug de logout)
-  authentik-worker:
-    image: ghcr.io/goauthentik/server:2026.5.6
-    container_name: authentik-worker
-    restart: unless-stopped
-    command: worker
-    environment:
-      AUTHENTIK_SECRET_KEY: c3VwZXJzZWNyZXRhdXRoZW50aWtrZXlmb3JnZXJlbmNpYW1lbnRvZW5kZXJlY28yMDI2
-      AUTHENTIK_POSTGRESQL__HOST: authentik-postgresql
-      AUTHENTIK_POSTGRESQL__USER: authentik
-      AUTHENTIK_POSTGRESQL__NAME: authentik
-      AUTHENTIK_POSTGRESQL__PASSWORD: authentik_pass_2026
-      AUTHENTIK_REDIS__HOST: authentik-redis
-    user: "0:0"
-    volumes:
-      - ../auth/blueprints:/blueprints/custom
-      - ../auth/theme/custom.css:/web/dist/custom.css
-      - ../auth/theme/logo.svg:/web/dist/assets/icons/custom-logo.svg
-      - ../auth/theme/favicon.svg:/web/dist/assets/icons/custom-favicon.svg
-    depends_on:
-      authentik-postgresql:
-        condition: service_healthy
-      authentik-redis:
+      keycloak-db:
         condition: service_healthy
     networks:
       - gerenc-net
 
 volumes:
   sqldata:
-  authentik_database:
-  authentik_redis_data:
+  keycloak_database:
 
 networks:
   gerenc-net:

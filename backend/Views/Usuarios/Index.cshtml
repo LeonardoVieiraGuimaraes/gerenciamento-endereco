@@ -84,11 +84,11 @@
                                title="Ver e Editar Endereços do Usuário">
                                 <i class="bi bi-geo-alt me-1"></i> Endereços (@item.EnderecoCount)
                             </a>
-                            <a href="http://localhost:8089/if/admin/#/identity/users/@item.Id"
+                            <a href="http://localhost:8089/admin/master/console/#/gerenciamento-endereco/users/@item.Id/settings"
                                target="_blank"
                                class="btn btn-sm btn-outline-primary rounded-pill me-1"
-                               title="Abrir no Console Admin do Authentik">
-                                <i class="bi bi-shield-lock me-1"></i> Authentik
+                               title="Abrir no Console Admin do Keycloak">
+                                <i class="bi bi-shield-lock me-1"></i> Keycloak
                             </a>
                             <a asp-action="Delete" asp-route-id="@item.Id"
                                class="btn btn-sm btn-outline-danger rounded-pill"

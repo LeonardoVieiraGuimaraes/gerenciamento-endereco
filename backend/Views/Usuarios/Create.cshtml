@@ -1,4 +1,4 @@
-@model GerenciamentoEndereco.API.Services.CreateAuthentikUserRequest
+@model GerenciamentoEndereco.API.Services.CreateKeycloakUserRequest
 @{
     ViewData["Title"] = "Criar Usuário";
 }
@@ -22,8 +22,13 @@
     <form asp-action="Create" method="post" class="needs-validation">
         <div class="row g-3">
             <div class="col-md-6">
-                <label asp-for="Name" class="form-label fw-bold">Nome completo</label>
-                <input asp-for="Name" class="form-control" placeholder="João Silva" required />
+                <label asp-for="FirstName" class="form-label fw-bold">Nome</label>
+                <input asp-for="FirstName" class="form-control" placeholder="João" required />
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="LastName" class="form-label fw-bold">Sobrenome</label>
+                <input asp-for="LastName" class="form-control" placeholder="Silva" required />
             </div>
 
             <div class="col-md-6">

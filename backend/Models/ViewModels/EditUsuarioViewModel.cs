@@ -6,6 +6,8 @@ namespace GerenciamentoEndereco.API.Models.ViewModels
     {
         public int Pk { get; set; }
 
+        public string? KeycloakId { get; set; }
+
         public string? Username { get; set; }
 
         [Required(ErrorMessage = "O nome é obrigatório.")]

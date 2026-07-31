@@ -11,12 +11,12 @@ namespace GerenciamentoEndereco.API.Controllers;
 public class UsuariosController : Controller
 {
     private readonly AppDbContext _context;
-    private readonly IAuthentikAdminService _authentikAdminService;
+    private readonly IKeycloakAdminService _keycloakAdminService;
 
-    public UsuariosController(AppDbContext context, IAuthentikAdminService authentikAdminService)
+    public UsuariosController(AppDbContext context, IKeycloakAdminService keycloakAdminService)
     {
         _context = context;
-        _authentikAdminService = authentikAdminService;
+        _keycloakAdminService = keycloakAdminService;
     }
 
     public async Task<IActionResult> Index()
@@ -30,23 +30,23 @@ public class UsuariosController : Controller
 
         try
         {
-            var authentikUsers = await _authentikAdminService.GetUsersAsync();
-            if (authentikUsers != null && authentikUsers.Any())
+            var keycloakUsers = await _keycloakAdminService.GetUsersAsync();
+            if (keycloakUsers != null && keycloakUsers.Any())
             {
-                viewModels = authentikUsers.Select(u => new UsuarioListViewModel
+                viewModels = keycloakUsers.Select(u => new UsuarioListViewModel
                 {
-                    Id = u.Pk.ToString(),
+                    Id = u.Id,
                     Nome = string.IsNullOrWhiteSpace(u.Name) ? u.Username : u.Name,
                     Username = u.Username,
                     Email = u.Email,
-                    Enabled = u.IsActive,
+                    Enabled = u.Enabled,
                     EnderecoCount = localUsersDict.ContainsKey(u.Username ?? "") ? (localUsersDict[u.Username!].Enderecos?.Count ?? 0) : 0
                 }).OrderBy(u => u.Nome).ToList();
             }
         }
         catch
         {
-            // Se o serviço admin do Authentik não estiver acessível, cai para a base local abaixo
+            // Se o serviço admin do Keycloak não estiver acessível, cai para a base local abaixo
         }
 
         if (!viewModels.Any())
@@ -73,11 +73,11 @@ public class UsuariosController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(CreateAuthentikUserRequest request)
+    public async Task<IActionResult> Create(CreateKeycloakUserRequest request)
     {
         if (!ModelState.IsValid) return View(request);
 
-        var success = await _authentikAdminService.CreateUserAsync(request);
+        var success = await _keycloakAdminService.CreateUserAsync(request);
         if (success)
         {
             TempData["SuccessMessage"] = $"Usuário {request.Username} criado com sucesso!";
@@ -89,18 +89,19 @@ public class UsuariosController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> Edit(int id)
+    public async Task<IActionResult> Edit(string id)
     {
-        var user = await _authentikAdminService.GetUserAsync(id);
+        var user = await _keycloakAdminService.GetUserAsync(id);
         if (user == null) return NotFound();
 
         var viewModel = new EditUsuarioViewModel
         {
-            Pk = user.Pk,
+            Pk = 0,
+            KeycloakId = user.Id,
             Username = user.Username,
-            Name = user.Name,
+            Name = user.Name ?? user.Username,
             Email = user.Email,
-            IsActive = user.IsActive
+            IsActive = user.Enabled
         };
 
         return View(viewModel);
@@ -108,16 +109,21 @@ public class UsuariosController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, EditUsuarioViewModel viewModel)
+    public async Task<IActionResult> Edit(string id, EditUsuarioViewModel viewModel)
     {
-        if (id != viewModel.Pk) return NotFound();
+        if (id != viewModel.KeycloakId) return NotFound();
         if (!ModelState.IsValid) return View(viewModel);
 
-        var success = await _authentikAdminService.UpdateUserAsync(id, new UpdateAuthentikUserRequest
+        var parts = (viewModel.Name ?? string.Empty).Split(' ', 2, StringSplitOptions.RemoveEmptyEntries);
+        var firstName = parts.Length > 0 ? parts[0] : viewModel.Name;
+        var lastName = parts.Length > 1 ? parts[1] : string.Empty;
+
+        var success = await _keycloakAdminService.UpdateUserAsync(id, new UpdateKeycloakUserRequest
         {
-            Name = viewModel.Name,
+            FirstName = firstName,
+            LastName = lastName,
             Email = viewModel.Email,
-            IsActive = viewModel.IsActive,
+            Enabled = viewModel.IsActive,
             NovaSenha = viewModel.NovaSenha
         });
 
@@ -132,9 +138,9 @@ public class UsuariosController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> Delete(string id)
     {
-        var user = await _authentikAdminService.GetUserAsync(id);
+        var user = await _keycloakAdminService.GetUserAsync(id);
         if (user == null) return NotFound();
 
         if (string.Equals(user.Username, User.Identity?.Name, StringComparison.OrdinalIgnoreCase))
@@ -148,16 +154,16 @@ public class UsuariosController : Controller
 
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int id)
+    public async Task<IActionResult> DeleteConfirmed(string id)
     {
-        var user = await _authentikAdminService.GetUserAsync(id);
+        var user = await _keycloakAdminService.GetUserAsync(id);
         if (user != null && string.Equals(user.Username, User.Identity?.Name, StringComparison.OrdinalIgnoreCase))
         {
             TempData["ErrorMessage"] = "Você não pode excluir o próprio usuário enquanto está logado com ele.";
             return RedirectToAction(nameof(Index));
         }
 
-        var success = await _authentikAdminService.DeleteUserAsync(id);
+        var success = await _keycloakAdminService.DeleteUserAsync(id);
         TempData["SuccessMessage"] = success ? "Usuário removido com sucesso!" : null;
         TempData["ErrorMessage"] = success ? null : "Erro ao remover o usuário.";
         return RedirectToAction(nameof(Index));

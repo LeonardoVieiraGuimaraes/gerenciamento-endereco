@@ -1,4 +1,4 @@
-@model GerenciamentoEndereco.API.Services.AuthentikUser
+@model GerenciamentoEndereco.API.Services.KeycloakUser
 @{
     ViewData["Title"] = "Excluir Usuário";
 }
@@ -26,7 +26,7 @@
         <dd class="col-sm-9">@Model.Email</dd>
     </dl>
 
-    <form asp-action="Delete" asp-route-id="@Model.Pk" method="post" class="mt-3">
+    <form asp-action="Delete" asp-route-id="@Model.Id" method="post" class="mt-3">
         <button type="submit" class="btn btn-danger rounded-pill px-4 fw-bold">
             <i class="bi bi-trash me-1"></i> Excluir Definitivamente
         </button>
