@@ -64,8 +64,11 @@ public class EnderecosController : Controller
 
     public async Task<IActionResult> Index(string? username = null)
     {
-        var isAdmin = User.HasClaim(c => c.Type == "roles" && c.Value == "admin") || 
-                      User.HasClaim(c => c.Type == "client_role" && c.Value == "usuarios.manage");
+        // As roles no Keycloak são cadastradas em maiúsculas ("ADMIN"); a comparação
+        // aqui estava fixa em minúsculas e nunca batia, então o admin nunca caía nesse
+        // "if" e sempre via os próprios endereços, mesmo pedindo os de outro usuário.
+        var isAdmin = User.IsInRole("ADMIN") ||
+                      User.HasClaim(c => c.Type == "roles" && string.Equals(c.Value, "admin", StringComparison.OrdinalIgnoreCase));
 
         // Se for Admin e nenhum usuário específico foi selecionado, mostra TODOS os endereços
         if (isAdmin && string.IsNullOrEmpty(username))
