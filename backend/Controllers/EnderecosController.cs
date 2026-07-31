@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using GerenciamentoEndereco.API.Data;
 using GerenciamentoEndereco.API.Models;
@@ -27,6 +28,7 @@ public class EnderecosController : Controller
     /// Usado pelo formulário de cadastro/edição para autopreenchimento.
     /// </summary>
     [HttpGet]
+    [EnableRateLimiting("cep-lookup")]
     public async Task<IActionResult> BuscarCep(string cep)
     {
         if (string.IsNullOrWhiteSpace(cep))
@@ -62,48 +64,78 @@ public class EnderecosController : Controller
         return localUser;
     }
 
-    public async Task<IActionResult> Index(string? username)
+    public async Task<IActionResult> Index(string? username = null, string? nome = null, string? cep = null, string? logradouro = null, string? cidade = null, string? uf = null)
     {
-        var isAdmin = User.HasClaim(c => c.Type == "roles" && c.Value == "admin") || 
-                      User.HasClaim(c => c.Type == "client_role" && c.Value == "usuarios.manage");
+        // As roles no Keycloak são cadastradas em maiúsculas ("ADMIN"); a comparação
+        // aqui estava fixa em minúsculas e nunca batia, então o admin nunca caía nesse
+        // "if" e sempre via os próprios endereços, mesmo pedindo os de outro usuário.
+        var isAdmin = User.IsInRole("ADMIN") ||
+                      User.HasClaim(c => c.Type == "roles" && string.Equals(c.Value, "admin", StringComparison.OrdinalIgnoreCase));
+
+        IQueryable<Endereco> query;
+        bool isAllView;
+        string targetNome;
+        string? targetUsername;
 
         // Se for Admin e nenhum usuário específico foi selecionado, mostra TODOS os endereços
+        // — só nesse modo o campo "Nome" do filtro fica livre pra digitar (busca por
+        // qualquer usuário). Fora dele, a lista já está restrita a UM usuário, então o
+        // campo fica travado mostrando o nome desse usuário.
         if (isAdmin && string.IsNullOrEmpty(username))
         {
-            var todosEnderecos = await _context.Enderecos
-                .Include(e => e.Usuario)
-                .ToListAsync();
-
-            ViewData["TargetNome"] = "Todos os Usuários (Painel Admin)";
-            ViewData["IsAllView"] = true;
-            return View(todosEnderecos);
-        }
-
-        Usuario targetUser;
-        if (!string.IsNullOrEmpty(username) && isAdmin)
-        {
-            targetUser = await _context.Usuarios.FirstOrDefaultAsync(u => u.Username == username);
-            if (targetUser == null)
+            query = _context.Enderecos.Include(e => e.Usuario).AsQueryable();
+            if (!string.IsNullOrWhiteSpace(nome))
             {
-                // Se o usuário existe no Keycloak mas ainda não criou endereço local, inicializa na base local
-                targetUser = new Usuario { Username = username, Nome = username, Senha = "KEYCLOAK_MANAGED" };
-                _context.Usuarios.Add(targetUser);
-                await _context.SaveChangesAsync();
+                query = query.Where(e => e.Usuario!.Nome.Contains(nome) || e.Usuario!.Username.Contains(nome));
             }
+
+            isAllView = true;
+            targetNome = "Todos os Usuários (Painel Admin)";
+            targetUsername = null;
         }
         else
         {
-            targetUser = await GetOrCreateLocalUserAsync();
+            Usuario targetUser;
+            if (!string.IsNullOrEmpty(username) && isAdmin)
+            {
+                targetUser = await _context.Usuarios.FirstOrDefaultAsync(u => u.Username == username);
+                if (targetUser == null)
+                {
+                    // Se o usuário existe no Keycloak mas ainda não criou endereço local, inicializa na base local
+                    targetUser = new Usuario { Username = username, Nome = username, Senha = "KEYCLOAK_MANAGED" };
+                    _context.Usuarios.Add(targetUser);
+                    await _context.SaveChangesAsync();
+                }
+            }
+            else
+            {
+                targetUser = await GetOrCreateLocalUserAsync();
+            }
+
+            query = _context.Enderecos.Include(e => e.Usuario).Where(e => e.UsuarioId == targetUser.Id);
+            isAllView = false;
+            targetNome = targetUser.Nome;
+            targetUsername = targetUser.Username;
+
+            ViewData["IsAdminViewingOther"] = targetUser.Username != User.Identity?.Name;
         }
 
-        var enderecos = await _context.Enderecos
-            .Include(e => e.Usuario)
-            .Where(e => e.UsuarioId == targetUser.Id)
-            .ToListAsync();
+        if (!string.IsNullOrWhiteSpace(cep)) query = query.Where(e => e.Cep.Contains(cep));
+        if (!string.IsNullOrWhiteSpace(logradouro)) query = query.Where(e => e.Logradouro.Contains(logradouro));
+        if (!string.IsNullOrWhiteSpace(cidade)) query = query.Where(e => e.Cidade.Contains(cidade));
+        if (!string.IsNullOrWhiteSpace(uf)) query = query.Where(e => e.Uf.Contains(uf));
 
-        ViewData["TargetUsername"] = targetUser.Username;
-        ViewData["TargetNome"] = targetUser.Nome;
-        ViewData["IsAdminViewingOther"] = targetUser.Username != User.Identity?.Name;
+        var enderecos = await query.ToListAsync();
+
+        ViewData["TargetUsername"] = targetUsername;
+        ViewData["TargetNome"] = targetNome;
+        ViewData["IsAllView"] = isAllView;
+        ViewData["FiltroNome"] = isAllView ? nome : targetNome;
+        ViewData["FiltroNomeEditavel"] = isAllView;
+        ViewData["FiltroCep"] = cep;
+        ViewData["FiltroLogradouro"] = logradouro;
+        ViewData["FiltroCidade"] = cidade;
+        ViewData["FiltroUf"] = uf;
 
         return View(enderecos);
     }

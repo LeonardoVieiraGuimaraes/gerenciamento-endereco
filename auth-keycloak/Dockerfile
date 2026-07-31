@@ -5,8 +5,11 @@ WORKDIR /opt/keycloak
 # Copia o tema customizado
 COPY theme/gerenciamento-endereco /opt/keycloak/themes/gerenciamento-endereco
 
-# Copia os realms para importação automática
-COPY realm/*.json /opt/keycloak/data/import/
+# Copia apenas o realm consolidado (settings + tema + clients + roles + users)
+# para importação automática. Os demais arquivos em realm/ (users-0, master-*)
+# não são usados: criariam usuários duplicados no mesmo realm ou mexeriam no
+# realm master, então ficam só como histórico/rascunho.
+COPY realm/gerenciamento-endereco-realm.json /opt/keycloak/data/import/
 
 # Habilita métricas e health
 ENV KC_METRICS_ENABLED=true

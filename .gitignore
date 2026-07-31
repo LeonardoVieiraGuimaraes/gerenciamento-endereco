@@ -20,3 +20,6 @@ Thumbs.db
 # Keycloak and DB data volumes if created locally
 **/keycloak_data/
 **/sqldata/
+
+# Segredos de produção — nunca commitar, só existe no servidor via GitHub Actions
+backend/.env.prod

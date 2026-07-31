@@ -4,20 +4,59 @@
     var title = ViewData["TargetNome"] != null ? $"Endereços: {ViewData["TargetNome"]}" : "Meus Endereços";
     ViewData["Title"] = title;
     var isAllView = ViewData["IsAllView"] as bool? == true;
+    var filtroNomeEditavel = ViewData["FiltroNomeEditavel"] as bool? == true;
 }
 
 <div class="glass-card fade-in">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2><i class="bi bi-map me-2"></i>@title</h2>
         <div>
-            <a asp-action="Create" class="btn btn-primary btn-sm rounded-pill px-3 fw-bold me-2">
-                <i class="bi bi-plus-circle me-1"></i> Novo Endereço
+            <a asp-action="Create" class="btn-app btn-app-primary btn-app-sm me-2">
+                <i class="bi bi-plus-circle"></i> Novo Endereço
             </a>
-            <a asp-action="ExportCsv" class="btn btn-outline-success btn-sm rounded-pill px-3 fw-bold">
-                <i class="bi bi-file-earmark-spreadsheet me-1"></i> Exportar CSV
+            <a asp-action="ExportCsv" class="btn-app btn-app-success btn-app-sm">
+                <i class="bi bi-file-earmark-spreadsheet"></i> Exportar CSV
             </a>
         </div>
     </div>
+
+    <form asp-action="Index" method="get" class="row g-2 mb-4 align-items-end">
+        <div class="col-6 col-md-3 col-lg-2">
+            <label class="form-label small var-text-muted mb-1">Nome</label>
+            @if (filtroNomeEditavel)
+            {
+                <input type="text" name="nome" value="@ViewData["FiltroNome"]" class="form-control form-control-sm" placeholder="Buscar por usuário..." />
+            }
+            else
+            {
+                <input type="text" value="@ViewData["FiltroNome"]" class="form-control form-control-sm" disabled title="Restrito ao seu próprio usuário" />
+            }
+        </div>
+        <div class="col-6 col-md-2 col-lg-2">
+            <label class="form-label small var-text-muted mb-1">CEP</label>
+            <input type="text" name="cep" value="@ViewData["FiltroCep"]" class="form-control form-control-sm" />
+        </div>
+        <div class="col-6 col-md-3 col-lg-3">
+            <label class="form-label small var-text-muted mb-1">Logradouro</label>
+            <input type="text" name="logradouro" value="@ViewData["FiltroLogradouro"]" class="form-control form-control-sm" />
+        </div>
+        <div class="col-6 col-md-2 col-lg-2">
+            <label class="form-label small var-text-muted mb-1">Cidade</label>
+            <input type="text" name="cidade" value="@ViewData["FiltroCidade"]" class="form-control form-control-sm" />
+        </div>
+        <div class="col-6 col-md-1 col-lg-1">
+            <label class="form-label small var-text-muted mb-1">UF</label>
+            <input type="text" name="uf" value="@ViewData["FiltroUf"]" maxlength="2" class="form-control form-control-sm text-uppercase" />
+        </div>
+        <div class="col-6 col-md-1 col-lg-2 d-flex gap-2">
+            <button type="submit" class="btn-app btn-app-primary btn-app-sm">
+                <i class="bi bi-search"></i> Buscar
+            </button>
+            <a asp-action="Index" class="btn-app btn-app-outline btn-app-sm" title="Limpar filtros">
+                <i class="bi bi-x-circle"></i>
+            </a>
+        </div>
+    </form>
 
     <div class="table-responsive">
         <table class="table table-hover align-middle">
@@ -51,11 +90,11 @@
                         <td>@item.Bairro</td>
                         <td>@item.Cidade - @item.Uf</td>
                         <td>
-                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning rounded-pill me-1">
-                                <i class="bi bi-pencil me-1"></i> Editar
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn-app btn-app-outline btn-app-sm me-1">
+                                <i class="bi bi-pencil"></i> Editar
                             </a>
-                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger rounded-pill">
-                                <i class="bi bi-trash me-1"></i> Excluir
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn-app btn-app-danger btn-app-sm">
+                                <i class="bi bi-trash"></i> Excluir
                             </a>
                         </td>
                     </tr>

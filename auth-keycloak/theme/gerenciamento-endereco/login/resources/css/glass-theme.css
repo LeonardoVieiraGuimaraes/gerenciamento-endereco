@@ -178,3 +178,87 @@ a:hover, .login-pf-settings a:hover, #kc-registration a:hover, #kc-login a:hover
     color: white;
     transform: scale(1.1);
 }
+
+/* Telas com mais conteúdo (configurar 2FA, cadastro) precisam de um card mais largo
+   que o do login simples, senão o texto/QR code ficam espremidos. */
+body:has(#kc-totp-settings) .card-pf,
+body:has(#kc-register-form) .card-pf {
+    max-width: 560px !important;
+}
+
+/* Passo a passo de configuração de TOTP (ol > li com texto, lista de apps, QR code) */
+#kc-totp-settings {
+    text-align: left !important;
+    padding-left: 1.25rem !important;
+    margin: 0 0 1.5rem 0 !important;
+    color: var(--text-main) !important;
+}
+
+#kc-totp-settings > li {
+    margin-bottom: 1.25rem !important;
+    line-height: 1.5 !important;
+}
+
+#kc-totp-settings p {
+    margin: 0 0 0.5rem 0 !important;
+    color: var(--text-main) !important;
+}
+
+#kc-totp-supported-apps {
+    padding-left: 1.25rem !important;
+    margin: 0.25rem 0 !important;
+    color: var(--text-muted) !important;
+}
+
+#kc-totp-settings ul {
+    padding-left: 1.25rem !important;
+    margin: 0.25rem 0 !important;
+    color: var(--text-muted) !important;
+    font-size: 0.85rem !important;
+}
+
+/* QR code precisa de fundo branco sólido pra manter contraste/leitura no tema escuro */
+#kc-totp-secret-qr-code {
+    display: block !important;
+    max-width: 200px !important;
+    width: 100% !important;
+    height: auto !important;
+    margin: 0.75rem 0 !important;
+    padding: 0.75rem !important;
+    background: #ffffff !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Código secreto (modo manual) em fonte monoespaçada, pra ficar legível/copiável */
+#kc-totp-secret-key {
+    display: inline-block !important;
+    font-family: 'Courier New', monospace !important;
+    font-size: 1rem !important;
+    letter-spacing: 1px !important;
+    background: var(--input-bg) !important;
+    border: 1px solid var(--input-border) !important;
+    border-radius: 8px !important;
+    padding: 0.4rem 0.75rem !important;
+    margin-top: 0.25rem !important;
+    word-break: break-all !important;
+}
+
+/* Botões quando há mais de um lado a lado (Salvar / Cancelar) */
+#kc-form-buttons {
+    display: flex !important;
+    gap: 0.75rem !important;
+    margin-top: 1rem !important;
+}
+
+#kc-form-buttons .btn-primary,
+#kc-form-buttons button {
+    width: 100% !important;
+    margin-top: 0 !important;
+}
+
+#kc-form-buttons button[name="cancel-aia"] {
+    background: transparent !important;
+    border: 1px solid var(--input-border) !important;
+    color: var(--text-main) !important;
+}

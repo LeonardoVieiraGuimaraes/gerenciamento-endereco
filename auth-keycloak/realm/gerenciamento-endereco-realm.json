@@ -172,5 +172,128 @@
     "adminTheme":  "gerenciamento-endereco",
     "emailTheme":  "gerenciamento-endereco",
     "loginTheme":  "gerenciamento-endereco",
-    "accountTheme":  "gerenciamento-endereco"
+    "accountTheme":  "gerenciamento-endereco",
+    "roles": {
+        "realm": [
+            { "name": "ADMIN", "description": "Administrador do sistema" },
+            { "name": "USUARIO", "description": "Usuário padrão" }
+        ]
+    },
+    "clients": [
+        {
+            "clientId": "app-csharp",
+            "name": "Gerenciamento de Endereços",
+            "enabled": true,
+            "protocol": "openid-connect",
+            "publicClient": false,
+            "clientAuthenticatorType": "client-secret",
+            "secret": "bcdbmbolTUjkbRc21tgKv7yuU8XZDk1E",
+            "standardFlowEnabled": true,
+            "implicitFlowEnabled": false,
+            "directAccessGrantsEnabled": false,
+            "serviceAccountsEnabled": false,
+            "redirectUris": [
+                "http://localhost:5000/signin-oidc",
+                "https://localhost:5001/signin-oidc",
+                "https://enderecos.leoproti.com.br/signin-oidc"
+            ],
+            "webOrigins": [ "http://localhost:5000", "https://localhost:5001", "https://enderecos.leoproti.com.br" ],
+            "attributes": {
+                "post.logout.redirect.uris": "http://localhost:5000/signout-callback-oidc##https://enderecos.leoproti.com.br/signout-callback-oidc"
+            },
+            "defaultClientScopes": [ "web-origins", "acr", "profile", "roles", "email" ]
+        },
+        {
+            "clientId": "backend-admin-api",
+            "name": "Backend Admin API (service account)",
+            "enabled": true,
+            "protocol": "openid-connect",
+            "publicClient": false,
+            "clientAuthenticatorType": "client-secret",
+            "secret": "K3eQM5uNBNJCRBKTxGRiBwqAPsErOrZh-GIwYpZ3PC4",
+            "standardFlowEnabled": false,
+            "implicitFlowEnabled": false,
+            "directAccessGrantsEnabled": false,
+            "serviceAccountsEnabled": true
+        }
+    ],
+    "clientScopes": [
+        {
+            "name": "roles",
+            "description": "OpenID Connect scope for add user roles to the access token",
+            "protocol": "openid-connect",
+            "attributes": {
+                "include.in.token.scope": "false",
+                "display.on.consent.screen": "false"
+            },
+            "protocolMappers": [
+                {
+                    "name": "realm roles",
+                    "protocol": "openid-connect",
+                    "protocolMapper": "oidc-usermodel-realm-role-mapper",
+                    "consentRequired": false,
+                    "config": {
+                        "user.attribute": "foo",
+                        "access.token.claim": "true",
+                        "id.token.claim": "true",
+                        "claim.name": "realm_access.roles",
+                        "jsonType.label": "String",
+                        "multivalued": "true"
+                    }
+                },
+                {
+                    "name": "client roles",
+                    "protocol": "openid-connect",
+                    "protocolMapper": "oidc-usermodel-client-role-mapper",
+                    "consentRequired": false,
+                    "config": {
+                        "user.attribute": "foo",
+                        "access.token.claim": "true",
+                        "id.token.claim": "true",
+                        "claim.name": "resource_access.${client_id}.roles",
+                        "jsonType.label": "String",
+                        "multivalued": "true"
+                    }
+                }
+            ]
+        }
+    ],
+    "users": [
+        {
+            "username": "admin",
+            "enabled": true,
+            "emailVerified": true,
+            "attributes": { "locale": [ "pt-BR" ] },
+            "email": "leonardovieriaxy@gmail.com",
+            "firstName": "Administrador",
+            "lastName": "Master",
+            "credentials": [
+                { "type": "password", "value": "270414", "temporary": false }
+            ],
+            "realmRoles": [ "ADMIN", "USUARIO" ],
+            "clientRoles": {
+                "realm-management": [ "realm-admin" ]
+            }
+        },
+        {
+            "username": "leonardo",
+            "enabled": true,
+            "emailVerified": true,
+            "email": "leonardovieriaxy@hotmail.com",
+            "firstName": "Leonardo",
+            "lastName": "Guimaraes",
+            "credentials": [
+                { "type": "password", "value": "270414", "temporary": false }
+            ],
+            "realmRoles": [ "USUARIO" ]
+        },
+        {
+            "username": "service-account-backend-admin-api",
+            "enabled": true,
+            "serviceAccountClientId": "backend-admin-api",
+            "clientRoles": {
+                "realm-management": [ "manage-users", "view-users", "query-users" ]
+            }
+        }
+    ]
 }

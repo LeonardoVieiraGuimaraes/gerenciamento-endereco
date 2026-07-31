@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using GerenciamentoEndereco.API.Data;
 using GerenciamentoEndereco.API.Models.ViewModels;
@@ -14,17 +15,27 @@ namespace GerenciamentoEndereco.API.Controllers;
 public class AuthController : Controller
 {
     private readonly AppDbContext _context;
-    private readonly IAuthentikAdminService _authentikAdminService;
+    private readonly IKeycloakAdminService _keycloakAdminService;
 
-    public AuthController(AppDbContext context, IAuthentikAdminService authentikAdminService)
+    public AuthController(AppDbContext context, IKeycloakAdminService keycloakAdminService)
     {
         _context = context;
-        _authentikAdminService = authentikAdminService;
+        _keycloakAdminService = keycloakAdminService;
     }
 
     [HttpGet]
+    [EnableRateLimiting("login")]
     public IActionResult Login(string returnUrl = "/")
     {
+        // AuthenticationProperties.RedirectUri (usado pelo Challenge abaixo) não é
+        // validado pelo framework como LocalRedirect() é — sem essa checagem, um
+        // returnUrl apontando pra fora do site vira um open redirect logo após o
+        // login (ex.: /Auth/Login?returnUrl=https://site-malicioso.com).
+        if (!Url.IsLocalUrl(returnUrl))
+        {
+            returnUrl = "/";
+        }
+
         // Se o usuário já estiver logado, redireciona de volta
         if (User.Identity != null && User.Identity.IsAuthenticated)
         {
@@ -36,23 +47,44 @@ public class AuthController : Controller
     }
 
     [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Logout()
+    public IActionResult Logout()
     {
-        // O RP-Initiated Logout (redirect pro end-session do Authentik) está quebrado
-        // no Authentik 2026.5.x (retorna "Bad Request" — bug confirmado upstream:
-        // https://github.com/goauthentik/authentik/issues/22904). Em vez de depender
-        // desse redirect, revogamos a sessão diretamente via Admin API antes de encerrar
-        // a sessão local — assim o usuário sai de verdade (app + Authentik) sem passar
-        // pela tela de erro.
-        var username = User.FindFirst("preferred_username")?.Value ?? User.Identity?.Name;
-        if (!string.IsNullOrEmpty(username))
-        {
-            await _authentikAdminService.RevokeAllSessionsAsync(username);
-        }
+        // Sem [ValidateAntiForgeryToken] de propósito: esse token fica vinculado aos
+        // claims do usuário no momento em que a página foi renderizada. Como o Keycloak
+        // mantém uma sessão SSO ativa, é comum o usuário ser re-autenticado silenciosamente
+        // entre um clique em "Sair" e outro (ex.: after voltar pra Home, ou usando o botão
+        // voltar do navegador) — o que invalida esse token e gera um 400 feio numa ação que
+        // não é destrutiva (o pior caso de um CSRF forçando logout é só deslogar a vítima).
+        //
+        // Diferente do Authentik, o RP-Initiated Logout do Keycloak funciona normalmente
+        // (sem bug conhecido) — o próprio SignOut do OIDC já redireciona pro
+        // end_session_endpoint e volta via post.logout.redirect.uris do client.
+        return SignOut(
+            new AuthenticationProperties { RedirectUri = "/" },
+            CookieAuthenticationDefaults.AuthenticationScheme,
+            OpenIdConnectDefaults.AuthenticationScheme);
+    }
 
-        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-        return LocalRedirect("/");
+    // Dispara uma ação nativa do Keycloak (trocar senha, configurar 2FA...) usando o
+    // parâmetro kc_action — o usuário é levado pra tela de login do Keycloak (com o
+    // NOSSO tema customizado, em pt-BR) já na etapa certa, sem precisar do Account
+    // Console (app React separado, que exigiria configuração de CORS à parte).
+    [Authorize]
+    [HttpGet]
+    public IActionResult AlterarSenha()
+    {
+        var props = new AuthenticationProperties { RedirectUri = "/Auth/Perfil" };
+        props.Items["kc_action"] = "UPDATE_PASSWORD";
+        return Challenge(props, OpenIdConnectDefaults.AuthenticationScheme);
+    }
+
+    [Authorize]
+    [HttpGet]
+    public IActionResult ConfigurarDoisFatores()
+    {
+        var props = new AuthenticationProperties { RedirectUri = "/Auth/Perfil" };
+        props.Items["kc_action"] = "CONFIGURE_TOTP";
+        return Challenge(props, OpenIdConnectDefaults.AuthenticationScheme);
     }
 
     [Authorize]

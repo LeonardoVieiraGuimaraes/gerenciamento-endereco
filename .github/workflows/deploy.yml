@@ -1,0 +1,112 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+env:
+  DEPLOY_PATH: /home/leonardovieiraxy/projetos/gerenciamento-endereco
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Restore
+        run: dotnet restore GerenciamentoEndereco.Tests/GerenciamentoEndereco.Tests.csproj
+
+      - name: Build
+        run: dotnet build GerenciamentoEndereco.Tests/GerenciamentoEndereco.Tests.csproj --no-restore -c Release
+
+      - name: Test
+        run: dotnet test GerenciamentoEndereco.Tests/GerenciamentoEndereco.Tests.csproj --no-build -c Release
+
+      - name: Vulnerable packages
+        run: dotnet list backend/GerenciamentoEndereco.API.csproj package --vulnerable --include-transitive
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar cloudflared
+        run: |
+          curl -L --output cloudflared.deb https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb
+          sudo dpkg -i cloudflared.deb
+
+      - name: Configurar acesso SSH via Cloudflare Access
+        env:
+          SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          SSH_HOST: ${{ secrets.DEPLOY_SSH_HOST }}
+          SSH_USER: ${{ secrets.DEPLOY_SSH_USER }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          cat > ~/.ssh/config <<EOF
+          Host deploy-target
+            HostName $SSH_HOST
+            User $SSH_USER
+            IdentityFile ~/.ssh/deploy_key
+            ProxyCommand cloudflared access ssh --hostname %h
+            StrictHostKeyChecking no
+            UserKnownHostsFile /dev/null
+          EOF
+          chmod 600 ~/.ssh/config
+
+      # O túnel exige uma identidade de Cloudflare Access pra sequer abrir a
+      # conexão SSH — sem isso o handshake nem começa, independente da chave
+      # SSH em si. O Service Token é criado uma vez no painel do Cloudflare
+      # Zero Trust (Access > Service Auth) e authoriza automações (CI/CD) sem
+      # precisar de login interativo.
+      - name: Sincronizar código com o servidor
+        env:
+          CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
+          CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
+        run: |
+          ssh -F ~/.ssh/config deploy-target "mkdir -p ${{ env.DEPLOY_PATH }}"
+          rsync -az --delete \
+            --exclude='.git' --exclude='bin' --exclude='obj' --exclude='**/bin' --exclude='**/obj' \
+            -e "ssh -F ~/.ssh/config" \
+            ./ deploy-target:${{ env.DEPLOY_PATH }}/
+
+      - name: Escrever segredos de produção (.env)
+        env:
+          CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
+          CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
+          SQL_SA_PASSWORD: ${{ secrets.SQL_SA_PASSWORD }}
+          KEYCLOAK_DB_PASSWORD: ${{ secrets.KEYCLOAK_DB_PASSWORD }}
+          KEYCLOAK_ADMIN_PASSWORD: ${{ secrets.KEYCLOAK_ADMIN_PASSWORD }}
+          KEYCLOAK_CLIENT_SECRET: ${{ secrets.KEYCLOAK_CLIENT_SECRET }}
+          KEYCLOAK_ADMIN_CLIENT_SECRET: ${{ secrets.KEYCLOAK_ADMIN_CLIENT_SECRET }}
+        run: |
+          ssh -F ~/.ssh/config deploy-target "cat > ${{ env.DEPLOY_PATH }}/backend/.env" <<EOF
+          SQL_SA_PASSWORD=$SQL_SA_PASSWORD
+          KEYCLOAK_DB_PASSWORD=$KEYCLOAK_DB_PASSWORD
+          KEYCLOAK_ADMIN_PASSWORD=$KEYCLOAK_ADMIN_PASSWORD
+          KEYCLOAK_CLIENT_SECRET=$KEYCLOAK_CLIENT_SECRET
+          KEYCLOAK_ADMIN_CLIENT_SECRET=$KEYCLOAK_ADMIN_CLIENT_SECRET
+          EOF
+          ssh -F ~/.ssh/config deploy-target "chmod 600 ${{ env.DEPLOY_PATH }}/backend/.env"
+
+      - name: Build e subir os containers
+        env:
+          CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
+          CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
+        run: |
+          ssh -F ~/.ssh/config deploy-target "cd ${{ env.DEPLOY_PATH }}/backend && docker compose -f docker-compose.prod.yml up -d --build"
+
+      - name: Verificar saúde da aplicação
+        env:
+          CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
+          CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
+        run: |
+          ssh -F ~/.ssh/config deploy-target "for i in \$(seq 1 15); do curl -sf http://localhost:8090/health && exit 0; sleep 4; done; echo 'Health check falhou'; docker logs gerenc-web --tail 100; exit 1"

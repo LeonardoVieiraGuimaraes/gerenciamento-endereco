@@ -6,9 +6,10 @@ services:
     restart: unless-stopped
     environment:
       - ACCEPT_EULA=Y
-      - MSSQL_SA_PASSWORD=SuperSenha123!
-    ports:
-      - "1433:1433"
+      - MSSQL_SA_PASSWORD=${SQL_SA_PASSWORD}
+    # Sem "ports:" aqui de propósito — em produção o SQL Server só precisa ser
+    # alcançável pelos outros containers na rede interna (gerenc-net), nunca
+    # exposto na internet.
     volumes:
       - sqldata:/var/opt/mssql
     networks:
@@ -23,19 +24,22 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "5000:8080"
-      - "5001:8081"
+      - "8090:8080"
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Server=sqldb;Database=GerenciamentoEnderecoDb;User Id=sa;Password=SuperSenha123!;TrustServerCertificate=True;
-      - Keycloak__MetadataAddress=http://keycloak:8080/realms/gerenciamento-endereco/.well-known/openid-configuration
-      - Keycloak__Authority=http://localhost:8089/realms/gerenciamento-endereco
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Server=sqldb;Database=GerenciamentoEnderecoDb;User Id=sa;Password=${SQL_SA_PASSWORD};TrustServerCertificate=True;
+      - Keycloak__Authority=https://auth-enderecos.leoproti.com.br/realms/gerenciamento-endereco
+      - Keycloak__ExternalHost=auth-enderecos.leoproti.com.br
+      - Keycloak__ExternalScheme=https
       - Keycloak__InternalHost=keycloak:8080
-      - Keycloak__ExternalHost=localhost:8089
+      - Keycloak__ClientSecret=${KEYCLOAK_CLIENT_SECRET}
+      - Keycloak__RequireHttpsMetadata=true
+      - Keycloak__ValidateIssuer=true
       - KeycloakAdmin__BaseUrl=http://keycloak:8080
       - KeycloakAdmin__Realm=gerenciamento-endereco
       - KeycloakAdmin__ClientId=backend-admin-api
-      - KeycloakAdmin__ClientSecret=K3eQM5uNBNJCRBKTxGRiBwqAPsErOrZh-GIwYpZ3PC4
+      - KeycloakAdmin__ClientSecret=${KEYCLOAK_ADMIN_CLIENT_SECRET}
+      - Logging__ShowPII=false
     depends_on:
       - sqldb
       - keycloak
@@ -56,15 +60,13 @@ services:
     environment:
       POSTGRES_DB: keycloak
       POSTGRES_USER: keycloak
-      POSTGRES_PASSWORD: keycloak_pass_2026
+      POSTGRES_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
     volumes:
       - keycloak_database:/var/lib/postgresql/data
     networks:
       - gerenc-net
 
-  # 4. SERVIDOR KEYCLOAK — build local (Dockerfile em auth-keycloak/) com tema glassmorphism
-  #    custom e o realm "gerenciamento-endereco" (client, roles, usuários) importado
-  #    automaticamente no boot.
+  # 4. SERVIDOR KEYCLOAK
   keycloak:
     build:
       context: ../auth-keycloak
@@ -76,20 +78,18 @@ services:
       KC_DB_URL_HOST: keycloak-db
       KC_DB_URL_DATABASE: keycloak
       KC_DB_USERNAME: keycloak
-      KC_DB_PASSWORD: keycloak_pass_2026
+      KC_DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
       KC_BOOTSTRAP_ADMIN_USERNAME: admin
-      KC_BOOTSTRAP_ADMIN_PASSWORD: admin123
-      # KC_HOSTNAME fica com o nome público (localhost:8089): o Keycloak usa esse
-      # valor em TODAS as URLs que ele mesmo renderiza (inclusive o "action" do
-      # formulário de login), então precisa ser o que o NAVEGADOR do usuário
-      # consegue resolver. O backend-api, que precisa falar com o Keycloak
-      # server-to-server (token exchange, JWKS), usa os endpoints internos
-      # (keycloak:8080) montados manualmente em Program.cs — não pelo discovery
-      # document, que só teria a versão pública.
-      KC_HOSTNAME: localhost
-      KC_HOSTNAME_PORT: "8089"
-      KC_HOSTNAME_STRICT_HTTPS: "false"
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      # Diferente do dev local: aqui o hostname público é servido via HTTPS de
+      # verdade (TLS terminado no Cloudflare Tunnel), então strict-https fica
+      # ligado e KC_PROXY_HEADERS informa o Keycloak pra confiar no
+      # X-Forwarded-* que o túnel envia (senão ele gera links com esquema/host
+      # errado).
+      KC_HOSTNAME: auth-enderecos.leoproti.com.br
+      KC_HOSTNAME_STRICT_HTTPS: "true"
       KC_HTTP_ENABLED: "true"
+      KC_PROXY_HEADERS: xforwarded
     ports:
       - "8089:8080"
     depends_on:
