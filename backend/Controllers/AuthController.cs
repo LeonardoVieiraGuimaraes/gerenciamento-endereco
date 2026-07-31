@@ -48,6 +48,28 @@ public class AuthController : Controller
             OpenIdConnectDefaults.AuthenticationScheme);
     }
 
+    // Dispara uma ação nativa do Keycloak (trocar senha, configurar 2FA...) usando o
+    // parâmetro kc_action — o usuário é levado pra tela de login do Keycloak (com o
+    // NOSSO tema customizado, em pt-BR) já na etapa certa, sem precisar do Account
+    // Console (app React separado, que exigiria configuração de CORS à parte).
+    [Authorize]
+    [HttpGet]
+    public IActionResult AlterarSenha()
+    {
+        var props = new AuthenticationProperties { RedirectUri = "/Auth/Perfil" };
+        props.Items["kc_action"] = "UPDATE_PASSWORD";
+        return Challenge(props, OpenIdConnectDefaults.AuthenticationScheme);
+    }
+
+    [Authorize]
+    [HttpGet]
+    public IActionResult ConfigurarDoisFatores()
+    {
+        var props = new AuthenticationProperties { RedirectUri = "/Auth/Perfil" };
+        props.Items["kc_action"] = "CONFIGURE_TOTP";
+        return Challenge(props, OpenIdConnectDefaults.AuthenticationScheme);
+    }
+
     [Authorize]
     [HttpGet]
     public async Task<IActionResult> Perfil()

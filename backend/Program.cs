@@ -195,6 +195,13 @@ builder.Services.AddAuthentication(options =>
             context.ProtocolMessage.SetParameter("kc_locale", "pt-BR");
             context.ProtocolMessage.SetParameter("ui_locales", "pt-BR");
 
+            // Repassa a ação nativa do Keycloak (trocar senha, configurar 2FA...) definida
+            // em AuthController.AlterarSenha/ConfigurarDoisFatores.
+            if (context.Properties.Items.TryGetValue("kc_action", out var kcAction) && !string.IsNullOrEmpty(kcAction))
+            {
+                context.ProtocolMessage.SetParameter("kc_action", kcAction);
+            }
+
             return Task.CompletedTask;
         }
     };
