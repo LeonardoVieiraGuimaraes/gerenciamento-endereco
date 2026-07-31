@@ -166,6 +166,108 @@ body {
   color: #ffffff !important;
 }
 
+/* ==========================================================================
+   Sistema de botões padronizado (.btn-app-*)
+   Toda ação de tela (toolbar, formulário, linha de tabela) deve usar essas
+   classes em vez de combinar utilitários do Bootstrap soltos — garante que
+   botões do mesmo "papel" (primário, contorno, perigo, ícone) tenham sempre
+   o mesmo tamanho/altura/raio em qualquer tela.
+   ========================================================================== */
+.btn-app {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  height: 40px;
+  padding: 0 1.25rem;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  line-height: 1;
+  border: 1px solid transparent;
+  text-decoration: none !important;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-app:hover {
+  transform: translateY(-1px);
+}
+
+/* Tamanho compacto — toolbars e ações de linha de tabela */
+.btn-app-sm {
+  height: 32px;
+  padding: 0 1rem;
+  font-size: 0.8rem;
+}
+
+/* Variante circular, só ícone (mesma largura da altura) */
+.btn-app-icon {
+  width: 40px;
+  padding: 0;
+  border-radius: 50%;
+}
+
+.btn-app-icon.btn-app-sm {
+  width: 32px;
+}
+
+/* Cores */
+.btn-app-primary {
+  background: var(--btn-primary);
+  border-color: var(--btn-primary);
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px 0 rgba(37, 99, 235, 0.3);
+}
+
+.btn-app-primary:hover {
+  background: var(--btn-primary-hover);
+  border-color: var(--btn-primary-hover);
+  color: #ffffff !important;
+}
+
+.btn-app-outline {
+  background: transparent;
+  border-color: var(--input-border);
+  color: var(--text-main) !important;
+}
+
+.btn-app-outline:hover {
+  background: var(--table-hover-bg);
+  border-color: var(--primary-color);
+  color: var(--text-main) !important;
+}
+
+.btn-app-danger {
+  background: transparent;
+  border-color: rgba(239, 68, 68, 0.5);
+  color: #ef4444 !important;
+}
+
+.btn-app-danger:hover {
+  background: #ef4444;
+  border-color: #ef4444;
+  color: #ffffff !important;
+}
+
+.btn-app-danger.btn-app-solid {
+  background: #ef4444;
+  color: #ffffff !important;
+}
+
+.btn-app-success {
+  background: transparent;
+  border-color: rgba(16, 185, 129, 0.5);
+  color: #10b981 !important;
+}
+
+.btn-app-success:hover {
+  background: #10b981;
+  border-color: #10b981;
+  color: #ffffff !important;
+}
+
 /* Botão de CTA principal (usado no "Entrar" da navbar e nos hero CTAs) —
    classe usada em várias views mas nunca tinha sido definida no CSS. */
 .btn-premium {

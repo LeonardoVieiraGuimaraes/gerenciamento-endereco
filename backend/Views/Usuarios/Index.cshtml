@@ -8,8 +8,8 @@
         <h2><i class="bi bi-people me-2"></i>@ViewData["Title"]</h2>
         <div>
             <span class="badge bg-primary rounded-pill fs-6 me-2">@Model.Count() usuários</span>
-            <a asp-action="Create" class="btn btn-primary btn-sm rounded-pill px-3 fw-bold">
-                <i class="bi bi-person-plus me-1"></i> Novo Usuário
+            <a asp-action="Create" class="btn-app btn-app-primary btn-app-sm">
+                <i class="bi bi-person-plus"></i> Novo Usuário
             </a>
         </div>
     </div>
@@ -83,14 +83,14 @@
                         <td class="text-center">
                             <a href="http://localhost:8089/admin/gerenciamento-endereco/console/#/gerenciamento-endereco/users/@item.Id/settings"
                                target="_blank"
-                               class="btn btn-sm btn-outline-primary rounded-circle"
+                               class="btn-app btn-app-outline btn-app-icon btn-app-sm"
                                title="Abrir no Console Admin do Keycloak">
                                 <i class="bi bi-shield-lock"></i>
                             </a>
                         </td>
                         <td class="text-center">
                             <a asp-action="Delete" asp-route-id="@item.Id"
-                               class="btn btn-sm btn-outline-danger rounded-circle"
+                               class="btn-app btn-app-danger btn-app-icon btn-app-sm"
                                title="Excluir Usuário">
                                 <i class="bi bi-trash"></i>
                             </a>
