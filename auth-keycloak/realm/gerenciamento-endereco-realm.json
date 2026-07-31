@@ -27,7 +27,7 @@
     "oauth2DevicePollingInterval":  5,
     "enabled":  true,
     "sslRequired":  "external",
-    "registrationAllowed":  false,
+    "registrationAllowed":  true,
     "registrationEmailAsUsername":  false,
     "rememberMe":  false,
     "verifyEmail":  false,
@@ -176,7 +176,18 @@
     "roles": {
         "realm": [
             { "name": "ADMIN", "description": "Administrador do sistema" },
-            { "name": "USUARIO", "description": "Usuário padrão" }
+            { "name": "USUARIO", "description": "Usuário padrão" },
+            {
+                "name": "default-roles-gerenciamento-endereco",
+                "description": "${role_default-roles}",
+                "composite": true,
+                "composites": {
+                    "realm": [ "offline_access", "uma_authorization", "USUARIO" ],
+                    "client": {
+                        "account": [ "view-profile", "manage-account" ]
+                    }
+                }
+            }
         ]
     },
     "clients": [

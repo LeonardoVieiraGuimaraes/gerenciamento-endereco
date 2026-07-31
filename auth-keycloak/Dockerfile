@@ -1,4 +1,8 @@
-FROM quay.io/keycloak/keycloak:latest
+# Tag de versão fixa (não "latest") — uma tag flutuante já quebrou o tema custom
+# silenciosamente uma vez: novas versões do Keycloak reorganizam os temas embutidos
+# (ex.: "common/keycloak.v2" virou só "keycloak.v2" numa atualização), e sem pin
+# nenhum aviso aparece até alguém notar a tela sem estilo nenhum.
+FROM quay.io/keycloak/keycloak:26.6.3
 
 WORKDIR /opt/keycloak
 

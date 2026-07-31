@@ -70,15 +70,38 @@ body {
     transition: background 0.3s ease, border 0.3s ease;
 }
 
+/* Marca (ícone + nome da aplicação) acima do título */
+.brand-mark {
+    width: 56px !important;
+    height: 56px !important;
+    margin: 0 auto 1rem !important;
+    border-radius: 16px !important;
+    background: var(--btn-bg) !important;
+    color: #fff !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0 10px 20px -8px rgba(37, 99, 235, 0.6) !important;
+}
+
+.brand-kicker {
+    display: block !important;
+    text-align: center !important;
+    font-size: 0.8rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.5px !important;
+    color: var(--text-muted) !important;
+    margin-bottom: 0.35rem !important;
+}
+
 /* Títulos */
 #kc-page-title {
-    font-size: 1.75rem !important;
+    font-size: 1.5rem !important;
     font-weight: 700 !important;
-    color: var(--title-color) !important;
+    color: var(--text-main) !important;
     text-align: center !important;
-    margin-bottom: 1.5rem !important;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    margin-bottom: 1.75rem !important;
+    letter-spacing: -0.01em;
 }
 
 /* Labels */
@@ -102,6 +125,24 @@ input[type="email"] {
     transition: all 0.3s ease !important;
     width: 100% !important;
     box-sizing: border-box !important;
+}
+
+/* Ícone dentro do campo (usuário/senha) */
+.input-icon-wrap {
+    position: relative !important;
+}
+
+.input-icon-wrap .input-icon {
+    position: absolute !important;
+    left: 0.9rem !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    color: var(--text-muted) !important;
+    pointer-events: none !important;
+}
+
+.input-icon-wrap input {
+    padding-left: 2.5rem !important;
 }
 
 input[type="text"]:focus,
@@ -152,6 +193,47 @@ a:hover, .login-pf-settings a:hover, #kc-registration a:hover, #kc-login a:hover
 
 #kc-registration, #kc-login {
     color: var(--text-muted);
+}
+
+/* Divisor "ou" entre o login e o botão de cadastro */
+.divider {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.75rem !important;
+    margin: 1.5rem 0 !important;
+    color: var(--text-muted) !important;
+    font-size: 0.8rem !important;
+}
+
+.divider::before,
+.divider::after {
+    content: "" !important;
+    flex: 1 !important;
+    height: 1px !important;
+    background: var(--input-border) !important;
+}
+
+/* Botão secundário (Criar uma conta) — mesmo tamanho do primário, contorno em vez de preenchido */
+.btn-secondary {
+    display: block !important;
+    text-align: center !important;
+    background: transparent !important;
+    border: 1px solid var(--input-border) !important;
+    border-radius: 10px !important;
+    color: var(--text-main) !important;
+    font-weight: 600 !important;
+    font-size: 1rem !important;
+    padding: 0.75rem 1.5rem !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    text-decoration: none !important;
+    transition: all 0.2s ease !important;
+}
+
+.btn-secondary:hover {
+    border-color: var(--input-focus-border) !important;
+    color: var(--link-color) !important;
+    text-decoration: none !important;
 }
 
 .theme-toggle {

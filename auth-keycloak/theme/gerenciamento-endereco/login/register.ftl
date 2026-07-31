@@ -45,8 +45,14 @@
         </svg>
     </button>
     <div class="card-pf" style="max-width: 500px;">
-        <h1 id="kc-page-title">Criar Conta</h1>
-        
+        <div class="brand-mark">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6"/>
+            </svg>
+        </div>
+        <span class="brand-kicker">Gerenciamento de Endereços</span>
+        <h1 id="kc-page-title">Criar sua conta</h1>
+
         <script>
             const themeToggleBtn = document.getElementById('theme-toggle');
             const root = document.documentElement;
@@ -109,9 +115,8 @@
                 <button type="submit" class="btn-primary">Finalizar Cadastro</button>
             </div>
             
-            <div id="kc-login" style="text-align: center; margin-top: 1.5rem;">
-                <span>Já tem uma conta? <a tabindex="6" href="${url.loginUrl}">Faça login</a></span>
-            </div>
+            <div class="divider"><span>ou</span></div>
+            <a tabindex="6" href="${url.loginUrl}" class="btn-secondary">Já tenho uma conta</a>
         </form>
     </div>
 </body>
