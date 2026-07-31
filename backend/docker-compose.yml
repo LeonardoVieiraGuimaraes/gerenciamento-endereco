@@ -62,12 +62,12 @@ services:
     networks:
       - gerenc-net
 
-  # 4. SERVIDOR KEYCLOAK — build local (Dockerfile em auth-2/) com tema glassmorphism
+  # 4. SERVIDOR KEYCLOAK — build local (Dockerfile em auth-keycloak/) com tema glassmorphism
   #    custom e o realm "gerenciamento-endereco" (client, roles, usuários) importado
   #    automaticamente no boot.
   keycloak:
     build:
-      context: ../auth-2
+      context: ../auth-keycloak
       dockerfile: Dockerfile
     container_name: keycloak-gerenciamento-endereco
     restart: unless-stopped
