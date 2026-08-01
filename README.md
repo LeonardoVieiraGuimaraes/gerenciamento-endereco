@@ -271,4 +271,26 @@ acessibilidade
 
 ---
 
+## Sobre o desenvolvimento
+
+Este projeto foi desenvolvido com apoio de ferramentas de IA, prática hoje comum
+no mercado. Vale registrar como isso foi usado, porque muda o resultado:
+
+- **As decisões de arquitetura foram tomadas e justificadas**, não aceitas por
+  padrão. Cada uma está registrada em [ADR](backend/docs/adr/) com as
+  alternativas descartadas e o gatilho para revisão.
+- **Os problemas foram diagnosticados até a causa raiz.** Alguns exemplos, todos
+  registrados nas [issues](https://github.com/LeonardoVieiraGuimaraes/gerenciamento-endereco/issues?q=is%3Aissue):
+  um logout que falhava por causa de um cabeçalho de segurança que bloqueava o
+  redirecionamento; uma atualização automática do Keycloak que quebrou o tema em
+  silêncio; um vínculo por nome de usuário que permitiria uma conta recriada
+  herdar dados da anterior.
+- **A qualidade é verificável:** 47 testes automatizados, nenhuma dependência com
+  vulnerabilidade conhecida e publicação bloqueada se algo falhar.
+
+O histórico de commits e as issues mostram o processo completo, incluindo os
+erros cometidos e como foram corrigidos.
+
+---
+
 Desenvolvido por **Leonardo Vieira Guimarães**
