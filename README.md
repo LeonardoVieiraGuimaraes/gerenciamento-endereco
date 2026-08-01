@@ -32,6 +32,15 @@ busca automática por CEP e exportação para CSV.
 - **API REST completa**, com documentação interativa
 - **Tema claro e escuro**, inclusive nas telas de login
 
+### Telas
+
+![Tela inicial](docs/img/home.png)
+
+Quem entra como **ADMIN** vê os endereços de todos e ganha os filtros por
+usuário; um usuário comum vê só os próprios.
+
+![Lista de endereços na visão do administrador](docs/img/enderecos-admin.png)
+
 ---
 
 ## Arquitetura e decisões
@@ -41,7 +50,7 @@ com ênfase em segurança e com as portas abertas para evoluir sem reescrita.
 
 Cada escolha abaixo tem o motivo resumido. O raciocínio completo — alternativas
 descartadas e o gatilho que indica quando revisar — está nos
-[ADRs](backend/docs/adr/) e nas
+[ADRs](docs/adr/) e nas
 [issues](https://github.com/LeonardoVieiraGuimaraes/gerenciamento-endereco/issues).
 
 | Escolha | Por quê |
@@ -105,7 +114,7 @@ máquina".
 - Testes automatizados barrando a publicação em caso de falha
 
 **Qualidade**
-- 47 testes automatizados (xUnit, Moq, FluentAssertions)
+- 49 testes automatizados (xUnit, Moq, FluentAssertions)
 - Revisão de segurança aplicada antes de expor a aplicação na internet
 - Verificação de dependências vulneráveis a cada publicação
 
@@ -157,9 +166,9 @@ gerenciamento-endereco/
 │   ├── Models/         Domínio e contratos de entrada
 │   ├── Views/          Telas
 │   ├── Data/           Contexto e configuração do banco
-│   ├── Migrations/     Histórico versionado do schema
-│   └── docs/           Documentação técnica, ADRs e manual de deploy
+│   └── Migrations/     Histórico versionado do schema
 │
+├── docs/               Documentação técnica, ADRs, manual de deploy e imagens
 ├── auth-keycloak/      Servidor de identidade — realm e tema versionados
 ├── GerenciamentoEndereco.Tests/   Testes automatizados
 ├── frontend/           Reservado para a interface em Next.js
@@ -215,6 +224,44 @@ A carga só acontece **em banco vazio** e é controlada pela configuração
 `Seed:Enabled` — ligada em desenvolvimento e homologação, desligada por padrão,
 para nunca inserir dado fictício junto de dado real.
 
+### Verificação em duas etapas (2FA)
+
+Senha e 2FA são responsabilidade do Keycloak — a aplicação nunca guarda nem
+manipula esses dados. Ela apenas leva o usuário até a tela certa.
+
+**Onde fica:** menu do usuário (canto superior direito) → **Meu Perfil** →
+seção *Segurança da conta*.
+
+![Tela de perfil com as opções de segurança](docs/img/perfil-seguranca.png)
+
+**Para cadastrar**, clique em **Configurar 2FA**. O Keycloak abre a tela abaixo:
+instale um aplicativo autenticador (Microsoft Authenticator, Google
+Authenticator ou FreeOTP), escaneie o QR Code e informe o código de seis dígitos
+para confirmar. A partir daí, todo login pede o código.
+
+![Tela de configuração do autenticador com QR Code](docs/img/2fa-configuracao.png)
+
+**Para remover**, o caminho é o painel de conta do próprio Keycloak, que a
+aplicação não embute:
+
+| Ambiente | Endereço |
+|---|---|
+| Local | http://localhost:8089/realms/gerenciamento-endereco/account/ |
+| Publicado | https://auth-enderecos.leoproti.com.br/realms/gerenciamento-endereco/account/ |
+
+Lá, em **Segurança → Formas de entrar**, o item *Aplicativo autenticador* tem o
+botão de excluir. É preciso ter outra forma de entrar configurada — o Keycloak
+não deixa remover o último fator.
+
+> **Se perder o acesso ao autenticador**, um ADMIN resolve pelo Console do
+> Keycloak (menu *Administração*): **Usuários → o usuário → Credenciais →
+> excluir a credencial OTP**. No próximo login a pessoa entra só com a senha e
+> pode cadastrar o 2FA de novo.
+
+A separação é proposital: cadastrar 2FA é uma ação do próprio dono da conta, e
+remover exige provar identidade — decisões que ficam melhor no servidor de
+identidade do que espalhadas pela aplicação.
+
 ### API REST
 
 | Método | Rota |
@@ -238,7 +285,7 @@ dependências vulneráveis, publica no servidor e confirma que a aplicação
 respondeu. Se qualquer etapa falhar, a publicação é interrompida e a versão
 anterior segue no ar.
 
-Passo a passo em [backend/docs/DEPLOY.md](backend/docs/DEPLOY.md).
+Passo a passo em [docs/DEPLOY.md](docs/DEPLOY.md).
 
 ---
 
@@ -268,11 +315,11 @@ acessibilidade
 
 ## Documentação técnica
 
-- [Decisões de arquitetura (ADR)](backend/docs/adr/) — o porquê de cada escolha
-- [Arquitetura](backend/docs/ARCHITECTURE.md)
-- [Documentação geral](backend/docs/DOCUMENTACAO.md)
-- [Configuração do Keycloak](backend/docs/SETUP_KEYCLOAK.md)
-- [Manual de deploy](backend/docs/DEPLOY.md)
+- [Decisões de arquitetura (ADR)](docs/adr/) — o porquê de cada escolha
+- [Arquitetura](docs/ARCHITECTURE.md)
+- [Documentação geral](docs/DOCUMENTACAO.md)
+- [Configuração do Keycloak](docs/SETUP_KEYCLOAK.md)
+- [Manual de deploy](docs/DEPLOY.md)
 - [Scripts do banco](backend/scripts/tabelas.sql)
 
 ---
@@ -283,7 +330,7 @@ Este projeto foi desenvolvido com apoio de ferramentas de IA, prática hoje comu
 no mercado. Vale registrar como isso foi usado, porque muda o resultado:
 
 - **As decisões de arquitetura foram tomadas e justificadas**, não aceitas por
-  padrão. Cada uma está registrada em [ADR](backend/docs/adr/) com as
+  padrão. Cada uma está registrada em [ADR](docs/adr/) com as
   alternativas descartadas e o gatilho para revisão.
 - **Os problemas foram diagnosticados até a causa raiz.** Alguns exemplos, todos
   registrados nas [issues](https://github.com/LeonardoVieiraGuimaraes/gerenciamento-endereco/issues?q=is%3Aissue):
@@ -291,7 +338,7 @@ no mercado. Vale registrar como isso foi usado, porque muda o resultado:
   redirecionamento; uma atualização automática do Keycloak que quebrou o tema em
   silêncio; um vínculo por nome de usuário que permitiria uma conta recriada
   herdar dados da anterior.
-- **A qualidade é verificável:** 47 testes automatizados, nenhuma dependência com
+- **A qualidade é verificável:** 49 testes automatizados, nenhuma dependência com
   vulnerabilidade conhecida e publicação bloqueada se algo falhar.
 
 O histórico de commits e as issues mostram o processo completo, incluindo os

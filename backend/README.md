@@ -35,5 +35,7 @@ O jeito mais fácil de rodar todo o ecossistema (Banco + App) é via Docker Comp
 - `Microsoft.AspNetCore.Authentication.OpenIdConnect`: Integração com o Keycloak.
 
 ## Documentações Adicionais
-- [Arquitetura do Projeto](ARCHITECTURE.md)
-- [Como Configurar o Keycloak](SETUP_KEYCLOAK.md)
+- [Arquitetura do Projeto](../docs/ARCHITECTURE.md)
+- [Como Configurar o Keycloak](../docs/SETUP_KEYCLOAK.md)
+- [Decisões de arquitetura (ADR)](../docs/adr/)
+- [Servidor de identidade](../auth-keycloak/README.md)
