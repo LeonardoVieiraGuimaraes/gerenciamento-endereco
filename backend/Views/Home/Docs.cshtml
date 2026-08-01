@@ -7,7 +7,7 @@
         <h1 class="fw-bold var-text-primary mb-0"><i class="bi bi-braces-asterisk me-2"></i>API — Gerenciamento de Endereços</h1>
         <span class="badge bg-secondary rounded-pill">v1</span>
     </div>
-    <p class="var-text-muted">API REST somente leitura para consulta dos endereços cadastrados no sistema.</p>
+    <p class="var-text-muted">API REST para gerenciar os endereços cadastrados no sistema.</p>
 
     <div class="d-flex flex-wrap gap-2 mb-4">
         <a href="/swagger" target="_blank" class="btn-app btn-app-primary">
@@ -49,15 +49,43 @@
                     <td>Retorna um endereço específico pelo ID</td>
                     <td><span class="var-text-muted small">Autenticado + dono do recurso</span></td>
                 </tr>
+                <tr>
+                    <td><span class="badge bg-primary rounded-pill">POST</span></td>
+                    <td><code>/api/enderecos</code></td>
+                    <td>Cadastra um novo endereço para o usuário autenticado</td>
+                    <td><span class="var-text-muted small">Autenticado</span></td>
+                </tr>
+                <tr>
+                    <td><span class="badge bg-warning text-dark rounded-pill">PUT</span></td>
+                    <td><code>/api/enderecos/{id}</code></td>
+                    <td>Atualiza um endereço existente</td>
+                    <td><span class="var-text-muted small">Autenticado + dono do recurso</span></td>
+                </tr>
+                <tr>
+                    <td><span class="badge bg-danger rounded-pill">DELETE</span></td>
+                    <td><code>/api/enderecos/{id}</code></td>
+                    <td>Exclui um endereço</td>
+                    <td><span class="var-text-muted small">Autenticado + dono do recurso</span></td>
+                </tr>
             </tbody>
         </table>
     </div>
 
     <h5 class="fw-bold mt-4 mb-2"><i class="bi bi-shield-check me-2"></i>Códigos de resposta</h5>
     <ul class="var-text-muted">
-        <li><code>200 OK</code> — sucesso</li>
+        <li><code>200 OK</code> — sucesso na consulta</li>
+        <li><code>201 Created</code> — endereço criado (o cabeçalho <code>Location</code> aponta para ele)</li>
+        <li><code>204 No Content</code> — atualização ou exclusão concluída</li>
+        <li><code>400 Bad Request</code> — dados inválidos</li>
         <li><code>401 Unauthorized</code> — sessão ausente ou expirada</li>
         <li><code>403 Forbidden</code> — endereço pertence a outro usuário</li>
         <li><code>404 Not Found</code> — endereço inexistente</li>
     </ul>
+
+    <div class="alert alert-info mt-3">
+        <i class="bi bi-info-circle me-2"></i>
+        O dono do endereço nunca é enviado na requisição — ele é sempre deduzido do
+        usuário autenticado. Da mesma forma, atualizar um endereço não transfere a
+        titularidade para outra pessoa.
+    </div>
 </div>

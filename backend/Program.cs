@@ -254,6 +254,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddHttpClient<IKeycloakAdminService, KeycloakAdminService>();
 builder.Services.AddHttpClient<IViaCepService, ViaCepService>();
 builder.Services.AddScoped<ICsvExportService, CsvExportService>();
+builder.Services.AddScoped<IUsuarioLocalService, UsuarioLocalService>();
 builder.Services.AddHealthChecks();
 
 // Configurar Políticas de Autorização integradas ao Keycloak

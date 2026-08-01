@@ -29,7 +29,7 @@ busca automática por CEP e exportação para CSV.
   contas direto na aplicação, sem abrir o painel do Keycloak
 - **Alterar senha e configurar 2FA** pela própria aplicação, usando o fluxo
   nativo do Keycloak (sem tela de terceiro)
-- **API REST** para consulta dos endereços, com documentação interativa
+- **API REST completa** dos endereços (consultar, criar, editar e excluir), com documentação interativa
 - **Tema claro e escuro**, inclusive nas telas de login
 
 ---
@@ -72,21 +72,6 @@ ficam a cargo de uma ferramenta especializada, e a aplicação apenas recebe a
 confirmação de quem é o usuário e do que ele pode fazer.
 
 Tudo roda em containers Docker, o que faz o ambiente local ser igual ao de produção.
-
-### Por que Keycloak
-
-Antes de fixar a escolha, o mesmo conjunto de funcionalidades foi implementado
-com um segundo servidor de identidade, o **Authentik**, para comparar na prática
-em vez de decidir pela documentação. Essa implementação continua disponível na
-branch [`authentik`](https://github.com/LeonardoVieiraGuimaraes/gerenciamento-endereco/tree/authentik).
-
-O Keycloak venceu em três pontos concretos:
-
-| Critério | Resultado |
-|---|---|
-| Logout | Funciona pelo padrão OpenID Connect. No Authentik testado havia falha conhecida que exigia contornar via API |
-| Tradução | Telas 100% traduzíveis para português, inclusive o painel administrativo |
-| 2FA | Nativo, sem código adicional |
 
 ---
 
@@ -172,7 +157,7 @@ gerenciamento-endereco/
 │   ├── theme/          Tema visual das telas de login e cadastro
 │   └── Dockerfile      Imagem do Keycloak já com tema e realm embutidos
 │
-├── GerenciamentoEndereco.Tests/   Testes automatizados (14 testes)
+├── GerenciamentoEndereco.Tests/   Testes automatizados (39 testes)
 │
 ├── frontend/           Reservado para a interface em Next.js (ver roadmap)
 │
@@ -212,18 +197,27 @@ minuto para ficar pronto. As tabelas do banco são criadas automaticamente.
 
 ### API REST
 
-Além das telas, a aplicação expõe uma API para consulta dos endereços:
+Além das telas, a aplicação expõe uma API REST completa para os endereços:
 
 | Método | Rota | Descrição |
 |---|---|---|
-| `GET` | `/api/enderecos` | Lista os endereços do usuário autenticado |
+| `GET` | `/api/enderecos` | Lista os endereços do usuário autenticado (todos, se ADMIN) |
 | `GET` | `/api/enderecos/{id}` | Retorna um endereço específico |
+| `POST` | `/api/enderecos` | Cadastra um novo endereço |
+| `PUT` | `/api/enderecos/{id}` | Atualiza um endereço existente |
+| `DELETE` | `/api/enderecos/{id}` | Exclui um endereço |
 
 A API usa a **mesma sessão e as mesmas permissões** da interface — um usuário
-comum só enxerga os próprios endereços, mesmo chamando a API diretamente.
-A documentação é gerada automaticamente a partir dos comentários do código e
-pode ser testada pelo Swagger. Há também uma página de referência dentro da
-própria aplicação, em **Administração → Documentação da API**.
+comum só enxerga e altera os próprios endereços, mesmo chamando a API
+diretamente com o id de outra pessoa.
+
+Dois cuidados na escrita: o **dono do endereço nunca vem da requisição** (é sempre
+deduzido de quem está autenticado, para não ser possível gravar na conta de
+outro), e a atualização **não transfere titularidade**.
+
+A documentação é gerada dos comentários do código e pode ser testada pelo
+Swagger. Há também uma página de referência dentro da aplicação, em
+**Administração → Documentação da API**.
 
 ---
 
