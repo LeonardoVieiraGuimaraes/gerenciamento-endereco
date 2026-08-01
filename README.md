@@ -25,7 +25,11 @@ busca automática por CEP e exportação para CSV.
 - **Busca por CEP** — informe o CEP e os demais campos são preenchidos sozinhos
 - **Filtros de busca** por nome, CEP, logradouro, cidade e UF
 - **Exportação para CSV** dos endereços cadastrados
-- **Área administrativa** para gerenciar usuários
+- **Área administrativa** para gerenciar usuários — criar, editar e excluir
+  contas direto na aplicação, sem abrir o painel do Keycloak
+- **Alterar senha e configurar 2FA** pela própria aplicação, usando o fluxo
+  nativo do Keycloak (sem tela de terceiro)
+- **API REST** para consulta dos endereços, com documentação interativa
 - **Tema claro e escuro**, inclusive nas telas de login
 
 ---
@@ -42,6 +46,11 @@ Quem se cadastra pelo site recebe o perfil **USUARIO** automaticamente.
 Um ponto importante: esconder um botão na tela não protege nada. Por isso cada
 ação também é conferida no servidor — se alguém digitar o endereço da página
 direto no navegador sem ter permissão, o acesso é negado do mesmo jeito.
+
+A verificação não é só "está logado ou não": existem **permissões separadas por
+ação** — ler, criar/editar, excluir, exportar, ver a documentação e gerenciar
+usuários. Assim é possível, no futuro, liberar leitura para um perfil sem
+liberar exclusão, sem reescrever o controle de acesso.
 
 ---
 
@@ -63,6 +72,21 @@ ficam a cargo de uma ferramenta especializada, e a aplicação apenas recebe a
 confirmação de quem é o usuário e do que ele pode fazer.
 
 Tudo roda em containers Docker, o que faz o ambiente local ser igual ao de produção.
+
+### Por que Keycloak
+
+Antes de fixar a escolha, o mesmo conjunto de funcionalidades foi implementado
+com um segundo servidor de identidade, o **Authentik**, para comparar na prática
+em vez de decidir pela documentação. Essa implementação continua disponível na
+branch [`authentik`](https://github.com/LeonardoVieiraGuimaraes/gerenciamento-endereco/tree/authentik).
+
+O Keycloak venceu em três pontos concretos:
+
+| Critério | Resultado |
+|---|---|
+| Logout | Funciona pelo padrão OpenID Connect. No Authentik testado havia falha conhecida que exigia contornar via API |
+| Tradução | Telas 100% traduzíveis para português, inclusive o painel administrativo |
+| 2FA | Nativo, sem código adicional |
 
 ---
 
@@ -108,6 +132,7 @@ Tudo roda em containers Docker, o que faz o ambiente local ser igual ao de produ
 | Segredos | Fora do código — guardados como segredos do GitHub |
 | Banco de dados | Não exposto para fora do servidor |
 | Registro de atividade | Log estruturado de toda requisição, sem gravar dado sensível |
+| Sessão | Chaves de criptografia guardadas no banco — reiniciar ou escalar a aplicação não desloga ninguém |
 
 ### Sobre os logs
 
@@ -147,7 +172,7 @@ gerenciamento-endereco/
 │   ├── theme/          Tema visual das telas de login e cadastro
 │   └── Dockerfile      Imagem do Keycloak já com tema e realm embutidos
 │
-├── GerenciamentoEndereco.Tests/   Testes automatizados
+├── GerenciamentoEndereco.Tests/   Testes automatizados (14 testes)
 │
 ├── frontend/           Reservado para a interface em Next.js (ver roadmap)
 │
@@ -181,8 +206,24 @@ minuto para ficar pronto. As tabelas do banco são criadas automaticamente.
 | Serviço | Endereço |
 |---|---|
 | Aplicação | http://localhost:5000 |
-| Documentação da API | http://localhost:5000/swagger |
+| Documentação da API (Swagger) | http://localhost:5000/swagger |
+| Verificação de saúde | http://localhost:5000/health |
 | Keycloak | http://localhost:8089 |
+
+### API REST
+
+Além das telas, a aplicação expõe uma API para consulta dos endereços:
+
+| Método | Rota | Descrição |
+|---|---|---|
+| `GET` | `/api/enderecos` | Lista os endereços do usuário autenticado |
+| `GET` | `/api/enderecos/{id}` | Retorna um endereço específico |
+
+A API usa a **mesma sessão e as mesmas permissões** da interface — um usuário
+comum só enxerga os próprios endereços, mesmo chamando a API diretamente.
+A documentação é gerada automaticamente a partir dos comentários do código e
+pode ser testada pelo Swagger. Há também uma página de referência dentro da
+própria aplicação, em **Administração → Documentação da API**.
 
 ---
 
