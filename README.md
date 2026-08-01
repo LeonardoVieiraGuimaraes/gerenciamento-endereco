@@ -196,11 +196,15 @@ navegar sem precisar criar dados na mão:
 
 | Usuário | Senha | Perfil | Endereços |
 |---|---|---|---|
+| `admin` | `Admin@123` | ADMIN | 0 |
 | `maria` | `Teste@123` | USUARIO | 3 |
 | `joao` | `Teste@123` | USUARIO | 3 |
 | `ana` | `Teste@123` | USUARIO | 4 |
 | `carlos` | `Teste@123` | USUARIO | 2 |
-| `leonardo` | — | USUARIO | 2 |
+| `leonardo` | `Teste@123` | USUARIO | 2 |
+
+> Credenciais de demonstração, para avaliação do projeto. Num ambiente real
+> essas contas não existiriam e a carga de dados estaria desligada.
 
 Entrar com um usuário comum mostra apenas os endereços dele; entrar como ADMIN
 mostra todos e libera a área de gerenciamento de usuários.
