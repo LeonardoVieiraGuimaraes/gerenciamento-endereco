@@ -15,6 +15,11 @@ busca automática por CEP e exportação para CSV.
 > originais — login, CRUD de endereços, integração com ViaCEP, exportação CSV e
 > scripts de banco — foram atendidos e, a partir deles, o sistema foi evoluído
 > com autenticação profissional, publicação automatizada e reforço de segurança.
+>
+> O escopo é pequeno de propósito, mas as decisões foram tomadas como num sistema
+> que vai crescer: **segurança em primeiro lugar** e estrutura que aceita evoluir
+> — front-end desacoplado, múltiplas réplicas, autorização mais granular — sem
+> reescrever o que já existe.
 
 ---
 
@@ -29,116 +34,34 @@ busca automática por CEP e exportação para CSV.
 
 ---
 
-## Decisões de arquitetura
+## Arquitetura e decisões
 
-O que define um projeto não é a lista de tecnologias, e sim o motivo de cada
-escolha. As decisões abaixo estão registradas em
-[ADRs](backend/docs/adr/), com o gatilho que indica quando devem ser revistas.
+O escopo é pequeno, mas foi construído como um sistema que **precisa crescer**:
+com ênfase em segurança e com as portas abertas para evoluir sem reescrita.
 
-### Identidade delegada, não construída
+Cada escolha abaixo tem o motivo resumido. O raciocínio completo — alternativas
+descartadas e o gatilho que indica quando revisar — está nos
+[ADRs](backend/docs/adr/) e nas
+[issues](https://github.com/LeonardoVieiraGuimaraes/gerenciamento-endereco/issues).
 
-**Decisão:** a autenticação é feita por um servidor de identidade (Keycloak) via
-OpenID Connect. A aplicação não guarda nem valida senha.
+| Escolha | Por quê |
+|---|---|
+| **Identidade delegada ao Keycloak** (OpenID Connect) | Autenticação é problema resolvido. Delegando, senha, 2FA e bloqueio por tentativa vêm prontos e auditados, em vez de virarem responsabilidade da aplicação |
+| **Autorização em camadas** — papel no Keycloak, dono do registro no banco | São perguntas de granularidade diferente. Escala acrescentando um autorizador dedicado (OpenFGA, Cerbos), sem trocar o que já existe |
+| **Permissões por ação**, não por "está logado" | Permite liberar leitura sem liberar exclusão, sem reescrever o controle de acesso |
+| **Tabela local espelhando o Keycloak** | Chave estrangeira não atravessa bancos, e filtrar por nome precisa do nome no SQL |
+| **Exclusão permanente**, não lógica | Nada referencia um endereço além do dono, e manter dado pessoal escondido conflita com a LGPD |
+| **Docker Compose agora**, Kubernetes no roadmap | Kubernetes resolve problemas de escala que este sistema ainda não tem. As chaves de sessão já são persistidas no banco, então migrar não derrubaria sessão |
+| **MVC hoje, API completa e independente** | Entrega valor agora sem fechar a porta: o front-end em Next.js previsto consome a API já pronta e testada |
+| **Versões fixadas**, nunca `latest` | Aprendizado do próprio projeto: uma atualização automática do Keycloak quebrou o tema silenciosamente |
 
-**Por quê:** autenticação é um problema resolvido, e resolvê-lo de novo significa
-assumir a responsabilidade por hash de senha, recuperação, bloqueio por tentativa
-e 2FA. Delegando, esses recursos vêm prontos e auditados.
+**O que "preparado para crescer" significa na prática, hoje:**
 
-**Alternativa descartada:** tabela de usuários com senha na própria aplicação —
-o caminho mais rápido, e o que concentra mais risco.
-
-### Autorização em duas camadas
-
-**Decisão:** o **Keycloak** cuida da autenticação e da autorização por papel
-(ADMIN/USUARIO); a checagem de **dono do registro** acontece no banco, junto da
-consulta. ([ADR 0003](backend/docs/adr/0003-estrategia-de-autorizacao.md))
-
-**Por quê:** são perguntas de granularidade diferente. "Esta pessoa pode excluir
-endereços?" o servidor de identidade responde. "Este endereço é dela?" só o banco
-responde — o Keycloak não sabe que endereços existem.
-
-**Alternativa descartada:** o Keycloak Authorization Services faria as duas, mas
-exigiria registrar cada endereço como recurso dentro dele — acoplando o cadastro
-do dado ao servidor de identidade. Para uma regra que cabe numa cláusula `WHERE`,
-o custo não se paga.
-
-**Como escalaria:** num sistema grande, o Keycloak continua responsável por
-autenticação e papéis, e entra uma terceira camada — um autorizador dedicado como
-o **OpenFGA** (projeto CNCF, baseado no modelo Zanzibar do Google), ou
-equivalentes como Cerbos e OPA:
-
-```
-Keycloak   →  quem é a pessoa + papéis e grupos
-OpenFGA    →  pode fazer X neste recurso Y?
-Aplicação  →  executa
-```
-
-Ele não substitui o Keycloak: um cuida da identidade, o outro das relações entre
-pessoas e recursos. Os gatilhos que justificam essa adoção — compartilhamento
-entre usuários, hierarquia de equipe, multi-tenant, regras ajustadas por quem não
-programa — estão listados no ADR.
-
-### Permissões por ação, não por "está logado"
-
-**Decisão:** existem políticas separadas para ler, escrever, excluir, exportar,
-ver a documentação e gerenciar usuários.
-
-**Por quê:** permite liberar leitura a um perfil sem liberar exclusão, sem
-reescrever o controle de acesso. Toda verificação é feita no servidor — esconder
-o botão na interface não protege nada.
-
-### Tabela local de usuários espelhando o Keycloak
-
-**Decisão:** manter uma tabela `Usuarios` local, sem credenciais, ligada à
-identidade pelo identificador imutável da conta.
-([ADR 0002](backend/docs/adr/0002-tabela-local-de-usuarios.md))
-
-**Por quê:** chave estrangeira não atravessa bancos diferentes, e filtrar
-endereços por nome precisa do nome no SQL.
-
-**Alternativa descartada:** guardar só o id do Keycloak no endereço. Cada
-listagem viraria uma chamada de API por registro, e o filtro por nome deixaria de
-funcionar em consulta.
-
-### Exclusão permanente, não lógica
-
-**Decisão:** excluir um endereço remove a linha do banco.
-([ADR 0001](backend/docs/adr/0001-exclusao-de-enderecos.md))
-
-**Por quê:** nada referencia um endereço além do dono, então apagar não corrompe
-histórico. E endereço é dado pessoal — exclusão lógica manteria esse dado no
-banco, o que conflita com o direito de eliminação da LGPD.
-
-**Quando muda:** se surgir pedido ou entrega apontando para endereço. Mesmo aí, a
-solução seria copiar os campos no momento do uso (*snapshot*), não exclusão lógica.
-
-### Docker Compose agora, Kubernetes depois
-
-**Decisão:** orquestração com Docker Compose, com Kubernetes mapeado no roadmap.
-
-**Por quê:** Kubernetes resolve escala, alta disponibilidade e atualização sem
-indisponibilidade — problemas que este sistema ainda não tem. Adotar antes
-adicionaria complexidade sem benefício.
-
-**O que já está preparado:** as chaves de sessão são persistidas no banco, então
-múltiplas réplicas não derrubariam a sessão de ninguém.
-
-### MVC hoje, API pronta para desacoplar
-
-**Decisão:** as telas são renderizadas pelo .NET, mas a API REST já existe
-completa e independente.
-
-**Por quê:** entrega valor agora sem fechar a porta. A interface em Next.js
-prevista no roadmap consome a API que já está pronta e testada, sem reescrever
-regra de negócio nem controle de acesso.
-
-### Versões fixadas em vez de `latest`
-
-**Decisão:** todas as imagens Docker usam versão fixa.
-
-**Por quê:** aprendizado do próprio projeto — uma atualização automática do
-Keycloak reorganizou os temas internos e quebrou o tema customizado
-silenciosamente, sem erro visível até alguém abrir a tela de login.
+- Autenticação e autorização já separadas, prontas para um autorizador dedicado
+- API independente das telas, pronta para um front-end desacoplado
+- Sessão fora da memória do processo, pronta para múltiplas réplicas
+- Ambiente idêntico em desenvolvimento e produção, pronto para orquestração
+- Banco versionado por migrations, com histórico rastreável
 
 ---
 
@@ -265,6 +188,26 @@ automaticamente.
 | Documentação da API (Swagger) | http://localhost:5000/swagger |
 | Verificação de saúde | http://localhost:5000/health |
 | Keycloak | http://localhost:8089 |
+
+### Dados de demonstração
+
+O ambiente sobe com **5 usuários e 14 endereços** já cadastrados, para poder
+navegar sem precisar criar dados na mão:
+
+| Usuário | Senha | Perfil | Endereços |
+|---|---|---|---|
+| `maria` | `Teste@123` | USUARIO | 3 |
+| `joao` | `Teste@123` | USUARIO | 3 |
+| `ana` | `Teste@123` | USUARIO | 4 |
+| `carlos` | `Teste@123` | USUARIO | 2 |
+| `leonardo` | — | USUARIO | 2 |
+
+Entrar com um usuário comum mostra apenas os endereços dele; entrar como ADMIN
+mostra todos e libera a área de gerenciamento de usuários.
+
+A carga só acontece **em banco vazio** e é controlada pela configuração
+`Seed:Enabled` — ligada em desenvolvimento e homologação, desligada por padrão,
+para nunca inserir dado fictício junto de dado real.
 
 ### API REST
 

@@ -1,190 +1,187 @@
 {
-    "id":  "56f75308-d94f-489b-86c7-fd8a1381691d",
-    "realm":  "gerenciamento-endereco",
-    "notBefore":  0,
-    "defaultSignatureAlgorithm":  "RS256",
-    "revokeRefreshToken":  false,
-    "refreshTokenMaxReuse":  0,
-    "accessTokenLifespan":  300,
-    "accessTokenLifespanForImplicitFlow":  900,
-    "ssoSessionIdleTimeout":  1800,
-    "ssoSessionMaxLifespan":  36000,
-    "ssoSessionIdleTimeoutRememberMe":  0,
-    "ssoSessionMaxLifespanRememberMe":  0,
-    "offlineSessionIdleTimeout":  2592000,
-    "offlineSessionMaxLifespanEnabled":  false,
-    "offlineSessionMaxLifespan":  5184000,
-    "clientSessionIdleTimeout":  0,
-    "clientSessionMaxLifespan":  0,
-    "clientOfflineSessionIdleTimeout":  0,
-    "clientOfflineSessionMaxLifespan":  0,
-    "accessCodeLifespan":  60,
-    "accessCodeLifespanUserAction":  300,
-    "accessCodeLifespanLogin":  1800,
-    "actionTokenGeneratedByAdminLifespan":  43200,
-    "actionTokenGeneratedByUserLifespan":  300,
-    "oauth2DeviceCodeLifespan":  600,
-    "oauth2DevicePollingInterval":  5,
-    "enabled":  true,
-    "sslRequired":  "external",
-    "registrationAllowed":  true,
-    "registrationEmailAsUsername":  false,
-    "rememberMe":  false,
-    "verifyEmail":  false,
-    "loginWithEmailAllowed":  true,
-    "duplicateEmailsAllowed":  false,
-    "resetPasswordAllowed":  false,
-    "editUsernameAllowed":  false,
-    "bruteForceProtected":  false,
-    "permanentLockout":  false,
-    "maxTemporaryLockouts":  0,
-    "bruteForceStrategy":  "MULTIPLE",
-    "maxFailureWaitSeconds":  900,
-    "minimumQuickLoginWaitSeconds":  60,
-    "waitIncrementSeconds":  60,
-    "quickLoginCheckMilliSeconds":  1000,
-    "maxDeltaTimeSeconds":  43200,
-    "failureFactor":  30,
-    "maxSecondaryAuthFailures":  0,
-    "defaultRole":  {
-                        "id":  "8c614750-018c-45f4-9bb1-7ee52cc707fd",
-                        "name":  "default-roles-gerenciamento-endereco",
-                        "description":  "${role_default-roles}",
-                        "composite":  true,
-                        "clientRole":  false,
-                        "containerId":  "56f75308-d94f-489b-86c7-fd8a1381691d"
-                    },
-    "requiredCredentials":  [
-                                "password"
-                            ],
-    "otpPolicyType":  "totp",
-    "otpPolicyAlgorithm":  "HmacSHA1",
-    "otpPolicyInitialCounter":  0,
-    "otpPolicyDigits":  6,
-    "otpPolicyLookAheadWindow":  1,
-    "otpPolicyPeriod":  30,
-    "otpPolicyCodeReusable":  false,
-    "otpSupportedApplications":  [
-                                     "totpAppFreeOTPName",
-                                     "totpAppGoogleName",
-                                     "totpAppMicrosoftAuthenticatorName"
-                                 ],
-    "webAuthnPolicyRpEntityName":  "keycloak",
-    "webAuthnPolicySignatureAlgorithms":  [
-                                              "ES256",
-                                              "RS256"
-                                          ],
-    "webAuthnPolicyRpId":  "",
-    "webAuthnPolicyAttestationConveyancePreference":  "not specified",
-    "webAuthnPolicyAuthenticatorAttachment":  "not specified",
-    "webAuthnPolicyRequireResidentKey":  "not specified",
-    "webAuthnPolicyUserVerificationRequirement":  "not specified",
-    "webAuthnPolicyCreateTimeout":  0,
-    "webAuthnPolicyAvoidSameAuthenticatorRegister":  false,
-    "webAuthnPolicyAcceptableAaguids":  [
-
-                                        ],
-    "webAuthnPolicyExtraOrigins":  [
-
-                                   ],
-    "webAuthnPolicyPasswordlessRpEntityName":  "keycloak",
-    "webAuthnPolicyPasswordlessSignatureAlgorithms":  [
-                                                          "ES256",
-                                                          "RS256"
-                                                      ],
-    "webAuthnPolicyPasswordlessRpId":  "",
-    "webAuthnPolicyPasswordlessAttestationConveyancePreference":  "not specified",
-    "webAuthnPolicyPasswordlessAuthenticatorAttachment":  "not specified",
-    "webAuthnPolicyPasswordlessRequireResidentKey":  "Yes",
-    "webAuthnPolicyPasswordlessUserVerificationRequirement":  "required",
-    "webAuthnPolicyPasswordlessCreateTimeout":  0,
-    "webAuthnPolicyPasswordlessAvoidSameAuthenticatorRegister":  false,
-    "webAuthnPolicyPasswordlessAcceptableAaguids":  [
-
-                                                    ],
-    "webAuthnPolicyPasswordlessExtraOrigins":  [
-
-                                               ],
-    "browserSecurityHeaders":  {
-                                   "contentSecurityPolicyReportOnly":  "",
-                                   "xContentTypeOptions":  "nosniff",
-                                   "referrerPolicy":  "no-referrer",
-                                   "xRobotsTag":  "none",
-                                   "xFrameOptions":  "SAMEORIGIN",
-                                   "contentSecurityPolicy":  "frame-src \u0027self\u0027; frame-ancestors \u0027self\u0027; object-src \u0027none\u0027;",
-                                   "strictTransportSecurity":  "max-age=31536000; includeSubDomains"
-                               },
-    "smtpServer":  {
-
-                   },
-    "eventsEnabled":  false,
-    "eventsListeners":  [
-                            "jboss-logging"
-                        ],
-    "enabledEventTypes":  [
-
-                          ],
-    "adminEventsEnabled":  false,
-    "adminEventsDetailsEnabled":  false,
-    "browserFlow":  "browser",
-    "registrationFlow":  "registration",
-    "directGrantFlow":  "direct grant",
-    "resetCredentialsFlow":  "reset credentials",
-    "clientAuthenticationFlow":  "clients",
-    "dockerAuthenticationFlow":  "docker auth",
-    "firstBrokerLoginFlow":  "first broker login",
-    "attributes":  {
-                       "cibaBackchannelTokenDeliveryMode":  "poll",
-                       "cibaAuthRequestedUserHint":  "login_hint",
-                       "clientOfflineSessionMaxLifespan":  "0",
-                       "oauth2DevicePollingInterval":  "5",
-                       "clientSessionIdleTimeout":  "0",
-                       "clientOfflineSessionIdleTimeout":  "0",
-                       "cibaInterval":  "5",
-                       "realmReusableOtpCode":  "false",
-                       "cibaExpiresIn":  "120",
-                       "oauth2DeviceCodeLifespan":  "600",
-                       "parRequestUriLifespan":  "60",
-                       "clientSessionMaxLifespan":  "0",
-                       "scimApiEnabled":  "false",
-                       "darkMode":  "true"
-                   },
-    "userManagedAccessAllowed":  false,
-    "organizationsEnabled":  false,
-    "verifiableCredentialsEnabled":  false,
-    "adminPermissionsEnabled":  false,
-    "scimApiEnabled":  false,
-    "clientProfiles":  {
-                           "profiles":  [
-
-                                        ]
-                       },
-    "clientPolicies":  {
-                           "policies":  [
-
-                                        ]
-                       },
-    "internationalizationEnabled":  true,
-    "supportedLocales":  [
-                             "pt-BR"
-                         ],
-    "defaultLocale":  "pt-BR",
-    "adminTheme":  "gerenciamento-endereco",
-    "emailTheme":  "gerenciamento-endereco",
-    "loginTheme":  "gerenciamento-endereco",
-    "accountTheme":  "gerenciamento-endereco",
+    "id": "56f75308-d94f-489b-86c7-fd8a1381691d",
+    "realm": "gerenciamento-endereco",
+    "notBefore": 0,
+    "defaultSignatureAlgorithm": "RS256",
+    "revokeRefreshToken": false,
+    "refreshTokenMaxReuse": 0,
+    "accessTokenLifespan": 300,
+    "accessTokenLifespanForImplicitFlow": 900,
+    "ssoSessionIdleTimeout": 1800,
+    "ssoSessionMaxLifespan": 36000,
+    "ssoSessionIdleTimeoutRememberMe": 0,
+    "ssoSessionMaxLifespanRememberMe": 0,
+    "offlineSessionIdleTimeout": 2592000,
+    "offlineSessionMaxLifespanEnabled": false,
+    "offlineSessionMaxLifespan": 5184000,
+    "clientSessionIdleTimeout": 0,
+    "clientSessionMaxLifespan": 0,
+    "clientOfflineSessionIdleTimeout": 0,
+    "clientOfflineSessionMaxLifespan": 0,
+    "accessCodeLifespan": 60,
+    "accessCodeLifespanUserAction": 300,
+    "accessCodeLifespanLogin": 1800,
+    "actionTokenGeneratedByAdminLifespan": 43200,
+    "actionTokenGeneratedByUserLifespan": 300,
+    "oauth2DeviceCodeLifespan": 600,
+    "oauth2DevicePollingInterval": 5,
+    "enabled": true,
+    "sslRequired": "external",
+    "registrationAllowed": true,
+    "registrationEmailAsUsername": false,
+    "rememberMe": false,
+    "verifyEmail": false,
+    "loginWithEmailAllowed": true,
+    "duplicateEmailsAllowed": false,
+    "resetPasswordAllowed": false,
+    "editUsernameAllowed": false,
+    "bruteForceProtected": false,
+    "permanentLockout": false,
+    "maxTemporaryLockouts": 0,
+    "bruteForceStrategy": "MULTIPLE",
+    "maxFailureWaitSeconds": 900,
+    "minimumQuickLoginWaitSeconds": 60,
+    "waitIncrementSeconds": 60,
+    "quickLoginCheckMilliSeconds": 1000,
+    "maxDeltaTimeSeconds": 43200,
+    "failureFactor": 30,
+    "maxSecondaryAuthFailures": 0,
+    "defaultRole": {
+        "id": "8c614750-018c-45f4-9bb1-7ee52cc707fd",
+        "name": "default-roles-gerenciamento-endereco",
+        "description": "${role_default-roles}",
+        "composite": true,
+        "clientRole": false,
+        "containerId": "56f75308-d94f-489b-86c7-fd8a1381691d"
+    },
+    "requiredCredentials": [
+        "password"
+    ],
+    "otpPolicyType": "totp",
+    "otpPolicyAlgorithm": "HmacSHA1",
+    "otpPolicyInitialCounter": 0,
+    "otpPolicyDigits": 6,
+    "otpPolicyLookAheadWindow": 1,
+    "otpPolicyPeriod": 30,
+    "otpPolicyCodeReusable": false,
+    "otpSupportedApplications": [
+        "totpAppFreeOTPName",
+        "totpAppGoogleName",
+        "totpAppMicrosoftAuthenticatorName"
+    ],
+    "webAuthnPolicyRpEntityName": "keycloak",
+    "webAuthnPolicySignatureAlgorithms": [
+        "ES256",
+        "RS256"
+    ],
+    "webAuthnPolicyRpId": "",
+    "webAuthnPolicyAttestationConveyancePreference": "not specified",
+    "webAuthnPolicyAuthenticatorAttachment": "not specified",
+    "webAuthnPolicyRequireResidentKey": "not specified",
+    "webAuthnPolicyUserVerificationRequirement": "not specified",
+    "webAuthnPolicyCreateTimeout": 0,
+    "webAuthnPolicyAvoidSameAuthenticatorRegister": false,
+    "webAuthnPolicyAcceptableAaguids": [],
+    "webAuthnPolicyExtraOrigins": [],
+    "webAuthnPolicyPasswordlessRpEntityName": "keycloak",
+    "webAuthnPolicyPasswordlessSignatureAlgorithms": [
+        "ES256",
+        "RS256"
+    ],
+    "webAuthnPolicyPasswordlessRpId": "",
+    "webAuthnPolicyPasswordlessAttestationConveyancePreference": "not specified",
+    "webAuthnPolicyPasswordlessAuthenticatorAttachment": "not specified",
+    "webAuthnPolicyPasswordlessRequireResidentKey": "Yes",
+    "webAuthnPolicyPasswordlessUserVerificationRequirement": "required",
+    "webAuthnPolicyPasswordlessCreateTimeout": 0,
+    "webAuthnPolicyPasswordlessAvoidSameAuthenticatorRegister": false,
+    "webAuthnPolicyPasswordlessAcceptableAaguids": [],
+    "webAuthnPolicyPasswordlessExtraOrigins": [],
+    "browserSecurityHeaders": {
+        "contentSecurityPolicyReportOnly": "",
+        "xContentTypeOptions": "nosniff",
+        "referrerPolicy": "no-referrer",
+        "xRobotsTag": "none",
+        "xFrameOptions": "SAMEORIGIN",
+        "contentSecurityPolicy": "frame-src 'self'; frame-ancestors 'self'; object-src 'none';",
+        "strictTransportSecurity": "max-age=31536000; includeSubDomains"
+    },
+    "smtpServer": {},
+    "eventsEnabled": false,
+    "eventsListeners": [
+        "jboss-logging"
+    ],
+    "enabledEventTypes": [],
+    "adminEventsEnabled": false,
+    "adminEventsDetailsEnabled": false,
+    "browserFlow": "browser",
+    "registrationFlow": "registration",
+    "directGrantFlow": "direct grant",
+    "resetCredentialsFlow": "reset credentials",
+    "clientAuthenticationFlow": "clients",
+    "dockerAuthenticationFlow": "docker auth",
+    "firstBrokerLoginFlow": "first broker login",
+    "attributes": {
+        "cibaBackchannelTokenDeliveryMode": "poll",
+        "cibaAuthRequestedUserHint": "login_hint",
+        "clientOfflineSessionMaxLifespan": "0",
+        "oauth2DevicePollingInterval": "5",
+        "clientSessionIdleTimeout": "0",
+        "clientOfflineSessionIdleTimeout": "0",
+        "cibaInterval": "5",
+        "realmReusableOtpCode": "false",
+        "cibaExpiresIn": "120",
+        "oauth2DeviceCodeLifespan": "600",
+        "parRequestUriLifespan": "60",
+        "clientSessionMaxLifespan": "0",
+        "scimApiEnabled": "false",
+        "darkMode": "true"
+    },
+    "userManagedAccessAllowed": false,
+    "organizationsEnabled": false,
+    "verifiableCredentialsEnabled": false,
+    "adminPermissionsEnabled": false,
+    "scimApiEnabled": false,
+    "clientProfiles": {
+        "profiles": []
+    },
+    "clientPolicies": {
+        "policies": []
+    },
+    "internationalizationEnabled": true,
+    "supportedLocales": [
+        "pt-BR"
+    ],
+    "defaultLocale": "pt-BR",
+    "adminTheme": "gerenciamento-endereco",
+    "emailTheme": "gerenciamento-endereco",
+    "loginTheme": "gerenciamento-endereco",
+    "accountTheme": "gerenciamento-endereco",
     "roles": {
         "realm": [
-            { "name": "ADMIN", "description": "Administrador do sistema" },
-            { "name": "USUARIO", "description": "Usuário padrão" },
+            {
+                "name": "ADMIN",
+                "description": "Administrador do sistema"
+            },
+            {
+                "name": "USUARIO",
+                "description": "Usuário padrão"
+            },
             {
                 "name": "default-roles-gerenciamento-endereco",
                 "description": "${role_default-roles}",
                 "composite": true,
                 "composites": {
-                    "realm": [ "offline_access", "uma_authorization", "USUARIO" ],
+                    "realm": [
+                        "offline_access",
+                        "uma_authorization",
+                        "USUARIO"
+                    ],
                     "client": {
-                        "account": [ "view-profile", "manage-account" ]
+                        "account": [
+                            "view-profile",
+                            "manage-account"
+                        ]
                     }
                 }
             }
@@ -208,11 +205,21 @@
                 "https://localhost:5001/signin-oidc",
                 "https://enderecos.leoproti.com.br/signin-oidc"
             ],
-            "webOrigins": [ "http://localhost:5000", "https://localhost:5001", "https://enderecos.leoproti.com.br" ],
+            "webOrigins": [
+                "http://localhost:5000",
+                "https://localhost:5001",
+                "https://enderecos.leoproti.com.br"
+            ],
             "attributes": {
                 "post.logout.redirect.uris": "http://localhost:5000/signout-callback-oidc##https://enderecos.leoproti.com.br/signout-callback-oidc"
             },
-            "defaultClientScopes": [ "web-origins", "acr", "profile", "roles", "email" ]
+            "defaultClientScopes": [
+                "web-origins",
+                "acr",
+                "profile",
+                "roles",
+                "email"
+            ]
         },
         {
             "clientId": "backend-admin-api",
@@ -274,17 +281,31 @@
             "username": "admin",
             "enabled": true,
             "emailVerified": true,
-            "attributes": { "locale": [ "pt-BR" ] },
+            "attributes": {
+                "locale": [
+                    "pt-BR"
+                ]
+            },
             "email": "leonardovieriaxy@gmail.com",
             "firstName": "Administrador",
             "lastName": "Master",
             "credentials": [
-                { "type": "password", "value": "270414", "temporary": false }
+                {
+                    "type": "password",
+                    "value": "270414",
+                    "temporary": false
+                }
             ],
-            "realmRoles": [ "ADMIN", "USUARIO" ],
+            "realmRoles": [
+                "ADMIN",
+                "USUARIO"
+            ],
             "clientRoles": {
-                "realm-management": [ "realm-admin" ]
-            }
+                "realm-management": [
+                    "realm-admin"
+                ]
+            },
+            "id": "00000000-0000-4000-a000-000000000001"
         },
         {
             "username": "leonardo",
@@ -294,17 +315,104 @@
             "firstName": "Leonardo",
             "lastName": "Guimaraes",
             "credentials": [
-                { "type": "password", "value": "270414", "temporary": false }
+                {
+                    "type": "password",
+                    "value": "270414",
+                    "temporary": false
+                }
             ],
-            "realmRoles": [ "USUARIO" ]
+            "realmRoles": [
+                "USUARIO"
+            ],
+            "id": "00000000-0000-4000-a000-000000000002"
         },
         {
             "username": "service-account-backend-admin-api",
             "enabled": true,
             "serviceAccountClientId": "backend-admin-api",
             "clientRoles": {
-                "realm-management": [ "manage-users", "view-users", "query-users" ]
+                "realm-management": [
+                    "manage-users",
+                    "view-users",
+                    "query-users"
+                ]
             }
+        },
+        {
+            "id": "00000000-0000-4000-a000-000000000003",
+            "username": "maria",
+            "enabled": true,
+            "emailVerified": true,
+            "email": "maria.oliveira@exemplo.com",
+            "firstName": "Maria",
+            "lastName": "Oliveira",
+            "credentials": [
+                {
+                    "type": "password",
+                    "value": "Teste@123",
+                    "temporary": false
+                }
+            ],
+            "realmRoles": [
+                "USUARIO"
+            ]
+        },
+        {
+            "id": "00000000-0000-4000-a000-000000000004",
+            "username": "joao",
+            "enabled": true,
+            "emailVerified": true,
+            "email": "joao.pereira@exemplo.com",
+            "firstName": "Joao",
+            "lastName": "Pereira",
+            "credentials": [
+                {
+                    "type": "password",
+                    "value": "Teste@123",
+                    "temporary": false
+                }
+            ],
+            "realmRoles": [
+                "USUARIO"
+            ]
+        },
+        {
+            "id": "00000000-0000-4000-a000-000000000005",
+            "username": "ana",
+            "enabled": true,
+            "emailVerified": true,
+            "email": "ana.souza@exemplo.com",
+            "firstName": "Ana",
+            "lastName": "Souza",
+            "credentials": [
+                {
+                    "type": "password",
+                    "value": "Teste@123",
+                    "temporary": false
+                }
+            ],
+            "realmRoles": [
+                "USUARIO"
+            ]
+        },
+        {
+            "id": "00000000-0000-4000-a000-000000000006",
+            "username": "carlos",
+            "enabled": true,
+            "emailVerified": true,
+            "email": "carlos.santos@exemplo.com",
+            "firstName": "Carlos",
+            "lastName": "Santos",
+            "credentials": [
+                {
+                    "type": "password",
+                    "value": "Teste@123",
+                    "temporary": false
+                }
+            ],
+            "realmRoles": [
+                "USUARIO"
+            ]
         }
     ]
 }

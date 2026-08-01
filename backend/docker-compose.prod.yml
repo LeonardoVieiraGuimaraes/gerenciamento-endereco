@@ -40,6 +40,9 @@ services:
       - KeycloakAdmin__ClientId=backend-admin-api
       - KeycloakAdmin__ClientSecret=${KEYCLOAK_ADMIN_CLIENT_SECRET}
       - Logging__ShowPII=false
+      # Ambiente de homologação: popula usuários e endereços de demonstração no
+      # primeiro boot com o banco vazio. Desligar ao virar produção com dado real.
+      - Seed__Enabled=true
     depends_on:
       - sqldb
       - keycloak

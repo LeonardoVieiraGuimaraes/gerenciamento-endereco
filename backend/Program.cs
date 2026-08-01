@@ -373,6 +373,14 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.Migrate();
+
+    // Dados de demonstração para o ambiente de homologação. Fica desligado por
+    // padrão: é habilitado por configuração (Seed:Enabled), nunca por engano.
+    if (builder.Configuration.GetValue<bool>("Seed:Enabled"))
+    {
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+        await DadosDeTeste.AplicarAsync(db, logger);
+    }
 }
 
 // Configure the HTTP request pipeline.
