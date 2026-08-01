@@ -93,11 +93,15 @@ apenas porque o enunciado original do teste pedia essa coluna — **ele nunca
 recebe credencial**, fica com um valor fixo indicando que quem autentica é o
 Keycloak.
 
-> ⚠️ **Limitação conhecida:** excluir um usuário pelo Keycloak hoje **não apaga
-> os dados locais** (registro espelho e endereços). Isso tem duas consequências:
-> dado pessoal que deveria sumir permanece no banco, e recriar um usuário com o
-> mesmo nome faria a nova conta herdar os endereços da antiga. Mapeado na
-> [issue #33](https://github.com/LeonardoVieiraGuimaraes/gerenciamento-endereco/issues/33).
+O vínculo entre a identidade do Keycloak e o registro local é feito pelo
+**identificador imutável da conta** (`sub`), não pelo nome de usuário. Isso
+importa por dois motivos: trocar o nome de usuário no Keycloak não cria uma
+pessoa nova, e uma conta excluída e recriada com o mesmo nome **não herda** os
+dados da anterior.
+
+Excluir um usuário pela tela administrativa remove a conta no Keycloak **e** os
+dados locais (registro espelho e endereços), em linha com o direito de eliminação
+da LGPD.
 
 ---
 
@@ -183,7 +187,7 @@ gerenciamento-endereco/
 │   ├── theme/          Tema visual das telas de login e cadastro
 │   └── Dockerfile      Imagem do Keycloak já com tema e realm embutidos
 │
-├── GerenciamentoEndereco.Tests/   Testes automatizados (39 testes)
+├── GerenciamentoEndereco.Tests/   Testes automatizados (46 testes)
 │
 ├── frontend/           Reservado para a interface em Next.js (ver roadmap)
 │
@@ -265,11 +269,6 @@ no ar. O passo a passo está em [backend/docs/DEPLOY.md](backend/docs/DEPLOY.md)
 
 O projeto é acompanhado por [issues organizadas em fases](https://github.com/LeonardoVieiraGuimaraes/gerenciamento-endereco/milestones),
 seguindo a ordem em que cada etapa faz sentido ser feita.
-
-**Correções pendentes**
-- [Excluir usuário não remove os dados locais](https://github.com/LeonardoVieiraGuimaraes/gerenciamento-endereco/issues/33) —
-  endereços ficam órfãos e o reuso de nome de usuário pode expor dados da conta
-  anterior. Falha conhecida, com análise e plano de correção registrados.
 
 **Fase 4 — Evolução da arquitetura**
 - Front-end em **Next.js (React)**, separando interface e API, com base para mobile

@@ -17,6 +17,9 @@ public interface IUsuarioLocalService
     /// <summary>Nome de usuário (preferred_username) de quem está autenticado.</summary>
     string? ObterUsername(ClaimsPrincipal principal);
 
+    /// <summary>Identificador imutável do usuário no Keycloak (claim "sub").</summary>
+    string? ObterKeycloakId(ClaimsPrincipal principal);
+
     /// <summary>Indica se o usuário autenticado tem perfil de administrador.</summary>
     bool EhAdmin(ClaimsPrincipal principal);
 
@@ -38,11 +41,19 @@ public class UsuarioLocalService : IUsuarioLocalService
         _context = context;
     }
 
+    // ClaimTypes.NameIdentifier foi retirado desta lista de propósito: ele carrega
+    // o "sub" (um GUID), não um nome de usuário. Se as claims de nome faltassem,
+    // o GUID acabaria gravado na coluna Username.
     public string? ObterUsername(ClaimsPrincipal principal) =>
         principal.FindFirstValue("preferred_username")
         ?? principal.FindFirstValue(ClaimTypes.Name)
-        ?? principal.FindFirstValue(ClaimTypes.NameIdentifier)
         ?? principal.Identity?.Name;
+
+    // O .NET mapeia "sub" para ClaimTypes.NameIdentifier por padrão, mas a claim
+    // crua pode aparecer quando o mapeamento está desligado — por isso as duas.
+    public string? ObterKeycloakId(ClaimsPrincipal principal) =>
+        principal.FindFirstValue(ClaimTypes.NameIdentifier)
+        ?? principal.FindFirstValue("sub");
 
     // As roles do Keycloak vêm em maiúsculas ("ADMIN"). A comparação precisa
     // ignorar caixa: uma versão anterior comparava com "admin" minúsculo e
@@ -56,13 +67,41 @@ public class UsuarioLocalService : IUsuarioLocalService
     public async Task<Usuario> ObterOuCriarAsync(ClaimsPrincipal principal)
     {
         var username = ObterUsername(principal);
+        var keycloakId = ObterKeycloakId(principal);
 
         if (string.IsNullOrEmpty(username))
             throw new UnauthorizedAccessException("Usuário não identificado no sistema de autenticação.");
 
-        var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.Username == username);
-        if (usuario != null)
-            return usuario;
+        // 1) Caminho normal: casar pelo identificador imutável do Keycloak.
+        if (!string.IsNullOrEmpty(keycloakId))
+        {
+            var porId = await _context.Usuarios.FirstOrDefaultAsync(u => u.KeycloakId == keycloakId);
+            if (porId != null)
+            {
+                // O nome de usuário pode mudar no Keycloak sem deixar de ser a
+                // mesma pessoa — mantém o espelho em dia.
+                if (porId.Username != username)
+                {
+                    porId.Username = username;
+                    await _context.SaveChangesAsync();
+                }
+                return porId;
+            }
+        }
+
+        // 2) Registro criado antes desta coluna existir: casa pelo nome de usuário,
+        //    mas SOMENTE se ainda não pertencer a ninguém (KeycloakId nulo).
+        //    Essa restrição é o que impede o vazamento: um registro já vinculado a
+        //    um "sub" nunca é entregue a outro, mesmo com o mesmo nome de usuário.
+        var legado = await _context.Usuarios
+            .FirstOrDefaultAsync(u => u.Username == username && u.KeycloakId == null);
+
+        if (legado != null)
+        {
+            legado.KeycloakId = keycloakId;
+            await _context.SaveChangesAsync();
+            return legado;
+        }
 
         var nome = principal.FindFirstValue("name")
                 ?? principal.FindFirstValue(ClaimTypes.GivenName)
@@ -70,7 +109,14 @@ public class UsuarioLocalService : IUsuarioLocalService
 
         // "Senha" existe por causa do schema pedido no enunciado do teste, mas não
         // guarda credencial: a autenticação é sempre feita pelo Keycloak.
-        usuario = new Usuario { Username = username, Nome = nome, Senha = "KEYCLOAK_MANAGED" };
+        var usuario = new Usuario
+        {
+            Username = username,
+            KeycloakId = keycloakId,
+            Nome = nome,
+            Senha = "KEYCLOAK_MANAGED"
+        };
+
         _context.Usuarios.Add(usuario);
         await _context.SaveChangesAsync();
 

@@ -164,8 +164,52 @@ public class UsuariosController : Controller
         }
 
         var success = await _keycloakAdminService.DeleteUserAsync(id);
-        TempData["SuccessMessage"] = success ? "Usuário removido com sucesso!" : null;
-        TempData["ErrorMessage"] = success ? null : "Erro ao remover o usuário.";
+
+        if (!success)
+        {
+            TempData["ErrorMessage"] = "Erro ao remover o usuário.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        // Excluir só no Keycloak deixava para trás o registro espelho e todos os
+        // endereços da pessoa. Além de manter dado pessoal que deveria sumir
+        // (LGPD), o vínculo antigo era pelo nome de usuário — então recriar uma
+        // conta com o mesmo nome fazia a nova enxergar os endereços da anterior.
+        var enderecosRemovidos = await RemoverDadosLocaisAsync(id, user?.Username);
+
+        TempData["SuccessMessage"] = enderecosRemovidos > 0
+            ? $"Usuário removido com sucesso, junto com {enderecosRemovidos} endereço(s)."
+            : "Usuário removido com sucesso!";
+
         return RedirectToAction(nameof(Index));
+    }
+
+    /// <summary>
+    /// Remove o registro local do usuário e os endereços dele.
+    /// Retorna quantos endereços foram excluídos.
+    /// </summary>
+    /// <param name="keycloakId">Identificador do usuário no Keycloak.</param>
+    /// <param name="username">Nome de usuário, usado para achar registros antigos
+    /// criados antes da coluna KeycloakId existir.</param>
+    private async Task<int> RemoverDadosLocaisAsync(string keycloakId, string? username)
+    {
+        var local = await _context.Usuarios
+            .Include(u => u.Enderecos)
+            .FirstOrDefaultAsync(u =>
+                u.KeycloakId == keycloakId ||
+                (u.KeycloakId == null && u.Username == username));
+
+        if (local == null)
+            return 0;
+
+        var total = local.Enderecos?.Count ?? 0;
+
+        if (local.Enderecos != null && local.Enderecos.Count > 0)
+            _context.Enderecos.RemoveRange(local.Enderecos);
+
+        _context.Usuarios.Remove(local);
+        await _context.SaveChangesAsync();
+
+        return total;
     }
 }
