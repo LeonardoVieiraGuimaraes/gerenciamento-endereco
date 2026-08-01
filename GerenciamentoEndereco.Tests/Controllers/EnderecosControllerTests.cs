@@ -16,6 +16,7 @@ public class EnderecosControllerTests : IDisposable
     private readonly AppDbContext _context;
     private readonly Mock<ICsvExportService> _csvExportServiceMock;
     private readonly Mock<IViaCepService> _viaCepServiceMock;
+    private readonly Mock<IUsuarioLocalService> _usuarioLocalServiceMock;
     private readonly EnderecosController _controller;
     private readonly string _testUsername = "testuser";
 
@@ -29,7 +30,18 @@ public class EnderecosControllerTests : IDisposable
         _csvExportServiceMock = new Mock<ICsvExportService>();
         _viaCepServiceMock = new Mock<IViaCepService>();
 
-        _controller = new EnderecosController(_context, _csvExportServiceMock.Object, _viaCepServiceMock.Object);
+        // Usuário comum por padrão: os testes existentes verificam justamente que
+        // cada um enxerga só os próprios endereços. Um teste específico troca o
+        // EhAdmin para true quando precisa do comportamento de administrador.
+        _usuarioLocalServiceMock = new Mock<IUsuarioLocalService>();
+        _usuarioLocalServiceMock.Setup(s => s.EhAdmin(It.IsAny<ClaimsPrincipal>())).Returns(false);
+        _usuarioLocalServiceMock.Setup(s => s.ObterUsername(It.IsAny<ClaimsPrincipal>())).Returns(_testUsername);
+
+        _controller = new EnderecosController(
+            _context,
+            _csvExportServiceMock.Object,
+            _viaCepServiceMock.Object,
+            _usuarioLocalServiceMock.Object);
 
         // Simula usuário autenticado no HttpContext
         var claims = new List<Claim>
@@ -202,6 +214,70 @@ public class EnderecosControllerTests : IDisposable
 
         // Assert
         result.Should().BeOfType<NotFoundObjectResult>();
+    }
+
+    // --- Exportação CSV ---------------------------------------------------
+    //
+    // Estes dois testes existem porque a exportação ficou um tempo filtrando por
+    // dono mesmo para o administrador, que não tem endereços próprios e por isso
+    // baixava um arquivo vazio. O que garante a correção é comparar quantos
+    // endereços chegam ao serviço de CSV em cada caso.
+
+    private async Task<List<Endereco>> SemearDoisUsuariosAsync()
+    {
+        var user = new Usuario { Username = _testUsername, Nome = "Test User", Senha = "123" };
+        var outro = new Usuario { Username = "outro", Nome = "Outro", Senha = "123" };
+        _context.Usuarios.AddRange(user, outro);
+
+        _context.Enderecos.Add(new Endereco { Cep = "111", Logradouro = "Rua 1", Usuario = user });
+        _context.Enderecos.Add(new Endereco { Cep = "222", Logradouro = "Rua 2", Usuario = user });
+        _context.Enderecos.Add(new Endereco { Cep = "333", Logradouro = "Rua 3", Usuario = outro });
+        await _context.SaveChangesAsync();
+
+        return await _context.Enderecos.ToListAsync();
+    }
+
+    [Fact]
+    public async Task ExportCsv_UsuarioComum_ExportaApenasOsProprios()
+    {
+        // Arrange
+        await SemearDoisUsuariosAsync();
+        IEnumerable<Endereco>? exportados = null;
+        _csvExportServiceMock
+            .Setup(s => s.ExportarEnderecosParaCsv(It.IsAny<IEnumerable<Endereco>>()))
+            .Callback<IEnumerable<Endereco>>(e => exportados = e)
+            .Returns(Array.Empty<byte>());
+
+        // Act
+        var result = await _controller.ExportCsv();
+
+        // Assert
+        result.Should().BeOfType<FileContentResult>();
+        exportados.Should().NotBeNull();
+        exportados!.Should().HaveCount(2);
+        exportados!.Should().OnlyContain(e => e.Usuario!.Username == _testUsername);
+    }
+
+    [Fact]
+    public async Task ExportCsv_Admin_ExportaDeTodosOsUsuarios()
+    {
+        // Arrange
+        await SemearDoisUsuariosAsync();
+        _usuarioLocalServiceMock.Setup(s => s.EhAdmin(It.IsAny<ClaimsPrincipal>())).Returns(true);
+
+        IEnumerable<Endereco>? exportados = null;
+        _csvExportServiceMock
+            .Setup(s => s.ExportarEnderecosParaCsv(It.IsAny<IEnumerable<Endereco>>()))
+            .Callback<IEnumerable<Endereco>>(e => exportados = e)
+            .Returns(Array.Empty<byte>());
+
+        // Act
+        var result = await _controller.ExportCsv();
+
+        // Assert
+        result.Should().BeOfType<FileContentResult>();
+        exportados.Should().NotBeNull();
+        exportados!.Should().HaveCount(3, "o administrador exporta a base inteira, não só a dele");
     }
 
     public void Dispose()
