@@ -48,12 +48,15 @@
             <label class="form-label small var-text-muted mb-1">UF</label>
             <input type="text" name="uf" value="@ViewData["FiltroUf"]" maxlength="2" class="form-control form-control-sm text-uppercase" />
         </div>
-        <div class="col-6 col-md-1 col-lg-2 d-flex gap-2">
+        <div class="col-12 col-md-3 col-lg-2 d-flex gap-2">
             <button type="submit" class="btn-app btn-app-primary btn-app-sm">
-                <i class="bi bi-search"></i> Buscar
+                <i class="bi bi-funnel"></i> Filtrar
             </button>
-            <a asp-action="Index" class="btn-app btn-app-outline btn-app-sm" title="Limpar filtros">
-                <i class="bi bi-x-circle"></i>
+            @* Mantém o usuário selecionado ao limpar: quem está vendo os endereços
+               de outra pessoa continua nela, limpando só CEP/logradouro/cidade/UF. *@
+            <a asp-action="Index" asp-route-username="@ViewData["TargetUsername"]"
+               class="btn-app btn-app-outline btn-app-sm">
+                <i class="bi bi-eraser"></i> Limpar
             </a>
         </div>
     </form>
@@ -71,7 +74,7 @@
                     <th>Número</th>
                     <th>Bairro</th>
                     <th>Cidade / UF</th>
-                    <th><i class="bi bi-gear me-1"></i>Ações</th>
+                    <th class="text-center"><i class="bi bi-trash me-1"></i>Excluir</th>
                 </tr>
             </thead>
             <tbody>
@@ -85,16 +88,20 @@
                             </td>
                         }
                         <td><span class="badge bg-secondary rounded-pill">@item.Cep</span></td>
-                        <td class="fw-medium">@item.Logradouro</td>
+                        <td>
+                            @* O logradouro identifica a linha e leva para a edição —
+                               mesma lógica do nome na tela de usuários. *@
+                            <a asp-action="Edit" asp-route-id="@item.Id"
+                               class="link-nome" title="Editar endereço">@item.Logradouro</a>
+                        </td>
                         <td>@item.Numero</td>
                         <td>@item.Bairro</td>
                         <td>@item.Cidade - @item.Uf</td>
-                        <td>
-                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn-app btn-app-outline btn-app-sm me-1">
-                                <i class="bi bi-pencil"></i> Editar
-                            </a>
-                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn-app btn-app-danger btn-app-sm">
-                                <i class="bi bi-trash"></i> Excluir
+                        <td class="text-center">
+                            <a asp-action="Delete" asp-route-id="@item.Id"
+                               class="btn-app btn-app-danger btn-app-icon btn-app-sm"
+                               title="Excluir endereço">
+                                <i class="bi bi-trash"></i>
                             </a>
                         </td>
                     </tr>

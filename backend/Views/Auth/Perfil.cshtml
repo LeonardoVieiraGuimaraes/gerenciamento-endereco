@@ -39,7 +39,10 @@
             <span class="perfil-card-valor">@Model.Email</span>
         </div>
 
-        <a asp-controller="Enderecos" asp-action="Index" class="perfil-card perfil-card-link">
+        @* Passa o usuário explicitamente: sem isso, um ADMIN cairia na visão
+           "todos os usuários" em vez de ver só os endereços do próprio perfil. *@
+        <a asp-controller="Enderecos" asp-action="Index" asp-route-username="@Model.Username"
+           class="perfil-card perfil-card-link">
             <span class="perfil-card-label">
                 <i class="bi bi-geo-alt"></i> Endereços cadastrados
             </span>
