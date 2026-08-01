@@ -211,31 +211,7 @@
                 "profile",
                 "roles",
                 "email"
-            ]
-        },
-        {
-            "clientId": "backend-admin-api",
-            "name": "Backend Admin API (service account)",
-            "enabled": true,
-            "protocol": "openid-connect",
-            "publicClient": false,
-            "clientAuthenticatorType": "client-secret",
-            "secret": "__BACKEND_ADMIN_SECRET__",
-            "standardFlowEnabled": false,
-            "implicitFlowEnabled": false,
-            "directAccessGrantsEnabled": false,
-            "serviceAccountsEnabled": true
-        }
-    ],
-    "clientScopes": [
-        {
-            "name": "roles",
-            "description": "OpenID Connect scope for add user roles to the access token",
-            "protocol": "openid-connect",
-            "attributes": {
-                "include.in.token.scope": "false",
-                "display.on.consent.screen": "false"
-            },
+            ],
             "protocolMappers": [
                 {
                     "name": "realm roles",
@@ -266,6 +242,19 @@
                     }
                 }
             ]
+        },
+        {
+            "clientId": "backend-admin-api",
+            "name": "Backend Admin API (service account)",
+            "enabled": true,
+            "protocol": "openid-connect",
+            "publicClient": false,
+            "clientAuthenticatorType": "client-secret",
+            "secret": "__BACKEND_ADMIN_SECRET__",
+            "standardFlowEnabled": false,
+            "implicitFlowEnabled": false,
+            "directAccessGrantsEnabled": false,
+            "serviceAccountsEnabled": true
         }
     ],
     "users": [
