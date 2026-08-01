@@ -248,13 +248,9 @@ public class EnderecosController : Controller
     public async Task<IActionResult> ExportCsv()
     {
         // Admin exporta tudo; usuário comum exporta só os dele.
-        IQueryable<Endereco> query = _context.Enderecos;
+        IQueryable<Endereco> query = _context.Enderecos.Include(e => e.Usuario);
 
-        if (_usuarioLocalService.EhAdmin(User))
-        {
-            query = _context.Enderecos;
-        }
-        else
+        if (!_usuarioLocalService.EhAdmin(User))
         {
             var username = _usuarioLocalService.ObterUsername(User);
             query = query.Where(e => e.Usuario!.Username == username);
