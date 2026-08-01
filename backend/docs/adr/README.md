@@ -11,6 +11,7 @@ condições a decisão deve ser revista**.
 |---|---|---|
 | [0001](0001-exclusao-de-enderecos.md) | Exclusão de endereços: permanente ou lógica? | Aceita |
 | [0002](0002-tabela-local-de-usuarios.md) | Manter uma tabela local de usuários espelhando o Keycloak | Aceita |
+| [0003](0003-estrategia-de-autorizacao.md) | Estratégia de autorização e caminho de evolução | Aceita |
 
 ## Formato
 

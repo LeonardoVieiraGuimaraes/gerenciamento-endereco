@@ -49,19 +49,34 @@ o caminho mais rápido, e o que concentra mais risco.
 
 ### Autorização em duas camadas
 
-**Decisão:** o **papel** vem do Keycloak (ADMIN/USUARIO); a checagem de **dono do
-registro** acontece no banco, junto da consulta.
+**Decisão:** o **Keycloak** cuida da autenticação e da autorização por papel
+(ADMIN/USUARIO); a checagem de **dono do registro** acontece no banco, junto da
+consulta. ([ADR 0003](backend/docs/adr/0003-estrategia-de-autorizacao.md))
 
-**Por quê:** são perguntas diferentes. "Esta pessoa pode excluir endereços?" o
-servidor de identidade responde. "Este endereço é dela?" só o banco responde — o
-Keycloak não sabe que endereços existem.
+**Por quê:** são perguntas de granularidade diferente. "Esta pessoa pode excluir
+endereços?" o servidor de identidade responde. "Este endereço é dela?" só o banco
+responde — o Keycloak não sabe que endereços existem.
 
 **Alternativa descartada:** o Keycloak Authorization Services faria as duas, mas
-exigiria registrar cada endereço como recurso dentro dele. Para uma regra que
-cabe numa cláusula `WHERE`, o custo em acoplamento e latência não se paga.
-Externalizar só passa a valer com regras que a consulta não expressa —
-compartilhamento entre usuários, hierarquia de equipe — e nesse caso o mercado
-usa ferramentas dedicadas (OpenFGA, Cerbos), não o próprio IdP.
+exigiria registrar cada endereço como recurso dentro dele — acoplando o cadastro
+do dado ao servidor de identidade. Para uma regra que cabe numa cláusula `WHERE`,
+o custo não se paga.
+
+**Como escalaria:** num sistema grande, o Keycloak continua responsável por
+autenticação e papéis, e entra uma terceira camada — um autorizador dedicado como
+o **OpenFGA** (projeto CNCF, baseado no modelo Zanzibar do Google), ou
+equivalentes como Cerbos e OPA:
+
+```
+Keycloak   →  quem é a pessoa + papéis e grupos
+OpenFGA    →  pode fazer X neste recurso Y?
+Aplicação  →  executa
+```
+
+Ele não substitui o Keycloak: um cuida da identidade, o outro das relações entre
+pessoas e recursos. Os gatilhos que justificam essa adoção — compartilhamento
+entre usuários, hierarquia de equipe, multi-tenant, regras ajustadas por quem não
+programa — estão listados no ADR.
 
 ### Permissões por ação, não por "está logado"
 
