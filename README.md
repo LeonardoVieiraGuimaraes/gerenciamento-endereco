@@ -311,6 +311,8 @@ seguindo a ordem em que cada etapa faz sentido ser feita.
 ## Documentação técnica
 
 - [Arquitetura](backend/docs/ARCHITECTURE.md)
+- [Decisões de arquitetura (ADR)](backend/docs/adr/) — o porquê de cada escolha
+  e em que condições ela deve ser revista
 - [Documentação geral](backend/docs/DOCUMENTACAO.md)
 - [Configuração do Keycloak](backend/docs/SETUP_KEYCLOAK.md)
 - [Manual de deploy](backend/docs/DEPLOY.md)
