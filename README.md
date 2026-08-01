@@ -186,18 +186,36 @@ no ar. O passo a passo está em [backend/docs/DEPLOY.md](backend/docs/DEPLOY.md)
 
 ## Próximos passos
 
-- **Front-end em Next.js (React)** — separar a interface da API, com renderização
-  no servidor e base preparada para uma versão mobile em React Native
-- **Auditoria** — registrar quem alterou o quê e quando, com tela de consulta
-- **Kubernetes** — orquestração com réplicas, escala automática e atualização sem
-  indisponibilidade (hoje a orquestração é via Docker Compose)
+O projeto é acompanhado por [issues organizadas em fases](https://github.com/LeonardoVieiraGuimaraes/gerenciamento-endereco/milestones),
+seguindo a ordem em que cada etapa faz sentido ser feita.
+
+**Fase 4 — Evolução da arquitetura**
+- Front-end em **Next.js (React)**, separando interface e API, com base para mobile
+- **Auditoria** — registrar quem alterou o quê, quando, e os valores antes e depois
+- **Registro de decisões de arquitetura (ADR)**
+
+**Fase 5 — Escala e operação**
+- **Kubernetes** — réplicas, escala automática e atualização sem indisponibilidade
 - **Observabilidade** — métricas e alertas com Prometheus e Grafana
 - **Cache com Redis** — reduzir consultas repetidas ao ViaCEP
-- **Processamento em segundo plano** — exportações grandes via fila, sem travar a tela
-- **Testes end-to-end** — cobrir a jornada completa do usuário no navegador
+- **Processamento em segundo plano** — exportações grandes via fila
+- **Testes end-to-end** — jornada completa do usuário no navegador
 
-O acompanhamento das etapas está nas
-[issues do repositório](https://github.com/LeonardoVieiraGuimaraes/gerenciamento-endereco/issues).
+**Fase 6 — Conformidade e proteção de dados**
+- **LGPD** — exportar, excluir e anonimizar dados; consentimento, política de
+  retenção e criptografia dos dados pessoais no banco
+- **Backup automatizado** e plano de recuperação, com teste de restauração
+- **Cofre de segredos** (Vault ou Key Vault), com rotação automática
+- **Segurança contínua no pipeline** — análise do código (SAST), varredura das
+  imagens Docker e atualização automática de dependências
+
+**Fase 7 — Resiliência e performance**
+- **Tolerância a falhas** — novas tentativas, disjuntor e tempos limite (Polly)
+- **Rastreamento distribuído** com OpenTelemetry, seguindo a requisição ponta a ponta
+- **Escalabilidade de dados** — paginação, índices e réplicas de leitura
+- **Testes de carga** com k6, para medir a capacidade real
+- **Implantação gradual** (canary) e feature flags
+- **Acessibilidade (WCAG)** e suporte a múltiplos idiomas
 
 ---
 
