@@ -10,6 +10,7 @@ condições a decisão deve ser revista**.
 | # | Decisão | Situação |
 |---|---|---|
 | [0001](0001-exclusao-de-enderecos.md) | Exclusão de endereços: permanente ou lógica? | Aceita |
+| [0002](0002-tabela-local-de-usuarios.md) | Manter uma tabela local de usuários espelhando o Keycloak | Aceita |
 
 ## Formato
 

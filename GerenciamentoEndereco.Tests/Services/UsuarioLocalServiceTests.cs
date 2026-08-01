@@ -221,6 +221,28 @@ public class UsuarioLocalServiceTests : IDisposable
         _service.ObterUsername(principal).Should().BeNull();
     }
 
+    /// <summary>
+    /// A cópia local é usada para exibir e filtrar endereços por nome. Se a pessoa
+    /// mudar o nome no Keycloak, o espelho precisa acompanhar — senão a tela do
+    /// admin continuaria mostrando o nome antigo para sempre.
+    /// </summary>
+    [Fact]
+    public async Task ObterOuCriarAsync_NomeAlteradoNoKeycloak_DeveAtualizarOEspelho()
+    {
+        await _service.ObterOuCriarAsync(Principal(
+            new Claim("preferred_username", "ana"),
+            new Claim(ClaimTypes.NameIdentifier, "sub-ana"),
+            new Claim("name", "Ana Souza")));
+
+        var depois = await _service.ObterOuCriarAsync(Principal(
+            new Claim("preferred_username", "ana"),
+            new Claim(ClaimTypes.NameIdentifier, "sub-ana"),
+            new Claim("name", "Ana Souza Lima")));
+
+        depois.Nome.Should().Be("Ana Souza Lima");
+        (await _context.Usuarios.CountAsync()).Should().Be(1);
+    }
+
     [Fact]
     public void ObterKeycloakId_DeveLerOSub()
     {

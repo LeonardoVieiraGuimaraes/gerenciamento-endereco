@@ -214,7 +214,7 @@ gerenciamento-endereco/
 │   ├── theme/          Tema visual das telas de login e cadastro
 │   └── Dockerfile      Imagem do Keycloak já com tema e realm embutidos
 │
-├── GerenciamentoEndereco.Tests/   Testes automatizados (46 testes)
+├── GerenciamentoEndereco.Tests/   Testes automatizados (47 testes)
 │
 ├── frontend/           Reservado para a interface em Next.js (ver roadmap)
 │

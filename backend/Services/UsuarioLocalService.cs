@@ -64,6 +64,15 @@ public class UsuarioLocalService : IUsuarioLocalService
                                 string.Equals(c.Value, "admin", StringComparison.OrdinalIgnoreCase)) ||
         principal.HasClaim(c => c.Type == "client_role" && c.Value == "usuarios.manage");
 
+    /// <summary>
+    /// Nome de exibição vindo do Keycloak. Cai para o nome de usuário quando a
+    /// conta não tem nome preenchido.
+    /// </summary>
+    private static string ObterNome(ClaimsPrincipal principal, string username) =>
+        principal.FindFirstValue("name")
+        ?? principal.FindFirstValue(ClaimTypes.GivenName)
+        ?? username;
+
     public async Task<Usuario> ObterOuCriarAsync(ClaimsPrincipal principal)
     {
         var username = ObterUsername(principal);
@@ -78,11 +87,16 @@ public class UsuarioLocalService : IUsuarioLocalService
             var porId = await _context.Usuarios.FirstOrDefaultAsync(u => u.KeycloakId == keycloakId);
             if (porId != null)
             {
-                // O nome de usuário pode mudar no Keycloak sem deixar de ser a
-                // mesma pessoa — mantém o espelho em dia.
-                if (porId.Username != username)
+                // Nome e nome de usuário podem mudar no Keycloak sem deixar de ser
+                // a mesma pessoa. Como a cópia local é usada para exibir e filtrar
+                // (tela de endereços do admin), ela precisa acompanhar — senão
+                // continuaria mostrando o dado antigo indefinidamente.
+                var nomeAtual = ObterNome(principal, username);
+
+                if (porId.Username != username || porId.Nome != nomeAtual)
                 {
                     porId.Username = username;
+                    porId.Nome = nomeAtual;
                     await _context.SaveChangesAsync();
                 }
                 return porId;
@@ -103,17 +117,13 @@ public class UsuarioLocalService : IUsuarioLocalService
             return legado;
         }
 
-        var nome = principal.FindFirstValue("name")
-                ?? principal.FindFirstValue(ClaimTypes.GivenName)
-                ?? username;
-
         // "Senha" existe por causa do schema pedido no enunciado do teste, mas não
         // guarda credencial: a autenticação é sempre feita pelo Keycloak.
         var usuario = new Usuario
         {
             Username = username,
             KeycloakId = keycloakId,
-            Nome = nome,
+            Nome = ObterNome(principal, username),
             Senha = "KEYCLOAK_MANAGED"
         };
 
