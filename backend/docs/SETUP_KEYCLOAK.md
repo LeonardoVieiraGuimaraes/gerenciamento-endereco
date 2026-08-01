@@ -4,15 +4,18 @@ Este guia documenta como o Keycloak foi configurado para autenticar a aplicaçã
 
 ## 1. Subindo o Container
 
-O Keycloak está isolado na pasta `/auth`.
-Para iniciá-lo em ambiente de desenvolvimento (que permite HTTP):
+A imagem do Keycloak (tema e realm) é construída a partir de `auth-keycloak/`,
+mas quem a sobe é o Compose da **raiz do repositório**, junto com o restante do
+ambiente:
+
 ```bash
-cd auth
-./start-dev.sh
+docker compose up -d --build
 ```
-Ou rodando o `docker-compose` diretamente:
+
+Para subir só o Keycloak e o banco dele:
+
 ```bash
-docker-compose up -d
+docker compose up -d keycloak
 ```
 
 Acesse o painel do administrador em: `http://localhost:8089/admin` (admin / admin123).

@@ -25,19 +25,40 @@ aplicação.
 
 ## Decisão
 
-### Hoje — duas camadas
+### Hoje — duas camadas (ABAC híbrido)
 
-**Keycloak: autenticação + autorização por papel**
+**Keycloak: autenticação + papéis apenas**
 
-Emite o token com a identidade e os papéis (`ADMIN`, `USUARIO`). A aplicação
-converte esses papéis em políticas do ASP.NET Core, separadas por ação: ler,
-escrever, excluir, exportar, ver documentação, gerenciar usuários.
+Emite o token com a identidade e **apenas dois papéis**: `ADMIN` e `USUARIO`.
+Nada mais — sem micro-permissões dentro do Keycloak. A separação de permissões
+fica toda na aplicação.
 
-**Aplicação: autorização por dado**
+**Aplicação: ABAC + row-level authorization**
 
-A regra "o dono vê o dele" é resolvida na própria consulta ao banco
-(`WHERE UsuarioId = @id`), porque depende de informação que só o banco tem — o
-Keycloak não sabe que endereços existem.
+A aplicação implementa atributos de dois tipos:
+
+1. **Permissões por ação** (coarse-grained): Baseado na role que veio do Keycloak,
+   converte em políticas do ASP.NET Core, separadas por ação — ler, escrever,
+   excluir, exportar, gerenciar usuários. Fica em `Program.cs`:
+   ```csharp
+   // Se tem role ADMIN, libera tudo. Se tem USUARIO, libera o básico.
+   options.AddPolicy("EnderecoWrite", policy => policy.RequireAssertion(context =>
+       context.User.IsInRole("ADMIN") || context.User.IsInRole("USUARIO")
+   ));
+   ```
+
+2. **Permissões por dado** (fine-grained, row-level): Verifica se o usuário é
+   dono do registro. Implementado nos controllers:
+   ```csharp
+   // ADMIN enxerga tudo. USUARIO enxerga só os seus.
+   if (usuarioEhAdmin) 
+       return todoEnderecos;
+   else
+       return enderecosDoUser;
+   ```
+
+Esse é o padrão ABAC porque a decisão leva em conta **atributos do usuário**
+(role) **e do recurso** (proprietário), não apenas a role.
 
 ### Amanhã — terceira camada, se necessário
 
@@ -58,6 +79,21 @@ Aplicação  →  executa
 
 Repare que **o Keycloak continua**. O autorizador não o substitui: um cuida da
 identidade, o outro das relações entre pessoas e recursos.
+
+### Por que não guardar permissões no Keycloak?
+
+Três motivos principais:
+
+1. **Acoplamento**: Cada permissão nova exigiria alterar o Keycloak e redescobrir
+   o token em cliente. A aplicação é o lado que muda — mantê-la independente é
+   mais ágil.
+
+2. **Responsabilidades**: O Keycloak cuida de "quem você é"; a aplicação cuida
+   de "o que você pode fazer com o que você vê". Misturar dificulta evolução.
+
+3. **Escala**: Permissões por dados (endereço X pertence a usuário Y?) exigem
+   consultar o banco de forma complexa em tempo de token, ou duplicar dados no
+   Keycloak. Mais fácil resolver junto da query que acessa os dados.
 
 ## Alternativas consideradas
 

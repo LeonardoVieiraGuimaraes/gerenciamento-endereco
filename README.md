@@ -148,6 +148,9 @@ máquina".
 
 ```
 gerenciamento-endereco/
+├── docker-compose.yml       Ambiente de desenvolvimento
+├── docker-compose.prod.yml  Ambiente de produção
+│
 ├── backend/            Aplicação .NET — telas, API, regras e acesso a dados
 │   ├── Controllers/    Entrada das requisições
 │   ├── Services/       Regras e integrações isoladas (ViaCEP, CSV, Keycloak)
@@ -155,8 +158,7 @@ gerenciamento-endereco/
 │   ├── Views/          Telas
 │   ├── Data/           Contexto e configuração do banco
 │   ├── Migrations/     Histórico versionado do schema
-│   ├── docs/           Documentação técnica, ADRs e manual de deploy
-│   └── docker-compose*.yml   Ambientes de desenvolvimento e produção
+│   └── docs/           Documentação técnica, ADRs e manual de deploy
 │
 ├── auth-keycloak/      Servidor de identidade — realm e tema versionados
 ├── GerenciamentoEndereco.Tests/   Testes automatizados
@@ -165,8 +167,9 @@ gerenciamento-endereco/
 ```
 
 A configuração de autenticação fica separada do código da aplicação, mas o
-ambiente sobe com um comando só — o `docker-compose.yml` do `backend/` constrói
-inclusive a imagem do Keycloak, a partir de `auth-keycloak/`.
+ambiente sobe com um comando só. Os arquivos de Compose ficam na raiz porque
+orquestram o conjunto inteiro — aplicação, Keycloak e os dois bancos — e não
+apenas o backend: cada serviço aponta para a pasta que o constrói.
 
 ---
 
@@ -175,7 +178,6 @@ inclusive a imagem do Keycloak, a partir de `auth-keycloak/`.
 Só é preciso ter o [Docker](https://www.docker.com/products/docker-desktop/) instalado.
 
 ```bash
-cd backend
 docker compose up -d --build
 ```
 

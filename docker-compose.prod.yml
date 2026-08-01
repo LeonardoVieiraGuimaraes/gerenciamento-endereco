@@ -1,3 +1,7 @@
+# O nome do projeto define o prefixo dos volumes. Fixo de proposito: sem isso,
+# mover este arquivo de pasta criaria volumes novos e vazios.
+name: gerenciamento-endereco
+
 services:
   # 1. BANCO DE DADOS DA APLICAÇÃO (SQL Server 2022)
   sqldb:
@@ -21,7 +25,7 @@ services:
     container_name: gerenc-web
     restart: unless-stopped
     build:
-      context: .
+      context: ./backend
       dockerfile: Dockerfile
     ports:
       - "8090:8080"
@@ -72,7 +76,7 @@ services:
   # 4. SERVIDOR KEYCLOAK
   keycloak:
     build:
-      context: ../auth-keycloak
+      context: ./auth-keycloak
       dockerfile: Dockerfile
       # Os client secrets entram só aqui, vindos dos segredos do GitHub — o
       # arquivo de realm versionado guarda apenas placeholders.

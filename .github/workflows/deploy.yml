@@ -78,7 +78,7 @@ jobs:
         run: |
           ssh -o ProxyCommand="cloudflared access ssh --hostname %h" \
               ${{ secrets.DEPLOY_SSH_USER }}@${{ secrets.DEPLOY_SSH_HOST }} \
-              "cat > ${{ env.DEPLOY_PATH }}/backend/.env && chmod 600 ${{ env.DEPLOY_PATH }}/backend/.env" <<EOF
+              "cat > ${{ env.DEPLOY_PATH }}/.env && chmod 600 ${{ env.DEPLOY_PATH }}/.env" <<EOF
           SQL_SA_PASSWORD=$SQL_SA_PASSWORD
           KEYCLOAK_DB_PASSWORD=$KEYCLOAK_DB_PASSWORD
           KEYCLOAK_ADMIN_PASSWORD=$KEYCLOAK_ADMIN_PASSWORD
@@ -90,7 +90,7 @@ jobs:
         run: |
           ssh -o ProxyCommand="cloudflared access ssh --hostname %h" \
               ${{ secrets.DEPLOY_SSH_USER }}@${{ secrets.DEPLOY_SSH_HOST }} \
-              "cd ${{ env.DEPLOY_PATH }}/backend && docker compose -f docker-compose.prod.yml up -d --build"
+              "cd ${{ env.DEPLOY_PATH }} && docker compose -f docker-compose.prod.yml up -d --build"
 
       - name: Verificar saúde da aplicação
         run: |

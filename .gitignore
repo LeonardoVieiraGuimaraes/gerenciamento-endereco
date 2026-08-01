@@ -21,8 +21,11 @@ Thumbs.db
 **/keycloak_data/
 **/sqldata/
 
-# Segredos de produção — nunca commitar, só existe no servidor via GitHub Actions
-backend/.env.prod
+# Segredos de produção — nunca commitar, só existem no servidor, escritos pelo
+# GitHub Actions ao lado do docker-compose.prod.yml (que é quem lê o .env).
+.env
+.env.prod
+docker-compose.override.yml
 
 # Ferramentas / ambiente local
 .cloud/

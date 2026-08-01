@@ -10,10 +10,12 @@ Projeto de Backend C# utilizando ASP.NET Core MVC e Web API, banco de dados SQL 
 
 O jeito mais fácil de rodar todo o ecossistema (Banco + App) é via Docker Compose.
 
-1. Na pasta `backend` (onde está o `docker-compose.yml`), execute:
+1. Na **raiz do repositório** (onde está o `docker-compose.yml`), execute:
    ```bash
-   docker-compose up -d --build
+   docker compose up -d --build
    ```
+   O Compose fica na raiz porque sobe o conjunto todo — aplicação, Keycloak e
+   os dois bancos —, não apenas esta pasta.
 
 2. Acesse a aplicação C#:
    ```
