@@ -202,8 +202,11 @@ seguindo a ordem em que cada etapa faz sentido ser feita.
 - **Testes end-to-end** — jornada completa do usuário no navegador
 
 **Fase 6 — Conformidade e proteção de dados**
-- **LGPD** — exportar, excluir e anonimizar dados; consentimento, política de
-  retenção e criptografia dos dados pessoais no banco
+- **LGPD** — direitos do titular (acessar, exportar, corrigir, excluir e
+  anonimizar), política de privacidade, retenção e criptografia dos dados no banco.
+  *A base legal aqui é execução de contrato, não consentimento — o consentimento
+  só passa a ser exigido se entrarem marketing, rastreamento ou compartilhamento
+  com terceiros ([issue #28](https://github.com/LeonardoVieiraGuimaraes/gerenciamento-endereco/issues/28)).*
 - **Backup automatizado** e plano de recuperação, com teste de restauração
 - **Cofre de segredos** (Vault ou Key Vault), com rotação automática
 - **Segurança contínua no pipeline** — análise do código (SAST), varredura das
