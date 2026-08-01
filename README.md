@@ -73,6 +73,32 @@ confirmação de quem é o usuário e do que ele pode fazer.
 
 Tudo roda em containers Docker, o que faz o ambiente local ser igual ao de produção.
 
+### Quem controla os usuários
+
+Quem manda na identidade é o **Keycloak** — ele é a fonte da verdade:
+
+| Onde fica | O que guarda |
+|---|---|
+| **Keycloak** | Conta, senha, e-mail, nome, perfis (ADMIN/USUARIO), 2FA e sessões |
+| **Banco da aplicação** | Apenas um registro espelho, usado para ligar os endereços ao dono |
+
+A tela **Gerenciar Usuários** não mexe numa tabela local: ela chama a API
+administrativa do Keycloak. Criar, editar ou excluir ali reflete direto no
+servidor de identidade — o mesmo que seria feito pelo painel dele.
+
+O registro local existe por um motivo técnico: a tabela de endereços precisa de
+uma chave estrangeira apontando para o dono. Ele é criado sozinho no primeiro
+acesso da pessoa e guarda só nome e nome de usuário. O campo `Senha` existe
+apenas porque o enunciado original do teste pedia essa coluna — **ele nunca
+recebe credencial**, fica com um valor fixo indicando que quem autentica é o
+Keycloak.
+
+> ⚠️ **Limitação conhecida:** excluir um usuário pelo Keycloak hoje **não apaga
+> os dados locais** (registro espelho e endereços). Isso tem duas consequências:
+> dado pessoal que deveria sumir permanece no banco, e recriar um usuário com o
+> mesmo nome faria a nova conta herdar os endereços da antiga. Mapeado na
+> [issue #33](https://github.com/LeonardoVieiraGuimaraes/gerenciamento-endereco/issues/33).
+
 ---
 
 ## Tecnologias
@@ -239,6 +265,11 @@ no ar. O passo a passo está em [backend/docs/DEPLOY.md](backend/docs/DEPLOY.md)
 
 O projeto é acompanhado por [issues organizadas em fases](https://github.com/LeonardoVieiraGuimaraes/gerenciamento-endereco/milestones),
 seguindo a ordem em que cada etapa faz sentido ser feita.
+
+**Correções pendentes**
+- [Excluir usuário não remove os dados locais](https://github.com/LeonardoVieiraGuimaraes/gerenciamento-endereco/issues/33) —
+  endereços ficam órfãos e o reuso de nome de usuário pode expor dados da conta
+  anterior. Falha conhecida, com análise e plano de correção registrados.
 
 **Fase 4 — Evolução da arquitetura**
 - Front-end em **Next.js (React)**, separando interface e API, com base para mobile
