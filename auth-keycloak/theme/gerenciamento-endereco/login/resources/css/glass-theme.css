@@ -1,362 +1,323 @@
-/* Modern Glassmorphism Theme for Keycloak with Light/Dark Mode */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+﻿@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
-    --bg-color: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    --card-bg: rgba(255, 255, 255, 0.7);
-    --card-border: rgba(255, 255, 255, 0.3);
-    --text-main: #333333;
-    --text-muted: #6b7280;
-    --title-color: #2563eb;
-    --input-bg: rgba(255, 255, 255, 0.6);
-    --input-border: rgba(200, 200, 200, 0.5);
-    --input-focus-border: #3b82f6;
-    --btn-bg: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-    --link-color: #2563eb;
-    --link-hover: #1d4ed8;
+  --bg-color: #f8fafc;
+  --bg-gradient: radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.05) 0%, transparent 40%),
+                 radial-gradient(circle at 90% 80%, rgba(99, 102, 241, 0.05) 0%, transparent 40%);
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(226, 232, 240, 0.8);
+  --btn-primary: #2563eb;
+  --btn-primary-hover: #1d4ed8;
+  --primary-color: #2563eb;
+  --card-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+  --input-bg: #ffffff;
+  --input-border: #cbd5e1;
 }
 
-[data-theme="dark"] {
-    --bg-color: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-        --card-bg: rgba(30, 41, 59, 0.7);
-        --card-border: rgba(255, 255, 255, 0.1);
-        --text-main: #f8fafc;
-        --text-muted: #94a3b8;
-    --card-bg: rgba(30, 41, 59, 0.7);
-    --card-border: rgba(255, 255, 255, 0.1);
-    --text-main: #f8fafc;
-    --text-muted: #94a3b8;
-    --title-color: #38bdf8;
-    --input-bg: rgba(15, 23, 42, 0.6);
-    --input-border: rgba(255, 255, 255, 0.1);
-    --input-focus-border: #38bdf8;
-    --btn-bg: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
-    --link-color: #38bdf8;
-    --link-hover: #60a5fa;
+html.dark-mode {
+  --bg-color: #0b0f17;
+  --bg-gradient: radial-gradient(circle at 15% 15%, rgba(56, 189, 248, 0.12) 0%, transparent 45%),
+                 radial-gradient(circle at 85% 85%, rgba(99, 102, 241, 0.10) 0%, transparent 45%);
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --glass-bg: rgba(17, 24, 39, 0.75);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --btn-primary: #38bdf8;
+  --btn-primary-hover: #0284c7;
+  --primary-color: #38bdf8;
+  --card-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  --input-bg: rgba(15, 23, 42, 0.7);
+  --input-border: rgba(255, 255, 255, 0.15);
 }
 
 body {
-    font-family: 'Inter', sans-serif !important;
-    background: var(--bg-color) !important;
-    color: var(--text-main) !important;
+    font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+    background-color: var(--bg-color);
+    background-image: var(--bg-gradient);
+    background-attachment: fixed;
+    color: var(--text-main);
+    display: flex;
+    justify-content: center;
+    align-items: center;
     min-height: 100vh;
+    margin: 0;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    -webkit-font-smoothing: antialiased;
+}
+
+.login-pf-page .card-pf {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 2.5rem;
+    box-shadow: var(--card-shadow);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    width: 100%;
+    max-width: 450px;
+}
+
+/* Injeta a Logo e o Nome da App no topo */
+body:not(:has(.brand-mark)) .login-pf-header::before {
+    content: "";
+    display: flex;
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 0.5rem auto;
+    border-radius: 12px;
+    background: var(--btn-primary) url('data:image/svg+xml;charset=UTF-8,%3Csvg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="%23ffffff" viewBox="0 0 16 16"%3E%3Cpath d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6"/%3E%3C/svg%3E') no-repeat center;
+    box-shadow: 0 8px 16px rgba(37,99,235,0.25);
+}
+
+body:not(:has(.brand-mark)) .login-pf-header::after {
+    content: "Gerenciamento de Endere\0000e7os";
+    display: block;
+    text-align: center;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    margin-bottom: 0.35rem;
+}
+
+.login-pf-header {
     display: flex;
     flex-direction: column;
-    padding: 2rem 1rem !important;
-    box-sizing: border-box !important;
-    margin: 0;
-    transition: background 0.3s ease, color 0.3s ease;
+    text-align: center;
 }
 
-#kc-header {
-    display: none !important;
-}
-
-.login-pf body {
-    background: var(--bg-color) !important;
-}
-
-/* Fix for screens using default Keycloak template.ftl (TOTP, Reset Password, etc) */
-.login-pf-page {
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: center !important;
-    min-height: 100vh !important;
-    width: 100% !important;
-    padding: 2rem 1rem !important;
-    box-sizing: border-box !important;
-}
-
-body:has(.login-pf-page) {
-    padding: 0 !important;
-}
-
-/* Container principal - Efeito Glass */
-.card-pf {
-    background: var(--card-bg) !important;
-    backdrop-filter: blur(16px) !important;
-    -webkit-backdrop-filter: blur(16px) !important;
-    border: 1px solid var(--card-border) !important;
-    border-radius: 20px !important;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
-    padding: 2.5rem !important;
-    max-width: 450px !important;
-    width: 100% !important;
-    margin: auto !important;
-    transition: background 0.3s ease, border 0.3s ease;
-}
-
-/* Marca (ícone + nome da aplicação) acima do título */
-.brand-mark {
-    width: 56px !important;
-    height: 56px !important;
-    margin: 0 auto 1rem !important;
-    border-radius: 16px !important;
-    background: var(--btn-bg) !important;
-    color: #fff !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    box-shadow: 0 10px 20px -8px rgba(37, 99, 235, 0.6) !important;
-}
-
-.brand-kicker {
-    display: block !important;
-    text-align: center !important;
-    font-size: 0.8rem !important;
-    font-weight: 600 !important;
-    letter-spacing: 0.5px !important;
-    color: var(--text-muted) !important;
-    margin-bottom: 0.35rem !important;
-}
-
-/* Títulos */
 #kc-page-title {
-    font-size: 1.5rem !important;
-    font-weight: 700 !important;
-    color: var(--text-main) !important;
-    text-align: center !important;
-    margin-bottom: 1.75rem !important;
-    letter-spacing: -0.01em;
+    margin-top: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 2rem;
 }
 
-/* Labels */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
 .control-label {
-    color: var(--text-muted) !important;
-    font-weight: 500 !important;
-    font-size: 0.9rem !important;
-    margin-bottom: 0.5rem !important;
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-main);
+    margin-bottom: 0.5rem;
+    text-align: left;
 }
 
-/* Inputs */
-input[type="text"],
-input[type="password"],
-input[type="email"] {
-    background: var(--input-bg) !important;
+.form-control {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    background-color: var(--input-bg) !important;
     border: 1px solid var(--input-border) !important;
     color: var(--text-main) !important;
-    border-radius: 10px !important;
-    padding: 0.75rem 1rem !important;
-    font-size: 1rem !important;
-    transition: all 0.3s ease !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
+    font-size: 0.95rem;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
 }
 
-/* Ícone dentro do campo (usuário/senha) */
-.input-icon-wrap {
-    position: relative !important;
+.form-control:focus {
+    outline: none;
+    border-color: var(--primary-color) !important;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15) !important;
 }
 
-.input-icon-wrap .input-icon {
-    position: absolute !important;
-    left: 0.9rem !important;
-    top: 50% !important;
-    transform: translateY(-50%) !important;
-    color: var(--text-muted) !important;
-    pointer-events: none !important;
-}
-
-.input-icon-wrap input {
-    padding-left: 2.5rem !important;
-}
-
-input[type="text"]:focus,
-input[type="password"]:focus,
-input[type="email"]:focus {
-    outline: none !important;
-    border-color: var(--input-focus-border) !important;
-    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.25) !important;
-}
-
-/* Botão de Submit */
 .btn-primary {
-    background: var(--btn-bg) !important;
-    border: none !important;
-    border-radius: 10px !important;
-    color: white !important;
-    font-weight: 600 !important;
-    font-size: 1rem !important;
-    padding: 0.75rem 1.5rem !important;
-    width: 100% !important;
-    transition: transform 0.2s, box-shadow 0.2s !important;
-    cursor: pointer !important;
-    margin-top: 1.5rem !important;
+    width: 100%;
+    padding: 0.85rem;
+    border-radius: 50px;
+    border: none;
+    background: linear-gradient(135deg, var(--btn-primary) 0%, var(--primary-color) 100%);
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: 0 4px 14px 0 rgba(37, 99, 235, 0.3);
+    transition: all 0.2s ease;
 }
 
 .btn-primary:hover {
-    transform: translateY(-2px) !important;
-    box-shadow: 0 10px 20px -10px rgba(37, 99, 235, 0.7) !important;
+    transform: translateY(-1px);
+    background: var(--btn-primary-hover);
+    box-shadow: 0 6px 20px 0 rgba(37, 99, 235, 0.4);
 }
 
-/* Links (Esqueci a senha, registrar) */
-a, .login-pf-settings a, #kc-registration a, #kc-login a {
-    color: var(--link-color) !important;
-    text-decoration: none !important;
-    font-size: 0.9rem !important;
-    transition: color 0.2s !important;
+/* Marca (ícone + nome da app) nas telas com template próprio (login/cadastro).
+   Nas telas renderizadas pelo tema base a mesma marca é injetada via
+   ::before/::after em .login-pf-header — por isso aquelas regras usam
+   body:not(:has(.brand-mark)), pra não duplicar. */
+.brand-mark {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 0.5rem auto;
+    border-radius: 12px;
+    background: var(--btn-primary);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 16px rgba(37, 99, 235, 0.25);
 }
 
-a:hover, .login-pf-settings a:hover, #kc-registration a:hover, #kc-login a:hover {
-    color: var(--link-hover) !important;
-    text-decoration: underline !important;
-}
-
-/* Checkbox Remember Me */
-.checkbox {
-    color: var(--text-muted) !important;
-}
-
-#kc-registration, #kc-login {
+.brand-kicker {
+    display: block;
+    text-align: center;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
     color: var(--text-muted);
+    margin-bottom: 0.35rem;
 }
 
-/* Divisor "ou" entre o login e o botão de cadastro */
+#kc-page-title {
+    text-align: center;
+}
+
+/* Campo com ícone à esquerda (usuário / cadeado).
+   Também serve de âncora para o olho da senha, por isso compartilha o
+   position: relative com .input-group. */
+.input-icon-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-icon-wrap .input-icon {
+    position: absolute;
+    left: 0.9rem;
+    color: var(--text-muted);
+    pointer-events: none;
+    z-index: 10;
+}
+
+.input-icon-wrap .form-control {
+    padding-left: 2.5rem;
+}
+
+/* Divisor "ou" entre a ação principal e a secundária */
 .divider {
-    display: flex !important;
-    align-items: center !important;
-    gap: 0.75rem !important;
-    margin: 1.5rem 0 !important;
-    color: var(--text-muted) !important;
-    font-size: 0.8rem !important;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 1.5rem 0;
+    color: var(--text-muted);
+    font-size: 0.8rem;
 }
 
 .divider::before,
 .divider::after {
-    content: "" !important;
-    flex: 1 !important;
-    height: 1px !important;
-    background: var(--input-border) !important;
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--input-border);
 }
 
-/* Botão secundário (Criar uma conta) — mesmo tamanho do primário, contorno em vez de preenchido */
+/* Ação secundária (criar conta / já tenho conta): mesmo formato do botão
+   principal, porém apenas com contorno. */
 .btn-secondary {
-    display: block !important;
-    text-align: center !important;
-    background: transparent !important;
-    border: 1px solid var(--input-border) !important;
-    border-radius: 10px !important;
-    color: var(--text-main) !important;
-    font-weight: 600 !important;
-    font-size: 1rem !important;
-    padding: 0.75rem 1.5rem !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-    text-decoration: none !important;
-    transition: all 0.2s ease !important;
+    display: block;
+    width: 100%;
+    padding: 0.85rem;
+    border-radius: 50px;
+    border: 1px solid var(--input-border);
+    background: transparent;
+    color: var(--text-main);
+    font-weight: 600;
+    font-size: 1rem;
+    text-align: center;
+    text-decoration: none;
+    box-sizing: border-box;
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
 .btn-secondary:hover {
-    border-color: var(--input-focus-border) !important;
-    color: var(--link-color) !important;
-    text-decoration: none !important;
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    text-decoration: none;
 }
 
-.theme-toggle {
-    position: absolute;
+/* Layout do Input Group para o olho da senha */
+.input-group { position: relative; display: flex; align-items: center; }
+.input-group input { flex: 1; padding-right: 40px !important; }
+.btn-password-toggle { position: absolute; right: 10px; background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem; padding: 0; margin: 0; z-index: 10; }
+.btn-password-toggle:hover { color: var(--text-main); }
+
+/* Checkbox e Remember me */
+.checkbox { display: flex; align-items: center; margin-top: -10px; margin-bottom: 15px; }
+.checkbox label { font-size: 0.9rem; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; gap: 8px; }
+.checkbox input[type='checkbox'] { width: 16px; height: 16px; accent-color: var(--btn-primary); cursor: pointer; }
+.form-options { text-align: center; margin-bottom: 1.5rem; }
+.form-options a { color: var(--primary-color); text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: all 0.3s ease; }
+.form-options a:hover { color: var(--btn-primary-hover); text-decoration: underline; }
+
+/* Estilo do botão Theme Toggle */
+#theme-toggle-btn {
+    position: fixed;
     top: 20px;
     right: 20px;
-    background: var(--input-bg);
-    border: 1px solid var(--input-border);
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
     color: var(--text-main);
-    width: 40px;
-    height: 40px;
     border-radius: 50%;
+    width: 45px;
+    height: 45px;
     display: flex;
     align-items: center;
     justify-content: center;
+    font-size: 1.2rem;
     cursor: pointer;
-    transition: all 0.3s ease;
+    box-shadow: var(--card-shadow);
     backdrop-filter: blur(10px);
-    z-index: 1000;
+    transition: all 0.3s ease;
+    z-index: 9999;
 }
-
-.theme-toggle:hover {
-    background: var(--btn-bg);
-    color: white;
+#theme-toggle-btn:hover {
     transform: scale(1.1);
+    background: var(--btn-primary);
+    color: #fff;
 }
 
-/* Telas com mais conteúdo (configurar 2FA, cadastro) precisam de um card mais largo
-   que o do login simples, senão o texto/QR code ficam espremidos. */
-body:has(#kc-totp-settings) .card-pf,
-body:has(#kc-register-form) .card-pf {
-    max-width: 560px !important;
-}
-
-/* Passo a passo de configuração de TOTP (ol > li com texto, lista de apps, QR code) */
-#kc-totp-settings {
-    text-align: left !important;
-    padding-left: 1.25rem !important;
-    margin: 0 0 1.5rem 0 !important;
-    color: var(--text-main) !important;
-}
-
-#kc-totp-settings > li {
-    margin-bottom: 1.25rem !important;
-    line-height: 1.5 !important;
-}
-
-#kc-totp-settings p {
-    margin: 0 0 0.5rem 0 !important;
-    color: var(--text-main) !important;
-}
-
-#kc-totp-supported-apps {
-    padding-left: 1.25rem !important;
-    margin: 0.25rem 0 !important;
-    color: var(--text-muted) !important;
-}
-
-#kc-totp-settings ul {
-    padding-left: 1.25rem !important;
-    margin: 0.25rem 0 !important;
-    color: var(--text-muted) !important;
-    font-size: 0.85rem !important;
-}
-
-/* QR code precisa de fundo branco sólido pra manter contraste/leitura no tema escuro */
-#kc-totp-secret-qr-code {
-    display: block !important;
-    max-width: 200px !important;
-    width: 100% !important;
-    height: auto !important;
-    margin: 0.75rem 0 !important;
-    padding: 0.75rem !important;
-    background: #ffffff !important;
-    border-radius: 12px !important;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15) !important;
-}
-
-/* Código secreto (modo manual) em fonte monoespaçada, pra ficar legível/copiável */
-#kc-totp-secret-key {
-    display: inline-block !important;
-    font-family: 'Courier New', monospace !important;
-    font-size: 1rem !important;
-    letter-spacing: 1px !important;
-    background: var(--input-bg) !important;
-    border: 1px solid var(--input-border) !important;
-    border-radius: 8px !important;
-    padding: 0.4rem 0.75rem !important;
-    margin-top: 0.25rem !important;
-    word-break: break-all !important;
-}
-
-/* Botões quando há mais de um lado a lado (Salvar / Cancelar) */
+/* Alinhamento do QR Code e Textos (TOTP) */
+#kc-totp-settings { padding-left: 20px; }
+#kc-totp-settings p { text-align: justify; }
+#kc-totp-settings li > img#kc-totp-secret-qr-code { display: block; margin: 15px auto; }
+/* Botões Enviar e Cancelar lado a lado e bonitos */
 #kc-form-buttons {
-    display: flex !important;
-    gap: 0.75rem !important;
-    margin-top: 1rem !important;
+    display: flex;
+    gap: 15px;
+    width: 100%;
+    margin-top: 1.5rem;
 }
 
-#kc-form-buttons .btn-primary,
-#kc-form-buttons button {
+#kc-form-buttons .btn {
+    flex: 1;
     width: 100% !important;
-    margin-top: 0 !important;
 }
 
-#kc-form-buttons button[name="cancel-aia"] {
-    background: transparent !important;
-    border: 1px solid var(--input-border) !important;
-    color: var(--text-main) !important;
+.btn-default {
+    padding: 0.85rem;
+    border-radius: 50px;
+    border: 1px solid var(--input-border);
+    background: transparent;
+    color: var(--text-main);
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-default:hover {
+    background: var(--input-border);
+}
+/* Esconde o cabeçalho padrao do Keycloak (texto solto) em todas as telas */
+#kc-header {
+    display: none !important;
 }

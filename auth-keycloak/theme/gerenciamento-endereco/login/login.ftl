@@ -7,6 +7,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="${url.resourcesPath}/css/glass-theme.css">
     <link rel="icon" type="image/svg+xml" href="${url.resourcesPath}/img/favicon.svg" />
+    <!-- Tema claro/escuro + olho da senha (compartilhado com as telas do tema base) -->
+    <script src="${url.resourcesPath}/js/theme-toggle.js"></script>
     <style>
         .alert {
             padding: 1rem;
@@ -37,12 +39,7 @@
         }
     </style>
 </head>
-<body>
-    <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-moon-fill" viewBox="0 0 16 16">
-            <path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z"/>
-        </svg>
-    </button>
+<body class="login-pf-page">
     <div class="card-pf">
         <div class="brand-mark">
             <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" viewBox="0 0 16 16">
@@ -52,23 +49,6 @@
         <span class="brand-kicker">Gerenciamento de Endereços</span>
         <h1 id="kc-page-title">Entrar na sua conta</h1>
 
-        <script>
-            const themeToggleBtn = document.getElementById('theme-toggle');
-            const root = document.documentElement;
-            let savedTheme = localStorage.getItem('theme');
-            if (!savedTheme) {
-                savedTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-            }
-            root.setAttribute('data-theme', savedTheme);
-
-            themeToggleBtn.addEventListener('click', () => {
-                const currentTheme = root.getAttribute('data-theme');
-                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-                root.setAttribute('data-theme', newTheme);
-                localStorage.setItem('theme', newTheme);
-            });
-        </script>
-        
         <#if message?has_content && (message.type != 'warning' || !isAppInitiatedAction??)>
             <div class="alert alert-${message.type}">
                 ${kcSanitize(message.summary)?no_esc}

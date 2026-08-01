@@ -310,6 +310,124 @@ body {
   color: #ffffff !important;
 }
 
+/* ==========================================================================
+   Tela "Minha Conta" (Auth/Perfil)
+   ========================================================================== */
+.perfil-header {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding-bottom: 1.75rem;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.perfil-avatar {
+  width: 72px;
+  height: 72px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--primary-color);
+  color: #fff;
+  font-size: 1.5rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.perfil-identidade {
+  min-width: 0; /* permite o text-overflow funcionar dentro do flex */
+}
+
+.perfil-nome {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-main);
+  line-height: 1.2;
+}
+
+.perfil-username {
+  margin: 0.15rem 0 0.6rem;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.perfil-roles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+/* Dados em cartões lado a lado — resolve a quebra de linha que acontecia
+   quando o rótulo dividia a largura com o valor numa lista de definição. */
+.perfil-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+  margin: 1.75rem 0;
+}
+
+.perfil-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 1rem 1.15rem;
+  border: 1px solid var(--glass-border);
+  border-radius: 14px;
+  text-decoration: none;
+}
+
+.perfil-card-label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.perfil-card-valor {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text-main);
+  overflow-wrap: anywhere;
+}
+
+.perfil-card-link {
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.perfil-card-link:hover {
+  border-color: var(--primary-color);
+  transform: translateY(-2px);
+}
+
+.perfil-card-link:hover .perfil-card-valor {
+  color: var(--primary-color);
+}
+
+.perfil-card-seta {
+  font-size: 0.9rem;
+  margin-left: 0.15rem;
+}
+
+.perfil-secao {
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--glass-border);
+}
+
+.perfil-secao-titulo {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.perfil-secao-desc {
+  margin: 0.25rem 0 1rem;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
 /* Hero Section */
 .hero-section {
   display: flex;
@@ -333,6 +451,46 @@ body {
   font-size: 1.2rem;
   color: var(--text-muted);
   line-height: 1.6;
+  max-width: 46ch;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Selo da marca no topo do hero — mesmo tratamento do ícone usado nas telas
+   de login do Keycloak, pra manter a identidade entre app e autenticação. */
+.hero-badge {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 1.5rem;
+  border-radius: 18px;
+  background: var(--primary-color);
+  color: #fff;
+  font-size: 1.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 12px 24px -10px var(--primary-color);
+}
+
+/* Stack técnica: informativo discreto, não compete com a navegação */
+.hero-stack {
+  list-style: none;
+  padding: 0;
+  margin: 2rem 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem 0.75rem;
+}
+
+.hero-stack li {
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--text-muted);
+  border: 1px solid var(--glass-border);
+  border-radius: 999px;
+  padding: 0.3rem 0.85rem;
 }
 
 /* Glassmorphism Dropdown Refinado */

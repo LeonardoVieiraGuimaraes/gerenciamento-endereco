@@ -4,26 +4,24 @@
 
 <div class="hero-section text-center">
     <div class="glass-card slide-up-anim">
-        <div class="hero-icon text-primary">
+        <div class="hero-badge">
             <i class="bi bi-pin-map-fill"></i>
         </div>
         <h1 class="hero-title">Gerenciamento de Endereços</h1>
-        <p class="hero-subtitle mb-4">Controle seus locais de forma segura e inteligente, com o poder do <strong>Keycloak</strong> e <strong>ASP.NET Core</strong>.</p>
-        
-        <div class="mt-4 d-flex justify-content-center gap-3">
-            @if (User.Identity != null && User.Identity.IsAuthenticated)
-            {
-                <a asp-controller="Enderecos" asp-action="Index" class="btn-premium px-5 py-3 fs-5">
-                    <i class="bi bi-map me-2"></i> Ir para Meus Endereços
-                </a>
-            }
-            else
-            {
-                <a asp-controller="Auth" asp-action="Login" class="btn-premium px-5 py-3 fs-5">
-                    <i class="bi bi-shield-lock me-2"></i> Acessar a Plataforma
-                </a>
-            }
-        </div>
+        <p class="hero-subtitle mb-0">
+            Cadastro e consulta de endereços com autenticação corporativa,
+            busca automática por CEP e exportação de dados.
+        </p>
+
+        @* Sem CTA aqui de propósito: a navegação principal (Entrar / Endereços)
+           já está no topo em todas as telas. Repetir o mesmo botão em destaque
+           no meio da página só competia com ela. *@
+        <ul class="hero-stack">
+            <li>.NET 8</li>
+            <li>Keycloak · OIDC</li>
+            <li>SQL Server</li>
+            <li>Docker</li>
+        </ul>
     </div>
 </div>
 

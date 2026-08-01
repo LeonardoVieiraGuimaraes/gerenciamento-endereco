@@ -1,142 +1,214 @@
-# 🏢 Plataforma Integrada de Gerenciamento de Endereços
+# Gerenciamento de Endereços
+
+Aplicação web para cadastro e consulta de endereços, com login corporativo,
+busca automática por CEP e exportação para CSV.
 
 [![.NET](https://img.shields.io/badge/.NET-8.0-512BD4?style=flat&logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
-[![Docker](https://img.shields.io/badge/Docker-Orchestration-2496ED?style=flat&logo=docker&logoColor=white)](https://www.docker.com/)
-[![Keycloak](https://img.shields.io/badge/Keycloak-IAM-blue?style=flat&logo=keycloak&logoColor=white)](https://www.keycloak.org/)
-[![SQL Server](https://img.shields.io/badge/SQL_Server-2022-CC2927?style=flat&logo=microsoft-sql-server&logoColor=white)](https://www.microsoft.com/)
+[![Keycloak](https://img.shields.io/badge/Keycloak-26-blue?style=flat&logo=keycloak&logoColor=white)](https://www.keycloak.org/)
+[![SQL Server](https://img.shields.io/badge/SQL_Server-2022-CC2927?style=flat&logo=microsoft-sql-server&logoColor=white)](https://www.microsoft.com/sql-server)
+[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=flat&logo=docker&logoColor=white)](https://www.docker.com/)
 
-> **Acesso em Produção:** [https://enderecos.leoproti.com.br](https://enderecos.leoproti.com.br) *(Exemplo de URL de hospedagem final)*
+**Aplicação no ar:** https://enderecos.leoproti.com.br
+**Tela de login:** https://auth-enderecos.leoproti.com.br
 
-Um sistema completo de gerenciamento de endereços construído com forte foco em **Engenharia de Software, Segurança e Arquitetura Escalável**. O projeto utiliza uma arquitetura baseada em containers (Docker), gerenciamento de identidade e acessos de ponta com o Keycloak (OIDC/OAuth 2.0) e as melhores práticas do ecossistema .NET 8.
-
----
-
-## 🏗️ Arquitetura e Engenharia de Software
-
-O sistema foi desenhado visando escalabilidade, manutenibilidade e alta segurança, adotando os seguintes padrões arquiteturais e metodologias de engenharia de software:
-
-- **Arquitetura Baseada em Containers:** Todos os serviços (API, Banco de Dados Relacional, Identity Server e DB de Autenticação) são orquestrados de forma totalmente independente via Docker. Isso garante paridade perfeita entre os ambientes de desenvolvimento, homologação e produção.
-- **Preparação para Microsserviços:** A infraestrutura atual já separa a camada de identidade (Keycloak IAM) da camada de negócios (Backend API), o que impede dependências diretas de banco de dados para credenciais, centralizando logins corporativos.
-- **Injeção de Dependência (DI):** Amplo uso do contêiner de Inversão de Controle nativo do ASP.NET Core para acoplamento fraco e facilidade de testes automatizados (ex: `IKeycloakAdminService`, `IViaCepService`).
-- **Resiliência e Rate Limiting:** Proteção de endpoints sensíveis e APIs externas (como a integração com a API pública do ViaCEP) através de políticas avançadas de *Rate Limiting* (`PartitionedRateLimiter`), prevenindo ativamente ataques de força bruta, scraping excessivo e abusos de banda.
-- **Integração Externa Otimizada:** Consumo seguro e cacheado de serviços de terceiros utilizando o padrão `HttpClientFactory`.
-- **UI & UX:** Interface projetada utilizando **Glassmorphism**, com CSS puro e moderno, garantindo transições leves e foco primário na experiência interativa do usuário.
+> Projeto criado a partir do teste prático para desenvolvedor C#. Os requisitos
+> originais — login, CRUD de endereços, integração com ViaCEP, exportação CSV e
+> scripts de banco — foram atendidos e, a partir deles, o sistema foi evoluído
+> com autenticação profissional, publicação automatizada e reforço de segurança.
 
 ---
 
-## 🔐 Segurança e Gerenciamento de Identidade (IAM)
+## O que o sistema faz
 
-A segurança é o pilar central desta aplicação. A autenticação não foi construída "do zero" no banco da aplicação (prática legada), mas delegada integralmente a um servidor Identity Provider (IdP), garantindo conformidade com protocolos abertos.
-
-- **Servidor Keycloak:** Atua como o Provedor de Identidade (IdP) exclusivo do sistema.
-- **Protocolos Modernos Abertos:** Utilização nativa do **OpenID Connect (OIDC)** e **OAuth 2.0** com fluxo de código de autorização (*Authorization Code Flow*).
-- **Gestão Híbrida de Perfis e Roles (RBAC Híbrido):**
-  - O sistema aplica o conceito de *Role-Based Access Control (RBAC)* operando em duas camadas cruzadas: **Realm Roles** (nível global corporativo) e **Client Roles** (nível específico da aplicação atual).
-  - Categorização principal divide usuários em `ADMIN` ou `USUARIO`. Estas *roles* são empacotadas dinamicamente dentro do *Access Token* JWT pelo Keycloak usando *Protocol Mappers*.
-  - A API em .NET atua como *Resource Server* e *Client*. Ela intercepta e decodifica o JWT OIDC, convertendo as *roles* transportadas via JSON para a infraestrutura de *Claims* de identidade nativas do C# (`ClaimsIdentity`), integrando nativamente com as políticas granulares de autorização do ASP.NET Core (ex: `options.AddPolicy("EnderecoWrite", ...)`).
-- **Tratamento Severo do OIDC:** O backend atua proativamente mantendo o estado dos tokens (`SaveTokens = true`), garantindo sincronia no processo de *Single Logout (SLO)*. Foram aplicados mecanismos contornando barreiras estritas de segurança de rede (`SameSite` cookies & `Secure=true`) que causam loops clássicos de deslogamento durante simulações e deploys (incluindo rewrites de hosts para comunicação *server-to-server* no docker vs *browser-to-server* via localhost).
-- **Data Protection Compartilhado:** Chaves de criptografia antiforgery e tokens são persistidas no Entity Framework (`PersistKeysToDbContext`), o que significa que se os contêineres reiniciarem ou sofrerem scale-out em Kubernetes, as sessões ativas dos clientes não serão destruídas, mantendo continuidade absoluta.
+- **Login único (SSO)** com opção de verificação em duas etapas (2FA)
+- **Cadastro de endereços** — criar, listar, editar e excluir
+- **Busca por CEP** — informe o CEP e os demais campos são preenchidos sozinhos
+- **Filtros de busca** por nome, CEP, logradouro, cidade e UF
+- **Exportação para CSV** dos endereços cadastrados
+- **Área administrativa** para gerenciar usuários
+- **Tema claro e escuro**, inclusive nas telas de login
 
 ---
 
-## 🛠️ Tecnologias, Frameworks e Ferramentas
+## Perfis de acesso
 
-| Categoria | Tecnologia / Stack |
-|-----------|--------------------|
-| **Linguagem Base** | C# (C-Sharp) 12 |
-| **Framework Web** | ASP.NET Core 8 (MVC + Web API) |
-| **Banco de Dados (API)** | Microsoft SQL Server 2022 |
-| **Banco de Dados (IdP)**| PostgreSQL 16 (Dedicado para os dados do Keycloak) |
-| **Identity & Access** | Keycloak v25/latest (Configurado como IAM) |
-| **Orquestração (Local)** | Docker & Docker Compose |
-| **Mapeamento (ORM)** | Entity Framework Core 8 |
-| **Estilização de UI** | CSS3 Vanilla Moderno (Glassmorphism), HTML5, Razor Views |
-| **Integração de Dados** | CsvHelper (Relatórios e Importação/Exportação) |
-| **Documentação API** | Swagger (Swashbuckle.AspNetCore v6) |
-| **Log Estruturado** | Serilog (Formatado e integrado ao pipeline HTTP) |
+| Perfil | O que pode fazer |
+|---|---|
+| **USUARIO** | Gerencia apenas os próprios endereços |
+| **ADMIN** | Tudo do usuário comum, mais gerenciar usuários e ver endereços de qualquer pessoa |
+
+Quem se cadastra pelo site recebe o perfil **USUARIO** automaticamente.
+
+Um ponto importante: esconder um botão na tela não protege nada. Por isso cada
+ação também é conferida no servidor — se alguém digitar o endereço da página
+direto no navegador sem ter permissão, o acesso é negado do mesmo jeito.
 
 ---
 
-## 📁 Organização e Estrutura de Pastas
+## Como está montado
 
-A base de código foi cuidadosamente segmentada baseada nos domínios funcionais e serviços de infraestrutura para facilitar o desenvolvimento independente:
-
-```text
-📁 gerenciamento-endereco/
-├── 📁 auth-keycloak/              # Infraestrutura isolada do Servidor de Identidade
-│   ├── 📄 Dockerfile              # Imagem customizada baseada no Keycloak Oficial (Quarkus)
-│   ├── 📁 realm/                  # Backup de configuração (Realm, Clients OIDC, Users, Mappers) injetados automaticamente no boot.
-│   └── 📁 theme/                  # Templates FreeMarker que injetam a identidade visual "Glassmorphism" na página de SSO.
-│
-├── 📁 backend/                    # Core da Aplicação (Backend + Web API + MVC)
-│   ├── 📄 docker-compose.yml      # O Maestro Central. Orquestra o SQLServer, Postgres, Keycloak e a aplicação de uma vez.
-│   ├── 📄 Program.cs              # Núcleo configuracional de Injeção de Dependência, Filtros OIDC, Rate Limiting e Pipeline de Requests.
-│   ├── 📁 Controllers/            # Controladores lidando com UI (MVC) e roteamento de Endpoints puros REST.
-│   ├── 📁 Data/                   # Camada de Persistência (AppDbContext, Migrations).
-│   ├── 📁 Models/                 # Entidades canônicas de domínio, Enums de acesso e ViewModels de transferência.
-│   ├── 📁 Services/               # Core Lógico de negócios, HTTP Client externo (ViaCEP) e integração administrativa REST API do Keycloak.
-│   ├── 📁 Views/                  # Camada de Visualização usando Razor e Componentização visual.
-│   └── 📁 wwwroot/                # Assets da UI (Stylesheets CSS globais, Javascript customizado e vetores visuais).
-│
-├── 📁 frontend/                   # Repositório segregado (Preparatório para arquiteturas Headless/BFF).
-├── 📁 GerenciamentoEndereco.Tests/# Suíte de testes unitários e de integração (Garantia de Qualidade).
-└── 📄 README.md                   # Documentação mestre atual.
+```
+Navegador
+    │
+    ├──► Aplicação web (.NET 8)  ──► Banco da aplicação (SQL Server)
+    │            │
+    │            └──► API ViaCEP (consulta de CEP)
+    │
+    └──► Keycloak (login)        ──► Banco do Keycloak (PostgreSQL)
 ```
 
----
+A aplicação **não armazena senhas**. Toda a autenticação é delegada ao Keycloak,
+um servidor de identidade usado no mercado. Ou seja: senha, 2FA e troca de senha
+ficam a cargo de uma ferramenta especializada, e a aplicação apenas recebe a
+confirmação de quem é o usuário e do que ele pode fazer.
 
-## 🔄 Issues, Linha do Tempo e Kanban (Roadmap)
-
-Organização dos escopos e metas do projeto.
-
-### ✅ Entregáveis (Concluído)
-- [x] **Domínio de Banco:** Modelagem e criação da estrutura de banco de dados relacional via *Code-First*.
-- [x] **Integrações de Terceiros:** Integração via C# e HttpClient com a API do ViaCEP, incluindo limitação de chamadas contra punições.
-- [x] **Desenvolvimento de API:** Construção da RESTful API e autogeração de contratos OAI documentados pelo Swagger.
-- [x] **Conteinerização / DevOps Local:** Dockerização 100% autossuficiente: Bancos relacionais (SQL e NoSQL-like auth properties), IAM OIDC, e Código.
-- [x] **Identidade Federal (OIDC):** Substituição completa de autenticação antiga via banco próprio para o uso oficial do Keycloak, segregando perfeitamente a gestão de pessoas.
-- [x] **UI/UX Global:** Implantação de Design System usando padrão Glassmorphism ponta a ponta (SSO Keycloak -> App Principal).
-- [x] **Correções Arquiteturais OIDC:** Fixação severa na transição do contexto de sessão HTTP OIDC em dev local (manipulando `sslRequired` para `none` internamente para não gerar loops infinitos de redirect, e passagem mandatória do `id_token_hint` em pipelines de logouts manuais na API).
-- [x] **Gestão de Roles Customizada:** Criação do ambiente dinâmico híbrido mapeando chaves de Claims (OIDC token payload -> .NET User Context) entre perfis `ADMIN` e `USUARIO`.
-
-### 🚀 Future Scope (Próximos Passos & Backlog Architecture)
-O caminho para uma aplicação de *Tier Global Enterprise*.
-
-- [ ] **1. Orquestração Avançada (Kubernetes / K8s):**
-  - Mover o mecanismo atual do `docker-compose` monolítico local para *Manifests* em YAML e *Helm Charts* robustos no cluster Kubernetes.
-  - Adição imediata de *Liveness* e *Readiness probes* nas APIs. Configuração dinâmica via *ConfigMaps* e isolamento de banco via *StatefulSets*.
-- [ ] **2. Desacoplamento Headless do Frontend (Next.js & React Native):**
-  - Arrancar toda a camada de *Views/Razor* do repositório backend.
-  - Implementar uma SPA (*Single Page Application*) isolada utilizando **React e Next.js** para renderização híbrida.
-  - Desenvolver cliente Mobile 100% fluido usando **React Native**.
-  - O Backend .NET assumirá finalmente um papel estrito de Web API (com padrão *BFF - Backend For Frontend*) respondendo JSON nativo para as novas interfaces e gerenciando JWT Tokens via PKCE diretamente aos apps.
-- [ ] **3. Trilha de Auditoria Universal (Audit Trail):**
-  - Criar um novo contexto de interceptação nos DbContexts usando a *Engine do Entity Framework* ou via CQRS Events, gravando um log imutável numa tabela otimizada (ou num banco NoSQL/ElasticSearch). Responder rigorosamente: *"Quem alterou esse endereço, quando, e qual era o dado antes e depois da ação?"*.
-- [ ] **4. Mensageria Event-Driven (RabbitMQ / Apache Kafka):**
-  - A ação de exportação de dados (CsvHelper) ou grandes relatórios podem gerar timeouts de requisições HTTP caso os registros atinjam milhões de linhas. Implementar Mensageria (Publish/Subscribe) para processamento em background (Workers).
-- [ ] **5. CI/CD Enterprise:**
-  - Plugar processos de integração contínua (GitHub Actions / GitLab CI). Submeter os PRs para checagem com o **SonarQube** para bloquear "Code Smells". Iniciar deploys baseados no estado do repositório usando **ArgoCD** apontando pro cluster.
+Tudo roda em containers Docker, o que faz o ambiente local ser igual ao de produção.
 
 ---
 
-## 🏃 Como Instalar e Executar (Um Clique)
+## Tecnologias
 
-Este projeto foi projetado para exigir o mínimo de atrito do desenvolvedor (DX). Você não precisa ter .NET, Visual Studio ou bancos de dados nativos rodando no Windows. Tudo o que você precisa é do **Docker Desktop** rodando.
+**Aplicação**
+- .NET 8 (ASP.NET Core MVC) — back-end e telas
+- Entity Framework Core — acesso a dados e versionamento do banco
+- SQL Server 2022 — banco da aplicação
+- Bootstrap 5 e CSS próprio — interface
+- Serilog — registro de logs
+- CsvHelper — geração dos arquivos CSV
 
-1. **Clone o repositório:**
-   ```bash
-   git clone https://github.com/SeuUsuario/gerenciamento-endereco.git
-   ```
-2. **Execute o Comando Mágico:** Abra o terminal na subpasta `backend/` e digite:
-   ```bash
-   docker-compose up -d --build
-   ```
-3. **Aguarde 15~25s.** A primeira subida do Keycloak demora alguns segundos para provisionar totalmente as chaves OIDC e o banco próprio. 
-4. **Pronto! Sistemas Online:**
-   - App em .NET: [http://localhost:5000](http://localhost:5000)
-   - Painel IAM Keycloak (Admin): [http://localhost:8089](http://localhost:8089)
-     - Logue com `admin` e senha `admin123`.
+**Autenticação**
+- Keycloak 26 — servidor de identidade (SSO, 2FA, cadastro)
+- OpenID Connect / OAuth 2.0 — protocolo de autenticação
+- PostgreSQL 16 — banco do Keycloak
 
-*(Nota: As migrations de tabelas pro SQL Server serão aplicadas automaticamente pelo EF Core no momento de boot do contêiner C#).*
+**Infraestrutura**
+- Docker e Docker Compose
+- GitHub Actions — testes e publicação automática
+- Cloudflare Tunnel — publicação sem expor portas do servidor
 
-> **Aviso de Recrutamento:** Este escopo abrange o domínio "End-to-End" completo: Levantamento Arquitetural, Containerização Otimizada, Identidade Distribuída (OAuth/OIDC), UX Design em Glassmorphism, e solução de segurança nativa do framework (Rate-limits & Proteção OIDC Data).
+**Qualidade**
+- xUnit, Moq e FluentAssertions — testes automatizados
+- Swagger — documentação da API
+
+---
+
+## Segurança aplicada
+
+| Item | O que foi feito |
+|---|---|
+| Senhas | Não passam pela aplicação — ficam sob responsabilidade do Keycloak |
+| Autenticação | OpenID Connect, com validação da assinatura e do destinatário do token |
+| Autorização | Conferida no servidor em toda ação, não apenas na interface |
+| Formulários | Proteção contra falsificação de requisição (CSRF) |
+| Limite de requisições | Bloqueio de excesso de tentativas, mais rígido no login |
+| Cabeçalhos de segurança | Política de conteúdo (CSP), bloqueio de uso em iframe, entre outros |
+| Cookies | Marcados como seguros e inacessíveis a scripts |
+| HTTPS | Obrigatório em produção |
+| Dependências | Sem pacotes com vulnerabilidade conhecida (checado a cada publicação) |
+| Segredos | Fora do código — guardados como segredos do GitHub |
+| Banco de dados | Não exposto para fora do servidor |
+
+---
+
+## Organização das pastas
+
+```
+gerenciamento-endereco/
+├── backend/            Aplicação .NET (telas, API, regras e acesso a dados)
+│   ├── Controllers/    Recebe as requisições e decide o que fazer
+│   ├── Models/         Representação dos dados (Endereço, Usuário)
+│   ├── Services/       Integrações isoladas (ViaCEP, CSV, Keycloak)
+│   ├── Views/          Telas da aplicação
+│   ├── Data/           Configuração do banco
+│   ├── Migrations/     Histórico de mudanças no banco
+│   ├── wwwroot/        Arquivos públicos (CSS, JS, imagens)
+│   ├── docs/           Documentação técnica e manual de deploy
+│   ├── docker-compose.yml       Ambiente completo de desenvolvimento
+│   └── docker-compose.prod.yml  Ambiente de produção
+│
+├── auth-keycloak/      Configuração do servidor de login
+│   ├── realm/          Usuários, perfis e aplicações (importado no boot)
+│   ├── theme/          Tema visual das telas de login e cadastro
+│   └── Dockerfile      Imagem do Keycloak já com tema e realm embutidos
+│
+├── GerenciamentoEndereco.Tests/   Testes automatizados
+│
+├── frontend/           Reservado para a interface em Next.js (ver roadmap)
+│
+└── .github/workflows/  Automação de testes e publicação
+```
+
+**Sobre a organização em containers:** existe um único `docker-compose.yml` (em
+`backend/`) que sobe os quatro serviços de uma vez — inclusive o Keycloak, cuja
+imagem é construída a partir da pasta `auth-keycloak/`. Ou seja, a configuração
+de autenticação vive separada do código da aplicação, mas a subida do ambiente é
+centralizada num comando só.
+
+**Sobre o front-end:** hoje as telas são geradas pelo próprio .NET (padrão MVC).
+A pasta `frontend/` está reservada para a futura interface em Next.js, que passará
+a consumir a API já existente.
+
+---
+
+## Como rodar na sua máquina
+
+Só é preciso ter o [Docker](https://www.docker.com/products/docker-desktop/) instalado.
+
+```bash
+cd backend
+docker compose up -d --build
+```
+
+Um comando sobe os quatro serviços. Na primeira vez o Keycloak leva cerca de um
+minuto para ficar pronto. As tabelas do banco são criadas automaticamente.
+
+| Serviço | Endereço |
+|---|---|
+| Aplicação | http://localhost:5000 |
+| Documentação da API | http://localhost:5000/swagger |
+| Keycloak | http://localhost:8089 |
+
+---
+
+## Publicação automática
+
+A cada envio de código para a branch `main`, o GitHub Actions:
+
+1. Roda os testes automatizados
+2. Verifica dependências com vulnerabilidades conhecidas
+3. Publica no servidor e sobe os containers
+4. Confirma que a aplicação respondeu com sucesso
+
+Se qualquer etapa falhar, a publicação é interrompida e a versão anterior segue
+no ar. O passo a passo está em [backend/docs/DEPLOY.md](backend/docs/DEPLOY.md).
+
+---
+
+## Próximos passos
+
+- **Front-end em Next.js (React)** — separar a interface da API, com renderização
+  no servidor e base preparada para uma versão mobile em React Native
+- **Auditoria** — registrar quem alterou o quê e quando, com tela de consulta
+- **Kubernetes** — orquestração com réplicas, escala automática e atualização sem
+  indisponibilidade (hoje a orquestração é via Docker Compose)
+- **Observabilidade** — métricas e alertas com Prometheus e Grafana
+- **Cache com Redis** — reduzir consultas repetidas ao ViaCEP
+- **Processamento em segundo plano** — exportações grandes via fila, sem travar a tela
+- **Testes end-to-end** — cobrir a jornada completa do usuário no navegador
+
+O acompanhamento das etapas está nas
+[issues do repositório](https://github.com/LeonardoVieiraGuimaraes/gerenciamento-endereco/issues).
+
+---
+
+## Documentação técnica
+
+- [Arquitetura](backend/docs/ARCHITECTURE.md)
+- [Documentação geral](backend/docs/DOCUMENTACAO.md)
+- [Configuração do Keycloak](backend/docs/SETUP_KEYCLOAK.md)
+- [Manual de deploy](backend/docs/DEPLOY.md)
+- [Scripts do banco](backend/scripts/tabelas.sql)
+
+---
+
+Desenvolvido por **Leonardo Vieira Guimarães**

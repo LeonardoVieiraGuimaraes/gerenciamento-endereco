@@ -23,3 +23,10 @@ Thumbs.db
 
 # Segredos de produção — nunca commitar, só existe no servidor via GitHub Actions
 backend/.env.prod
+
+# Ferramentas / ambiente local
+.cloud/
+
+# Extrações temporárias do tema do Keycloak (referência local, não versionar)
+theme.zip
+theme-extracted2/
