@@ -15,12 +15,14 @@ public class EnderecosController : Controller
     private readonly AppDbContext _context;
     private readonly ICsvExportService _csvExportService;
     private readonly IViaCepService _viaCepService;
+    private readonly IUsuarioLocalService _usuarioLocalService;
 
-    public EnderecosController(AppDbContext context, ICsvExportService csvExportService, IViaCepService viaCepService)
+    public EnderecosController(AppDbContext context, ICsvExportService csvExportService, IViaCepService viaCepService, IUsuarioLocalService usuarioLocalService)
     {
         _context = context;
         _csvExportService = csvExportService;
         _viaCepService = viaCepService;
+        _usuarioLocalService = usuarioLocalService;
     }
 
     /// <summary>
@@ -245,11 +247,20 @@ public class EnderecosController : Controller
     [Authorize(Policy = "EnderecoExport")]
     public async Task<IActionResult> ExportCsv()
     {
-        var user = await GetOrCreateLocalUserAsync();
-        var enderecos = await _context.Enderecos
-            .Where(e => e.UsuarioId == user.Id)
-            .ToListAsync();
+        // Admin exporta tudo; usuário comum exporta só os dele.
+        IQueryable<Endereco> query = _context.Enderecos;
 
+        if (_usuarioLocalService.EhAdmin(User))
+        {
+            query = _context.Enderecos;
+        }
+        else
+        {
+            var username = _usuarioLocalService.ObterUsername(User);
+            query = query.Where(e => e.Usuario!.Username == username);
+        }
+
+        var enderecos = await query.ToListAsync();
         var bytes = _csvExportService.ExportarEnderecosParaCsv(enderecos);
         return File(bytes, "text/csv", "enderecos.csv");
     }
