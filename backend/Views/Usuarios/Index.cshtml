@@ -1,4 +1,5 @@
 @model IEnumerable<GerenciamentoEndereco.API.Models.ViewModels.UsuarioListViewModel>
+@inject GerenciamentoEndereco.API.Services.KeycloakUrls KeycloakUrls
 @{
     ViewData["Title"] = "Usuários Registrados";
 }
@@ -71,8 +72,8 @@
                             }
                         </td>
                         <td class="text-center">
-                            <a href="http://localhost:8089/admin/gerenciamento-endereco/console/#/gerenciamento-endereco/users/@item.Id/settings"
-                               target="_blank"
+                            <a href="@KeycloakUrls.ConsoleUsuario(item.Id)"
+                               target="_blank" rel="noopener"
                                class="btn-app btn-app-outline btn-app-icon btn-app-sm"
                                title="Abrir no Console Admin do Keycloak">
                                 <i class="bi bi-shield-lock"></i>

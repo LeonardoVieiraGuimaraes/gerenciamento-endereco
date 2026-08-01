@@ -70,6 +70,11 @@ builder.Services.AddDataProtection()
     .SetApplicationName(dpAppName);
 
 // Setup Authentication with OpenID Connect (Keycloak)
+// Fonte única dos endereços do Keycloak — usada aqui na configuração do OIDC e,
+// via injeção de dependência, nas telas que linkam para o console.
+var keycloakUrls = new KeycloakUrls(builder.Configuration);
+builder.Services.AddSingleton(keycloakUrls);
+
 builder.Services.AddAuthentication(options => 
 {
     options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -102,9 +107,10 @@ builder.Services.AddAuthentication(options =>
     // Em produção o host externo é servido via HTTPS (TLS terminado no Cloudflare
     // Tunnel/proxy reverso); localmente é HTTP puro. O host interno (container-a-
     // container, dentro da rede Docker) é sempre HTTP.
-    var externalScheme = builder.Configuration["Keycloak:ExternalScheme"] ?? "http";
-    var externalRealmUrl = $"{externalScheme}://{builder.Configuration["Keycloak:ExternalHost"] ?? "localhost:8089"}/realms/gerenciamento-endereco";
-    var internalRealmUrl = $"http://{builder.Configuration["Keycloak:InternalHost"] ?? "keycloak:8080"}/realms/gerenciamento-endereco";
+    // Endereços vêm de KeycloakUrls, que é o único lugar que os monta — telas e
+    // serviços usam a mesma instância, evitando que um deles fique defasado.
+    var externalRealmUrl = keycloakUrls.RealmPublico;
+    var internalRealmUrl = keycloakUrls.RealmInterno;
 
     var oidcConfig = new Microsoft.IdentityModel.Protocols.OpenIdConnect.OpenIdConnectConfiguration
     {
@@ -397,8 +403,7 @@ app.UseForwardedHeaders();
 // já foi removido mas a sessão do Keycloak nunca morre, e o próximo login reautentica
 // sozinho via SSO — parecendo que "o logout não funciona". O Login() não é afetado
 // porque o Challenge ali é um redirect direto (ChallengeResult), não vem de um form.
-var keycloakExternalScheme = builder.Configuration["Keycloak:ExternalScheme"] ?? "http";
-var keycloakExternalOrigin = $"{keycloakExternalScheme}://{builder.Configuration["Keycloak:ExternalHost"] ?? "localhost:8089"}";
+var keycloakExternalOrigin = keycloakUrls.PublicoBase;
 
 app.Use(async (context, next) =>
 {

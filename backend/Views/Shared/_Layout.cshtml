@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 @inject Microsoft.AspNetCore.Authorization.IAuthorizationService AuthorizationService
+@inject GerenciamentoEndereco.API.Services.KeycloakUrls KeycloakUrls
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -61,7 +62,7 @@
                                     <li><hr class="dropdown-divider"></li>
                                     <li><h6 class="dropdown-header">Avançado</h6></li>
                                     <li>
-                                        <a class="dropdown-item fw-medium" href="http://localhost:8089/admin/gerenciamento-endereco/console/" target="_blank">
+                                        <a class="dropdown-item fw-medium" href="@KeycloakUrls.ConsoleAdmin" target="_blank" rel="noopener">
                                             <i class="bi bi-box-arrow-up-right me-2 text-muted"></i> Console do Keycloak
                                         </a>
                                     </li>
