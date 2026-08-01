@@ -167,6 +167,26 @@ body {
 }
 
 /* ==========================================================================
+   Link de nome em tabela (ex.: nome do usuário → editar)
+   Sem ícone: o próprio nome é a afordância. Fica na cor de texto normal e
+   só revela que é clicável no hover (cor de destaque + sublinhado sutil).
+   ========================================================================== */
+.link-nome {
+  color: var(--text-main, inherit);
+  font-weight: 500;
+  text-decoration: none;
+  text-underline-offset: 3px;
+  transition: color 0.15s ease;
+}
+
+.link-nome:hover,
+.link-nome:focus-visible {
+  color: var(--primary-color);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+}
+
+/* ==========================================================================
    Sistema de botões padronizado (.btn-app-*)
    Toda ação de tela (toolbar, formulário, linha de tabela) deve usar essas
    classes em vez de combinar utilitários do Bootstrap soltos — garante que
