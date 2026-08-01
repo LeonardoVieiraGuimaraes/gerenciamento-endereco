@@ -107,6 +107,22 @@ Tudo roda em containers Docker, o que faz o ambiente local ser igual ao de produ
 | Dependências | Sem pacotes com vulnerabilidade conhecida (checado a cada publicação) |
 | Segredos | Fora do código — guardados como segredos do GitHub |
 | Banco de dados | Não exposto para fora do servidor |
+| Registro de atividade | Log estruturado de toda requisição, sem gravar dado sensível |
+
+### Sobre os logs
+
+A aplicação usa **Serilog** com log estruturado:
+
+- Toda requisição HTTP é registrada (rota, código de resposta e tempo de execução)
+- Níveis ajustados por ambiente — mais detalhe em desenvolvimento, menos em produção
+- **Proteção de dado sensível:** a exibição de informação pessoal nos logs
+  (`ShowPII`) fica desligada em produção, evitando que token ou dado do usuário
+  apareça no registro
+- Erros são registrados com a pilha completa, facilitando o diagnóstico
+
+Hoje a saída é o console do container, o que atende o estágio atual. Centralizar
+os logs num destino pesquisável está mapeado na
+[issue #30](https://github.com/LeonardoVieiraGuimaraes/gerenciamento-endereco/issues/30).
 
 ---
 
@@ -196,6 +212,9 @@ seguindo a ordem em que cada etapa faz sentido ser feita.
 
 **Fase 5 — Escala e operação**
 - **Kubernetes** — réplicas, escala automática e atualização sem indisponibilidade
+- **Balanceamento de carga e gateway de entrada** (NGINX/Ingress ou YARP), com WAF
+- **Migrações de banco sem indisponibilidade** — pré-requisito para escalar
+- **Logs centralizados** (Seq ou Grafana Loki) — hoje eles somem com o container
 - **Observabilidade** — métricas e alertas com Prometheus e Grafana
 - **Cache com Redis** — reduzir consultas repetidas ao ViaCEP
 - **Processamento em segundo plano** — exportações grandes via fila
@@ -218,6 +237,7 @@ seguindo a ordem em que cada etapa faz sentido ser feita.
 - **Escalabilidade de dados** — paginação, índices e réplicas de leitura
 - **Testes de carga** com k6, para medir a capacidade real
 - **Implantação gradual** (canary) e feature flags
+- **Alta disponibilidade do banco** — replicação com troca automática em caso de falha
 - **Acessibilidade (WCAG)** e suporte a múltiplos idiomas
 
 ---
