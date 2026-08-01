@@ -93,12 +93,6 @@ apenas porque o enunciado original do teste pedia essa coluna — **ele nunca
 recebe credencial**, fica com um valor fixo indicando que quem autentica é o
 Keycloak.
 
-O vínculo entre a identidade do Keycloak e o registro local é feito pelo
-**identificador imutável da conta** (`sub`), não pelo nome de usuário. Isso
-importa por dois motivos: trocar o nome de usuário no Keycloak não cria uma
-pessoa nova, e uma conta excluída e recriada com o mesmo nome **não herda** os
-dados da anterior.
-
 Excluir um usuário pela tela administrativa remove a conta no Keycloak **e** os
 dados locais (registro espelho e endereços), em linha com o direito de eliminação
 da LGPD.
@@ -163,6 +157,39 @@ A aplicação usa **Serilog** com log estruturado:
 Hoje a saída é o console do container, o que atende o estágio atual. Centralizar
 os logs num destino pesquisável está mapeado na
 [issue #30](https://github.com/LeonardoVieiraGuimaraes/gerenciamento-endereco/issues/30).
+
+---
+
+## Engenharia de software
+
+Práticas adotadas na construção do projeto:
+
+**Arquitetura**
+- **Separação de responsabilidades** — controllers recebem requisições, serviços
+  concentram as regras e integrações, e o acesso a dados fica isolado
+- **Injeção de dependência** com interfaces (`IViaCepService`, `ICsvExportService`,
+  `IKeycloakAdminService`), o que permite testar cada parte de forma independente
+- **Identidade delegada** a um servidor especializado, em vez de autenticação
+  própria — a aplicação não guarda nem valida senha
+- **Autorização por política**, com permissões separadas por ação, sempre
+  verificada no servidor
+- **Contratos de entrada próprios (DTO)** na API, para o cliente não conseguir
+  gravar campos que não deveria controlar
+
+**Processo**
+- **Um commit por funcionalidade**, com mensagem explicando o motivo da mudança
+- **Issues organizadas em fases**, registrando o que foi feito e o que falta
+- **ADRs** (registros de decisão) documentando o porquê das escolhas e em que
+  condições devem ser revistas
+- **Banco versionado** por migrations, junto com o código
+- **Testes automatizados** rodando antes de qualquer publicação
+- **Publicação automatizada**, interrompida se teste ou verificação de
+  dependências falhar
+
+**Qualidade e segurança**
+- Revisão de segurança aplicada antes de expor a aplicação na internet
+- Verificação de dependências vulneráveis a cada publicação
+- Versões de imagens fixadas, para builds reproduzíveis
 
 ---
 

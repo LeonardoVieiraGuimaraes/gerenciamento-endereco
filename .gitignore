@@ -30,3 +30,6 @@ backend/.env.prod
 # Extrações temporárias do tema do Keycloak (referência local, não versionar)
 theme.zip
 theme-extracted2/
+
+# Configuração local de ferramentas de desenvolvimento
+.claude/
