@@ -173,16 +173,8 @@
                 "composite": true,
                 "composites": {
                     "realm": [
-                        "offline_access",
-                        "uma_authorization",
                         "USUARIO"
-                    ],
-                    "client": {
-                        "account": [
-                            "view-profile",
-                            "manage-account"
-                        ]
-                    }
+                    ]
                 }
             }
         ]
@@ -195,7 +187,7 @@
             "protocol": "openid-connect",
             "publicClient": false,
             "clientAuthenticatorType": "client-secret",
-            "secret": "bcdbmbolTUjkbRc21tgKv7yuU8XZDk1E",
+            "secret": "__APP_CSHARP_SECRET__",
             "standardFlowEnabled": true,
             "implicitFlowEnabled": false,
             "directAccessGrantsEnabled": false,
@@ -228,7 +220,7 @@
             "protocol": "openid-connect",
             "publicClient": false,
             "clientAuthenticatorType": "client-secret",
-            "secret": "K3eQM5uNBNJCRBKTxGRiBwqAPsErOrZh-GIwYpZ3PC4",
+            "secret": "__BACKEND_ADMIN_SECRET__",
             "standardFlowEnabled": false,
             "implicitFlowEnabled": false,
             "directAccessGrantsEnabled": false,

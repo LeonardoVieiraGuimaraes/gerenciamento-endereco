@@ -30,8 +30,8 @@ chave SSH basta.
 | `SQL_SA_PASSWORD` | `GUgq8bSz2ntWGkKnsFa4Fi7E!Aa1` |
 | `KEYCLOAK_DB_PASSWORD` | `WXrum4APsNi9ialqDLMf1IUMMImS` |
 | `KEYCLOAK_ADMIN_PASSWORD` | `264tGr1fRd6BKBDThUwQAa1!` |
-| `KEYCLOAK_CLIENT_SECRET` | `bcdbmbolTUjkbRc21tgKv7yuU8XZDk1E` (tem que bater com o `secret` do client `app-csharp` no realm JSON) |
-| `KEYCLOAK_ADMIN_CLIENT_SECRET` | `K3eQM5uNBNJCRBKTxGRiBwqAPsErOrZh-GIwYpZ3PC4` (tem que bater com o `secret` do client `backend-admin-api`) |
+| `KEYCLOAK_CLIENT_SECRET` | Secret do client `app-csharp` — **não fica no repositório**, ver abaixo |
+| `KEYCLOAK_ADMIN_CLIENT_SECRET` | Secret do client `backend-admin-api` — idem |
 
 As três senhas geradas acima (SQL/Keycloak DB/Keycloak admin) são novas e
 aleatórias — específicas de produção, diferentes das usadas em desenvolvimento
@@ -69,8 +69,28 @@ antes de qualquer coisa tocar o servidor — se falhar, o deploy não acontece.
   (`https://enderecos.leoproti.com.br/signin-oidc`) junto dos de
   desenvolvimento local — o mesmo `gerenciamento-endereco-realm.json` serve os
   dois ambientes.
-- Rotação de secrets: os dois `client secret` do Keycloak (`app-csharp` e
-  `backend-admin-api`) estão hardcoded no realm JSON committado no repositório
-  — pra rotacioná-los de verdade também precisa gerar um novo valor no realm
-  JSON e atualizar o secret do GitHub junto, nessa ordem, senão a autenticação
-  quebra até os dois lados baterem de novo.
+### Client secrets do Keycloak
+
+O realm versionado guarda apenas **placeholders** (`__APP_CSHARP_SECRET__` e
+`__BACKEND_ADMIN_SECRET__`). Os valores reais entram no build da imagem:
+
+| Ambiente | De onde vem o valor |
+|---|---|
+| Desenvolvimento | Valores padrão declarados no `Dockerfile`, claramente marcados como de desenvolvimento — permitem subir o ambiente com um comando |
+| Produção | Build args do `docker-compose.prod.yml`, alimentados pelos segredos do GitHub |
+
+O build falha se algum placeholder não for substituído, evitando publicar uma
+imagem com o valor literal.
+
+**Para rotacionar em produção**, os dois lados precisam mudar juntos — entre um
+passo e outro o login fica indisponível:
+
+1. Gerar o novo valor
+2. Atualizar o secret correspondente no GitHub
+3. Aplicar o mesmo valor no client do Keycloak em produção:
+   ```bash
+   kcadm.sh update clients/<id> -r gerenciamento-endereco -s secret=<novo-valor>
+   ```
+
+O passo 3 é necessário porque a importação do realm é ignorada quando ele já
+existe — mudar o arquivo sozinho não altera um ambiente já provisionado.

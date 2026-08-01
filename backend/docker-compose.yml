@@ -35,7 +35,7 @@ services:
       - KeycloakAdmin__BaseUrl=http://keycloak:8080
       - KeycloakAdmin__Realm=gerenciamento-endereco
       - KeycloakAdmin__ClientId=backend-admin-api
-      - KeycloakAdmin__ClientSecret=K3eQM5uNBNJCRBKTxGRiBwqAPsErOrZh-GIwYpZ3PC4
+      - KeycloakAdmin__ClientSecret=dev-backend-admin-secret-nao-usar-em-producao
     depends_on:
       - sqldb
       - keycloak
