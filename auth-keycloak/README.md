@@ -64,6 +64,15 @@ restrição mais fina — quem enxerga qual endereço — fica na aplicação, j
 dados. O porquê está na
 [ADR de estratégia de autorização](../docs/adr/0003-estrategia-de-autorizacao.md).
 
+**Os fluxos de autenticação são versionados por inteiro.** O realm declara os 21
+fluxos completos, não apenas o trecho alterado — declarar uma lista parcial faz o
+Keycloak **substituir** a lista interna em vez de complementá-la, e foi assim que
+os client scopes sumiram uma vez, deixando o Console de Administração exibindo
+"Anônimo". O que muda em relação ao padrão: no subfluxo *Browser - Conditional
+2FA*, os métodos **Códigos de recuperação** e **WebAuthn** saem de `DISABLED`
+para `ALTERNATIVE`, ao lado do OTP, para que ninguém fique trancado para fora ao
+perder o autenticador.
+
 **A importação é ignorada se o realm já existir.** Alterações neste JSON só valem
 para ambientes novos; num Keycloak que já rodou, é preciso aplicar a mudança pelo
 Console ou via `kcadm`. Limitação registrada na

@@ -253,10 +253,24 @@ Lá, em **Segurança → Formas de entrar**, o item *Aplicativo autenticador* te
 botão de excluir. É preciso ter outra forma de entrar configurada — o Keycloak
 não deixa remover o último fator.
 
-> **Se perder o acesso ao autenticador**, um ADMIN resolve pelo Console do
-> Keycloak (menu *Administração*): **Usuários → o usuário → Credenciais →
-> excluir a credencial OTP**. No próximo login a pessoa entra só com a senha e
-> pode cadastrar o 2FA de novo.
+**Se perder o acesso ao autenticador**, há dois caminhos:
+
+1. **Códigos de recuperação** — se tiverem sido gerados antes. Na tela de login,
+   *Tentar outro jeito* → **Códigos de recuperação**, e usa-se um dos códigos
+   guardados. Cada código serve uma vez só.
+2. **Um ADMIN destrava** — Console do Keycloak (menu *Administração*):
+   **Usuários → o usuário → Credenciais → excluir a credencial OTP**. No próximo
+   login a pessoa entra só com a senha.
+
+> Vale gerar os códigos de recuperação **junto com o 2FA**, no painel de conta,
+> em *Segurança → Formas de entrar*. Sem eles, perder o celular significa
+> depender de alguém com acesso administrativo. Apagar a entrada dentro do
+> aplicativo autenticador não avisa o servidor: a credencial continua registrada
+> e o login segue pedindo um código que ninguém consegue mais gerar.
+
+Além do aplicativo autenticador, o realm aceita **chave de segurança / biometria
+(WebAuthn)** como segundo fator — cadastro no mesmo lugar. Ter dois métodos
+registrados é o que evita ficar trancado para fora.
 
 A separação é proposital: cadastrar 2FA é uma ação do próprio dono da conta, e
 remover exige provar identidade — decisões que ficam melhor no servidor de
