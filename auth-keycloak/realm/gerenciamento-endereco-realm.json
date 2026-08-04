@@ -117,13 +117,13 @@
         "user": "__SMTP_USER__",
         "password": "__SMTP_PASSWORD__"
     },
-    "eventsEnabled": false,
+    "eventsEnabled": true,
     "eventsListeners": [
         "jboss-logging"
     ],
     "enabledEventTypes": [],
-    "adminEventsEnabled": false,
-    "adminEventsDetailsEnabled": false,
+    "adminEventsEnabled": true,
+    "adminEventsDetailsEnabled": true,
     "browserFlow": "browser",
     "registrationFlow": "registration",
     "directGrantFlow": "direct grant",
@@ -1227,5 +1227,6 @@
             "priority": 1000,
             "config": {}
         }
-    ]
+    ],
+    "eventsExpiration": 7776000
 }
