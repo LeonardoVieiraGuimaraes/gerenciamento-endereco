@@ -99,6 +99,23 @@ services:
     depends_on:
       keycloak-db:
         condition: service_healthy
+      mailpit:
+        condition: service_started
+    networks:
+      - gerenc-net
+
+  # 5. CAPTURADOR DE E-MAIL (só desenvolvimento)
+  #    Finge ser um servidor SMTP: aceita as mensagens que o Keycloak envia
+  #    (recuperação de senha, verificação de e-mail) e as mostra numa caixa de
+  #    entrada web, sem entregar nada de verdade. Evita depender de provedor
+  #    externo para testar o fluxo — e evita disparar e-mail real por engano
+  #    para os endereços fictícios da carga de demonstração.
+  mailpit:
+    image: axllent/mailpit:v1.21
+    container_name: gerenc-mailpit
+    restart: unless-stopped
+    ports:
+      - "8025:8025"   # caixa de entrada web
     networks:
       - gerenc-net
 

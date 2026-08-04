@@ -199,6 +199,13 @@ automaticamente.
 | Documentação da API (Swagger) | http://localhost:5000/swagger |
 | Verificação de saúde | http://localhost:5000/health |
 | Keycloak | http://localhost:8089 |
+| Caixa de e-mail de teste | http://localhost:8025 |
+
+O ambiente local sobe com um **capturador de e-mail** no lugar de um servidor de
+verdade: as mensagens do Keycloak (recuperação de senha, verificação de conta)
+não são entregues a ninguém, ficam visíveis em http://localhost:8025. Assim o
+fluxo é testável sem contratar provedor — e sem risco de disparar e-mail real
+para os endereços fictícios da carga de demonstração.
 
 ### Dados de demonstração
 
@@ -271,6 +278,37 @@ não deixa remover o último fator.
 Além do aplicativo autenticador, o realm aceita **chave de segurança / biometria
 (WebAuthn)** como segundo fator — cadastro no mesmo lugar. Ter dois métodos
 registrados é o que evita ficar trancado para fora.
+
+### Esqueci minha senha
+
+A tela de login tem o link de redefinição: informa-se o usuário ou e-mail e o
+Keycloak envia um link de uso único. Em desenvolvimento a mensagem cai na caixa
+de teste (http://localhost:8025); em produção, sai pelo provedor configurado.
+
+Para publicar, estes segredos precisam existir no repositório
+(*Settings → Secrets and variables → Actions*):
+
+| Segredo | Exemplo |
+|---|---|
+| `SMTP_HOST` | `smtp-relay.brevo.com` |
+| `SMTP_PORT` | `587` |
+| `SMTP_FROM` | `nao-responda@leoproti.com.br` |
+| `SMTP_USER` | usuário do provedor |
+| `SMTP_PASSWORD` | senha/chave SMTP do provedor |
+
+Servem qualquer provedor com SMTP — [Brevo](https://www.brevo.com/) (300/dia) e
+[Resend](https://resend.com/) (3.000/mês) têm plano gratuito suficiente para este
+volume. Vale publicar os registros SPF e DKIM do provedor no DNS do domínio, ou
+as mensagens tendem a cair em spam.
+
+> Num ambiente que **já existe**, preencher os segredos e publicar não basta: o
+> Keycloak ignora o arquivo de importação quando o realm já foi criado
+> ([issue #34](https://github.com/LeonardoVieiraGuimaraes/gerenciamento-endereco/issues/34)).
+> Depois de publicar, rode uma vez no servidor:
+> ```bash
+> bash auth-keycloak/aplicar-smtp.sh
+> ```
+> Ambiente novo já nasce configurado e não precisa disso.
 
 A separação é proposital: cadastrar 2FA é uma ação do próprio dono da conta, e
 remover exige provar identidade — decisões que ficam melhor no servidor de

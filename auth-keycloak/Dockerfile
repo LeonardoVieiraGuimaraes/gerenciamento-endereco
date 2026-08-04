@@ -29,11 +29,33 @@ COPY --chown=keycloak:root realm/gerenciamento-endereco-realm.json /opt/keycloak
 ARG APP_CSHARP_SECRET=dev-app-csharp-secret-nao-usar-em-producao
 ARG BACKEND_ADMIN_SECRET=dev-backend-admin-secret-nao-usar-em-producao
 
+# Servidor de e-mail, pelo mesmo mecanismo. O padrão aponta para o capturador
+# "mailpit" que sobe junto no ambiente de desenvolvimento: sem autenticação e sem
+# entrega real, as mensagens ficam visíveis em http://localhost:8025. Assim dá
+# para testar recuperação de senha e verificação de e-mail sem contratar nada.
+#
+# Em produção, o docker-compose.prod.yml passa os dados do provedor real
+# (Brevo, Resend, etc.) vindos dos segredos do GitHub.
+ARG SMTP_HOST=mailpit
+ARG SMTP_PORT=1025
+ARG SMTP_FROM=nao-responda@enderecos.local
+ARG SMTP_AUTH=false
+ARG SMTP_STARTTLS=false
+ARG SMTP_USER=
+ARG SMTP_PASSWORD=
+
 RUN sed -i \
       -e "s|__APP_CSHARP_SECRET__|${APP_CSHARP_SECRET}|g" \
       -e "s|__BACKEND_ADMIN_SECRET__|${BACKEND_ADMIN_SECRET}|g" \
+      -e "s|__SMTP_HOST__|${SMTP_HOST}|g" \
+      -e "s|__SMTP_PORT__|${SMTP_PORT}|g" \
+      -e "s|__SMTP_FROM__|${SMTP_FROM}|g" \
+      -e "s|__SMTP_AUTH__|${SMTP_AUTH}|g" \
+      -e "s|__SMTP_STARTTLS__|${SMTP_STARTTLS}|g" \
+      -e "s|__SMTP_USER__|${SMTP_USER}|g" \
+      -e "s|__SMTP_PASSWORD__|${SMTP_PASSWORD}|g" \
       /opt/keycloak/data/import/gerenciamento-endereco-realm.json \
- && ! grep -q "__APP_CSHARP_SECRET__\|__BACKEND_ADMIN_SECRET__" \
+ && ! grep -q "__[A-Z_]*__" \
       /opt/keycloak/data/import/gerenciamento-endereco-realm.json
 
 # Habilita métricas e health

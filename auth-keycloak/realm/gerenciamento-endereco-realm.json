@@ -33,7 +33,7 @@
     "verifyEmail": false,
     "loginWithEmailAllowed": true,
     "duplicateEmailsAllowed": false,
-    "resetPasswordAllowed": false,
+    "resetPasswordAllowed": true,
     "editUsernameAllowed": false,
     "bruteForceProtected": false,
     "permanentLockout": false,
@@ -106,7 +106,17 @@
         "contentSecurityPolicy": "frame-src 'self'; frame-ancestors 'self'; object-src 'none';",
         "strictTransportSecurity": "max-age=31536000; includeSubDomains"
     },
-    "smtpServer": {},
+    "smtpServer": {
+        "host": "__SMTP_HOST__",
+        "port": "__SMTP_PORT__",
+        "from": "__SMTP_FROM__",
+        "fromDisplayName": "Gerenciamento de Endereços",
+        "ssl": "false",
+        "starttls": "__SMTP_STARTTLS__",
+        "auth": "__SMTP_AUTH__",
+        "user": "__SMTP_USER__",
+        "password": "__SMTP_PASSWORD__"
+    },
     "eventsEnabled": false,
     "eventsListeners": [
         "jboss-logging"

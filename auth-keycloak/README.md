@@ -55,6 +55,14 @@ com um comando só; em produção, o `docker-compose.prod.yml` passa os valores
 reais via *build args*, vindos dos segredos do GitHub. O build falha de
 propósito se algum marcador sobrar.
 
+**O servidor de e-mail entra pelo mesmo mecanismo dos secrets.** O realm traz
+`__SMTP_HOST__`, `__SMTP_USER__`, `__SMTP_PASSWORD__` e afins, substituídos no
+build. O padrão aponta para o capturador `mailpit`, que sobe junto no ambiente de
+desenvolvimento e mostra as mensagens em http://localhost:8025 sem entregar nada
+— dá para testar recuperação de senha sem provedor e sem risco de enviar e-mail
+real para os endereços fictícios da carga de demonstração. Em produção entram os
+dados do provedor, vindos dos segredos do GitHub.
+
 **A versão do Keycloak é fixa, nunca `latest`.** Uma tag flutuante já quebrou o
 tema em silêncio: uma atualização reorganizou os temas embutidos e as telas
 passaram a renderizar sem estilo nenhum, sem nenhum aviso.
