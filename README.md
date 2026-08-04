@@ -290,11 +290,12 @@ Para publicar, estes segredos precisam existir no repositório
 
 | Segredo | Exemplo |
 |---|---|
-| `SMTP_HOST` | `smtp-relay.brevo.com` |
-| `SMTP_PORT` | `587` |
-| `SMTP_FROM` | `nao-responda@leoproti.com.br` |
-| `SMTP_USER` | usuário do provedor |
-| `SMTP_PASSWORD` | senha/chave SMTP do provedor |
+| `SMTP_FROM` | endereço que aparece no "De:" |
+| `SMTP_USER` | usuário SMTP do provedor |
+| `SMTP_PASSWORD` | chave SMTP do provedor |
+
+Só as credenciais são segredo. Endereço e porta do provedor ficam versionados no
+`docker-compose.prod.yml`, à vista — assim fica claro de onde o e-mail sai.
 
 Servem qualquer provedor com SMTP — [Brevo](https://www.brevo.com/) (300/dia) e
 [Resend](https://resend.com/) (3.000/mês) têm plano gratuito suficiente para este

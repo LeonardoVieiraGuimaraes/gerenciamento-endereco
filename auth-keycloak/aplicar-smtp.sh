@@ -26,10 +26,17 @@ fi
 
 set -a; . "./$ENV_FILE"; set +a
 
-for v in SMTP_HOST SMTP_PORT SMTP_FROM SMTP_USER SMTP_PASSWORD; do
+# Endereco e porta do provedor nao sao segredo e ficam versionados no
+# docker-compose.prod.yml; aqui so entram como padrao, caso alguem rode o
+# script fora do fluxo normal.
+SMTP_HOST="${SMTP_HOST:-smtp-relay.brevo.com}"
+SMTP_PORT="${SMTP_PORT:-587}"
+
+for v in SMTP_FROM SMTP_USER SMTP_PASSWORD; do
   if [ -z "${!v:-}" ]; then
     echo "erro: $v está vazio em $ENV_FILE." >&2
-    echo "      Preencha os segredos SMTP_* no repositório e publique antes de rodar." >&2
+    echo "      Cadastre SMTP_FROM, SMTP_USER e SMTP_PASSWORD nos segredos do" >&2
+    echo "      repositório e publique antes de rodar." >&2
     exit 1
   fi
 done

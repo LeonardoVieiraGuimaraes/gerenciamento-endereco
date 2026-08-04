@@ -85,8 +85,12 @@ services:
         BACKEND_ADMIN_SECRET: ${KEYCLOAK_ADMIN_CLIENT_SECRET}
         # Servidor de e-mail do provedor real. Sem isso não há "Esqueci minha
         # senha": o Keycloak precisa de SMTP para enviar o link de redefinição.
-        SMTP_HOST: ${SMTP_HOST}
-        SMTP_PORT: ${SMTP_PORT}
+        #
+        # Endereço do provedor e remetente ficam aqui, à vista: não são segredo,
+        # e versioná-los deixa claro de onde o e-mail sai. Só as credenciais
+        # entram por variável, vindas dos segredos do GitHub.
+        SMTP_HOST: smtp-relay.brevo.com
+        SMTP_PORT: "587"
         SMTP_FROM: ${SMTP_FROM}
         SMTP_USER: ${SMTP_USER}
         SMTP_PASSWORD: ${SMTP_PASSWORD}
