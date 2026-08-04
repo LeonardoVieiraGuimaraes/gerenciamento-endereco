@@ -189,5 +189,29 @@ namespace GerenciamentoEndereco.API.Services
             var response = await SendAsync(HttpMethod.Post, $"/admin/realms/{_realm}/users/{id}/logout");
             return response.IsSuccessStatusCode;
         }
+
+        public async Task<string?> ObterIdCredencial2FAAsync(string userId)
+        {
+            var response = await SendAsync(HttpMethod.Get, $"/admin/realms/{_realm}/users/{userId}/credentials");
+            if (!response.IsSuccessStatusCode) return null;
+
+            var body = await response.Content.ReadAsStringAsync();
+            using var doc = JsonDocument.Parse(body);
+
+            foreach (var credencial in doc.RootElement.EnumerateArray())
+            {
+                // "otp" é como o Keycloak nomeia a credencial do aplicativo
+                // autenticador. Senha e chave de segurança têm outros tipos e
+                // não podem ser removidas por aqui.
+                if (credencial.TryGetProperty("type", out var tipo) &&
+                    tipo.GetString() == "otp" &&
+                    credencial.TryGetProperty("id", out var id))
+                {
+                    return id.GetString();
+                }
+            }
+
+            return null;
+        }
     }
 }

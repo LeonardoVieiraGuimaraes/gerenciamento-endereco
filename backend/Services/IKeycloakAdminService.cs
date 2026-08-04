@@ -48,5 +48,14 @@ namespace GerenciamentoEndereco.API.Services
         /// Revoga todas as sessões ativas do usuário no Keycloak (logout forçado).
         /// </summary>
         Task<bool> LogoutUserSessionsAsync(string id);
+
+        /// <summary>
+        /// Identificador da credencial de verificação em duas etapas (TOTP) do
+        /// usuário, ou <c>null</c> se ele não tiver 2FA cadastrado.
+        ///
+        /// Serve para montar a ação de remoção: o Keycloak exige o id exato da
+        /// credencial a excluir, e essa informação só existe do lado dele.
+        /// </summary>
+        Task<string?> ObterIdCredencial2FAAsync(string userId);
     }
 }

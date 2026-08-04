@@ -62,14 +62,33 @@
             <a asp-controller="Auth" asp-action="AlterarSenha" class="btn-app btn-app-outline">
                 <i class="bi bi-key"></i> Alterar Senha
             </a>
-            <a asp-controller="Auth" asp-action="ConfigurarDoisFatores" class="btn-app btn-app-outline">
-                <i class="bi bi-shield-lock"></i> Configurar 2FA
-            </a>
+            @if (Model.PossuiDoisFatores)
+            {
+                <form asp-controller="Auth" asp-action="RemoverDoisFatores" method="post" class="m-0">
+                    <button type="submit" class="btn-app btn-app-outline"
+                            onclick="return confirm('Remover a verificação em duas etapas? Sua conta passará a exigir apenas a senha para entrar.');">
+                        <i class="bi bi-shield-slash"></i> Desativar 2FA
+                    </button>
+                </form>
+            }
+            else
+            {
+                <a asp-controller="Auth" asp-action="ConfigurarDoisFatores" class="btn-app btn-app-outline">
+                    <i class="bi bi-shield-lock"></i> Configurar 2FA
+                </a>
+            }
             <form asp-controller="Auth" asp-action="Logout" method="post" class="m-0 ms-auto">
                 <button type="submit" class="btn-app btn-app-danger">
                     <i class="bi bi-box-arrow-right"></i> Sair
                 </button>
             </form>
         </div>
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-warning mt-3 mb-0" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>@TempData["ErrorMessage"]
+            </div>
+        }
     </section>
 </div>

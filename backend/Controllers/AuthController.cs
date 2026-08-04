@@ -87,6 +87,38 @@ public class AuthController : Controller
         return Challenge(props, OpenIdConnectDefaults.AuthenticationScheme);
     }
 
+    /// <summary>
+    /// Remove a verificação em duas etapas da conta de quem está logado.
+    ///
+    /// Quem apaga é o próprio Keycloak, pela ação nativa "delete_credential": a
+    /// aplicação apenas descobre o id da credencial e encaminha o usuário para a
+    /// tela de confirmação. Assim a exclusão continua exigindo a sessão da
+    /// pessoa — a aplicação nunca remove credencial de ninguém por conta própria.
+    /// </summary>
+    [Authorize]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> RemoverDoisFatores()
+    {
+        var keycloakId = User.FindFirst("sub")?.Value;
+        if (string.IsNullOrEmpty(keycloakId))
+        {
+            TempData["ErrorMessage"] = "Não foi possível identificar sua conta.";
+            return RedirectToAction(nameof(Perfil));
+        }
+
+        var credencialId = await _keycloakAdminService.ObterIdCredencial2FAAsync(keycloakId);
+        if (string.IsNullOrEmpty(credencialId))
+        {
+            TempData["ErrorMessage"] = "Não há verificação em duas etapas cadastrada nesta conta.";
+            return RedirectToAction(nameof(Perfil));
+        }
+
+        var props = new AuthenticationProperties { RedirectUri = "/Auth/Perfil" };
+        props.Items["kc_action"] = $"delete_credential:{credencialId}";
+        return Challenge(props, OpenIdConnectDefaults.AuthenticationScheme);
+    }
+
     [Authorize]
     [HttpGet]
     public async Task<IActionResult> Perfil()
@@ -116,13 +148,24 @@ public class AuthController : Controller
                 .CountAsync();
         }
 
+        // Só o Keycloak sabe quais credenciais a conta tem — o token não carrega
+        // essa informação. Uma falha na consulta não deve derrubar o perfil: sem
+        // resposta, a tela apenas oferece configurar o 2FA.
+        var possuiDoisFatores = false;
+        var keycloakId = User.FindFirst("sub")?.Value;
+        if (!string.IsNullOrEmpty(keycloakId))
+        {
+            possuiDoisFatores = await _keycloakAdminService.ObterIdCredencial2FAAsync(keycloakId) is not null;
+        }
+
         var viewModel = new PerfilViewModel
         {
             Nome = nome ?? "Usuário",
             Username = username ?? "-",
             Email = email ?? "-",
             Roles = roles,
-            EnderecoCount = enderecoCount
+            EnderecoCount = enderecoCount,
+            PossuiDoisFatores = possuiDoisFatores
         };
 
         return View(viewModel);
